@@ -26,7 +26,8 @@ set(MODULE_INCLUDE_DIRECTORIES
   )
 
 set(MODULE_SRCS
-	segment.cpp
+        utils.cpp
+		segment.cpp
         convertvolume.cpp
   )
 

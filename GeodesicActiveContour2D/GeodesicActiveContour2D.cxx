@@ -66,7 +66,8 @@ int DoIt( int argc, char * argv[], T )
         seg.MyocardiumEC(first,last,sigma,sigma_min,sigma_max,propagation,curvature,advection,rms,iterations,timestep,it,conductance,alpha,beta,distance);
     }
     if(axis == "Eixo Longo Vertical"){
-
+        seg.InternalELV(first,last,sigma,sigma_min,sigma_max,propagation,curvature,advection,rms,iterations,timestep,it,conductance,alpha,beta,distance);
+        seg.MyocardiumELV(first,last,sigma,sigma_min,sigma_max,propagation,curvature,advection,rms,iterations,timestep,it,conductance,alpha,beta,distance);
     }
     if(axis == "Eixo Longo Horizontal"){
 
