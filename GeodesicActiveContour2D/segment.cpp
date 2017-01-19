@@ -226,7 +226,7 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
         try
         {
             writer->SetFileName(filename2);
-            writer->SetInput( gradient->GetOutput() );
+            writer->SetInput( thresholder->GetOutput() );
             writer->Update();
         }
         catch( itk::ExceptionObject & excep )
@@ -489,7 +489,6 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
         if(i<9)
             ss2<<name2<<"00"<<(i+1)<<type2;
         if(i>=9 && i<99)
-            void MyocardiumEC(int first,int last,double sigma,double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double meta, double distance);
             ss2<<name2<<"0"<<(i+1)<<type2;
         if(i>=99)
             ss2<<name2<<(i+1)<<type2;
@@ -645,10 +644,14 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
         typedef FastMarchingFilterType::NodeType       NodeType;
         NodeContainer::Pointer seeds = NodeContainer::New();
         InternalImageType::IndexType  seedPosition;
-        seedPosition.SetElement(0,x);
-        seedPosition.SetElement(1,y);
+        int seedX;
+        int seedY;
+        Utils utils;
+        utils.GetCenter(val, &seedX, &seedY);
+        seedPosition.SetElement(0,72);
+        seedPosition.SetElement(1,55);
         //seedPosition.SetElement(2,(int)z);
-        cout<<"X, Y = "<<x<<" "<<y<<endl;
+        cout<<"X, Y = "<<seedX<<" "<<seedY<<endl;
         NodeType node;
         const double seedValue = - distance;
         node.SetValue( seedValue );
@@ -907,8 +910,8 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         int seedX;
         int seedY;
         utils.GetSeed(valS, x, y, &seedX, &seedY);
-        cout<<"SEED X: "<<seedX<<endl;
-        cout<<"SEED Y: "<<seedY<<endl;
+        //cout<<"SEED X: "<<seedX<<endl;
+        //cout<<"SEED Y: "<<seedY<<endl;
 
         typedef FastMarchingFilterType::NodeContainer  NodeContainer;
         typedef FastMarchingFilterType::NodeType       NodeType;

@@ -3,17 +3,30 @@
 
 #include "itkImage.h"
 #include "QString"
+using namespace std;
 
 class Extract
 {
 public:
     Extract();
-    //typedef float PixelType;
-    //typedef unsigned char PixelType2;
-    //typedef itk::Image<PixelType,2> ImageType;
-    //typedef itk::Image<PixelType2,2> ImageType2;
-    //typedef itk::Image<unsigned char,3> ImageType;
+
     void Execute(int first,int last,const char* volume, const char* volume_out);
+
+    struct passwd *pw;
+
+    const char *homedir;
+
+    string endocardium;
+    string radius;
+    string slices;
+    string hough;
+    string cine;
+
+    string pathEndocardium;
+    string pathRadius;
+    string pathSlices;
+    string pathHough;
+    string pathCine;
 };
 
 #endif // EXTRACT_H

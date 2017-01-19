@@ -39,11 +39,30 @@
 #include "itkGradientMagnitudeRecursiveGaussianImageFilter.h"
 #include "itkSigmoidImageFilter.h"
 #include <fstream>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 using namespace std;
 
 Extract::Extract()
 {
+    this->pw = getpwuid(getuid());
+
+    this->homedir = this->pw->pw_dir;
+
+    this->endocardium = "/temp/endocardium.txt";
+    this->radius = "/temp/radius.txt";
+    this->slices = "/temp/slices.txt";
+    this->hough = "/temp/hough_";
+    this->cine = "/temp/cine_";
+    this->pathEndocardium = homedir + endocardium;
+    this->pathRadius = homedir + radius;
+    this->pathSlices = homedir + slices;
+    this->pathHough = homedir + hough;
+    this->pathCine = homedir + cine;
+
 }
+
 void Extract::Execute(int first,int last,const char* volume, const char* volume_out){
 
     typedef   unsigned char   PixelType;
@@ -103,9 +122,10 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
     cout<<"S X = "<<sizeX<<endl;
     cout<<"S Y = "<<sizeY<<endl;
     cout<<"S Z = "<<sizeZ<<endl;
-    ofstream myfile ("/home/gustavo/temp/endocardium.txt");
-    ofstream myfile2 ("/home/gustavo/temp/radius.txt");
-    ofstream slice_file ("/home/gustavo/temp/slices.txt");
+    cout<<pathEndocardium.c_str()<<endl;
+    ofstream myfile (pathEndocardium.c_str());
+    ofstream myfile2 (pathRadius.c_str());
+    ofstream slice_file (pathSlices.c_str());
     slice_file<<first<<"\n";
     slice_file<<last<<"\n";
     for(int i=first; i<last; i++){
@@ -233,20 +253,18 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
 
         stringstream ss;
 
-        string name = "/home/gustavo/temp/hough_";
         string type = ".tif";
 
-        ss<<name<<(i+1)<<type;
+        ss<<pathHough<<(i+1)<<type;
 
         string filename = ss.str();
         ss.str("");
 
         stringstream ss2;
 
-        string name2 = "/home/gustavo/temp/cine_";
         string type2 = ".tif";
 
-        ss2<<name2<<(i+1)<<type2;
+        ss2<<pathCine<<(i+1)<<type2;
 
         string filename2 = ss2.str();
         ss2.str("");
@@ -275,7 +293,7 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
     myfile.close();
     myfile2.close();
 
-      /*typedef itk::Image<unsigned char,3> ImageType2;
+    /*typedef itk::Image<unsigned char,3> ImageType2;
       ImageType2::Pointer imag_out = ImageType::New();
       imag_out = localOutputImage;
       return imag_out;*/

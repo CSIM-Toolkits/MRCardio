@@ -28,7 +28,7 @@ ImageType::Pointer convertVolume::Convert(int first, int last){
       string format = "/home/gustavo/temp/segmented2_%03d.tif";
       nameGenerator->SetSeriesFormat(format);
 
-      nameGenerator->SetStartIndex( (first+1) );
+      nameGenerator->SetStartIndex( (first)+1 );
       nameGenerator->SetEndIndex( last );
       nameGenerator->SetIncrementIndex( 1 );
       std::vector<std::string> names = nameGenerator->GetFileNames();

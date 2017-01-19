@@ -38,28 +38,15 @@ int DoIt( int argc, char * argv[], T )
                                          CLPProcessInformation);
     const char* volume = inputVolume.c_str();
     const char* volume_out = outputVolume.c_str();
-    //volume = inputVolume.c_str();
     reader->SetFileName( inputVolume.c_str() );
     reader->Update();
 
-
     typedef itk::ImageRegionIterator< InputImageType > ImageIteratorType;
-
-
-    //ImageType::Pointer imag_out = ImageType::New();
     typedef itk::Image<unsigned char,2> ImageType;
     ImageType::Pointer imag_out = ImageType::New();
     Extract ext;
 
     ext.Execute(sliceBegin,sliceEnd,volume, volume_out);
-
-    /*typename WriterType::Pointer writer = WriterType::New();
-     itk::PluginFilterWatcher watchWriter(writer, "Write Volume",
-                                          CLPProcessInformation);
-     writer->SetFileName( outputVolume.c_str() );
-     writer->SetInput(imag_out);
-     writer->SetUseCompression(1);
-     writer->Update();*/
 
     return EXIT_SUCCESS;
 }
