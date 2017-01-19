@@ -25,28 +25,26 @@ int DoIt( int argc, char * argv[], T )
 
     PARSE_ARGS;
     typedef    float InputPixelType;
-    typedef    unsigned char     OutputPixelType;
+    //typedef    unsigned char     OutputPixelType;
 
     typedef itk::Image<InputPixelType,  3> InputImageType;
-    typedef itk::Image<OutputPixelType, 3> OutputImageType;
+    //typedef itk::Image<OutputPixelType, 3> OutputImageType;
 
     typedef itk::ImageFileReader<InputImageType>  ReaderType;
-    typedef itk::ImageFileWriter<OutputImageType> WriterType;
+    //typedef itk::ImageFileWriter<OutputImageType> WriterType;
 
     typename ReaderType::Pointer reader = ReaderType::New();
     itk::PluginFilterWatcher watchReader(reader, "Read Volume",
                                          CLPProcessInformation);
     const char* volume = inputVolume.c_str();
-    const char* volume_out = outputVolume.c_str();
     reader->SetFileName( inputVolume.c_str() );
     reader->Update();
 
-    typedef itk::ImageRegionIterator< InputImageType > ImageIteratorType;
     typedef itk::Image<unsigned char,2> ImageType;
     ImageType::Pointer imag_out = ImageType::New();
     Extract ext;
 
-    ext.Execute(sliceBegin,sliceEnd,volume, volume_out);
+    ext.Execute(sliceBegin,sliceEnd,volume);
 
     return EXIT_SUCCESS;
 }

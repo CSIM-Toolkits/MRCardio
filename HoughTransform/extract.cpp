@@ -63,7 +63,7 @@ Extract::Extract()
 
 }
 
-void Extract::Execute(int first,int last,const char* volume, const char* volume_out){
+void Extract::Execute(int first,int last,const char* volume){
 
     typedef   unsigned char   PixelType;
     const     unsigned int    Dimension = 2;
@@ -78,9 +78,9 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
     typedef itk::Image<PixelType, 3> ImageType3D;
     typedef itk::Image<PixelType, 2> ImageType2D;
 
-    typedef    unsigned char InputPixelType;
+    //typedef    unsigned char InputPixelType;
 
-    typedef itk::Image<InputPixelType,  3> InputImageType;
+    //typedef itk::Image<InputPixelType,  3> InputImageType;
 
     typedef   unsigned char   PixelType;
     typedef   float           AccumulatorPixelType;
@@ -96,7 +96,6 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
     typedef itk::ExtractImageFilter<ImageType3D, ImageType2D>  ExtractFilterType;
     typename ExtractFilterType::Pointer extractImg = ExtractFilterType::New();
 
-    std::cout << "Computing Hough Map" << std::endl;
     typedef itk::HoughTransform2DCirclesImageFilter<PixelType,
             AccumulatorPixelType> HoughTransformFilterType;
     HoughTransformFilterType::Pointer houghFilter
@@ -104,7 +103,7 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
 
     int sizeX = reader3D->GetOutput()->GetRequestedRegion().GetSize()[0];
     int sizeY = reader3D->GetOutput()->GetRequestedRegion().GetSize()[1];
-    int sizeZ = reader3D->GetOutput()->GetRequestedRegion().GetSize()[2];
+    //int sizeZ = reader3D->GetOutput()->GetRequestedRegion().GetSize()[2];
 
     typedef itk::RescaleIntensityImageFilter< fImageType, ImageType3D > RescaleFilterType;
     RescaleFilterType::Pointer rescaleFilter = RescaleFilterType::New();
@@ -119,15 +118,11 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
      castFilter->SetInput(rescaleFilter->GetOutput());
      castFilter->Update();*/
 
-    cout<<"S X = "<<sizeX<<endl;
-    cout<<"S Y = "<<sizeY<<endl;
-    cout<<"S Z = "<<sizeZ<<endl;
-    cout<<pathEndocardium.c_str()<<endl;
-    ofstream myfile (pathEndocardium.c_str());
-    ofstream myfile2 (pathRadius.c_str());
-    ofstream slice_file (pathSlices.c_str());
-    slice_file<<first<<"\n";
-    slice_file<<last<<"\n";
+    ofstream endocardiumFile (pathEndocardium.c_str());
+    ofstream radiusFile (pathRadius.c_str());
+    ofstream sliceFile (pathSlices.c_str());
+    sliceFile<<first<<"\n";
+    sliceFile<<last<<"\n";
     for(int i=first; i<last; i++){
         extractImg->SetInput(rescaleFilter->GetOutput());
         ImageType3D::RegionType region2;
@@ -178,13 +173,11 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
         // houghFilter->SetDiscRadiusRatio( atof(argv[9]) );
 
         houghFilter->Update();
-        std::cout << "Raio: "<<houghFilter->GetMaximumRadius()<<endl;
-        std::cout << "Raio min: "<<houghFilter->GetMinimumRadius()<<endl;
+
         AccumulatorImageType::Pointer localAccumulator = houghFilter->GetOutput();
 
         HoughTransformFilterType::CirclesListType circles;
         circles = houghFilter->GetCircles(2);
-        std::cout << "Found " << circles.size() << " circle(s)." << std::endl;
 
         typedef  unsigned char                            OutputPixelType;
         typedef  itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -201,17 +194,12 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
         CirclesListType::const_iterator itCircles = circles.begin();
         while( itCircles != circles.end() )
         {
-            std::cout << "Center: ";
-            std::cout << (*itCircles)->GetObjectToParentTransform()->GetOffset()
-                      << std::endl;
-            if (myfile.is_open() && myfile2.is_open())
+            if (endocardiumFile.is_open() && radiusFile.is_open())
             {
-                myfile<<(long int)(*itCircles)->GetObjectToParentTransform()->GetOffset()[0]<<' ';
-                myfile<<(long int)(*itCircles)->GetObjectToParentTransform()->GetOffset()[1]<<"\n";
-                myfile2<<(long int)(*itCircles)->GetRadius()[0]<<"\n";
+                endocardiumFile<<(long int)(*itCircles)->GetObjectToParentTransform()->GetOffset()[0]<<' ';
+                endocardiumFile<<(long int)(*itCircles)->GetObjectToParentTransform()->GetOffset()[1]<<"\n";
+                radiusFile<<(long int)(*itCircles)->GetRadius()[0]<<"\n";
             }
-            std::cout << "Radius: " << (*itCircles)->GetRadius()[0] << std::endl;
-
             for(double angle = 0;angle <= 2*vnl_math::pi; angle += vnl_math::pi/60.0 )
             {
                 localIndex[0] =
@@ -229,8 +217,7 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
             }
             itCircles++;
         }
-        typedef  itk::ImageFileWriter< ImageType  > WriterType;
-        WriterType::Pointer writer = WriterType::New();
+
         /*try
          {
          writer->SetFileName(volume_out);
@@ -244,30 +231,28 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
          }
 */
         typedef  itk::ImageFileWriter< ImageType  > WriterType;
-        WriterType::Pointer writer2 = WriterType::New();
+        WriterType::Pointer writerHough = WriterType::New();
 
         typedef itk::Image<unsigned char, 2>  UnsignedCharImageType;
-        typedef itk::Image<float, 2>  FloatImageType;
-        typedef  itk::ImageFileWriter<UnsignedCharImageType> WriterType3;
-        WriterType3::Pointer writer3 = WriterType3::New();
+        //typedef itk::Image<float, 2>  FloatImageType;
+        typedef  itk::ImageFileWriter<UnsignedCharImageType> WriterTypeCine;
+        WriterTypeCine::Pointer writerCine = WriterTypeCine::New();
 
-        stringstream ss;
+        stringstream stringFileHough;
 
-        string type = ".tif";
+        string typeTiff = ".tif";
 
-        ss<<pathHough<<(i+1)<<type;
+        stringFileHough<<pathHough<<(i+1)<<typeTiff;
 
-        string filename = ss.str();
-        ss.str("");
+        string houghFile = stringFileHough.str();
+        stringFileHough.str("");
 
-        stringstream ss2;
+        stringstream stringFileCine;
 
-        string type2 = ".tif";
+        stringFileHough<<pathCine<<(i+1)<<typeTiff;
 
-        ss2<<pathCine<<(i+1)<<type2;
-
-        string filename2 = ss2.str();
-        ss2.str("");
+        string cineFile = stringFileHough.str();
+        stringFileHough.str("");
 
         typedef itk::RescaleIntensityImageFilter< ImageType2D, ImageType2D > RescaleFilterType2;
         RescaleFilterType2::Pointer rescaleFilter2 = RescaleFilterType2::New();
@@ -276,13 +261,13 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
         rescaleFilter2->SetOutputMaximum(255);
         rescaleFilter2->Update();
         try{
-            writer2->SetFileName(filename);
-            writer2->SetInput(localOutputImage );
-            writer2->Update();
+            writerHough->SetFileName(houghFile);
+            writerHough->SetInput(localOutputImage );
+            writerHough->Update();
 
-            writer3->SetFileName(filename2);
-            writer3->SetInput(rescaleFilter2->GetOutput());
-            writer3->Update();
+            writerCine->SetFileName(cineFile);
+            writerCine->SetInput(rescaleFilter2->GetOutput());
+            writerCine->Update();
         }
         catch( itk::ExceptionObject & excep )
         {
@@ -290,8 +275,8 @@ void Extract::Execute(int first,int last,const char* volume, const char* volume_
             std::cerr << excep << std::endl;
         }
     }
-    myfile.close();
-    myfile2.close();
+    endocardiumFile.close();
+    radiusFile.close();
 
     /*typedef itk::Image<unsigned char,3> ImageType2;
       ImageType2::Pointer imag_out = ImageType::New();
