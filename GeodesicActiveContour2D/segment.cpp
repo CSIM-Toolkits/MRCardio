@@ -483,7 +483,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
         stringstream ss2;
 
-        string name2 = "/home/gustavo/temp/segmented2_";
+        string name2 = "/home/gustavo/temp/segmentedFinal_";
         string type2 = ".tif";
 
         if(i<9)
@@ -1005,7 +1005,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
 
         stringstream ss2;
 
-        string name2 = "/home/gustavo/temp/segmented2_";
+        string name2 = "/home/gustavo/temp/segmentedFinal_";
         string type2 = ".tif";
 
         if(i<9)

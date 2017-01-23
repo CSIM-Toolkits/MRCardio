@@ -55,11 +55,11 @@ Extract::Extract()
     this->slices = "/temp/slices.txt";
     this->hough = "/temp/hough_";
     this->cine = "/temp/cine_";
-    this->pathEndocardium = homedir + endocardium;
-    this->pathRadius = homedir + radius;
-    this->pathSlices = homedir + slices;
-    this->pathHough = homedir + hough;
-    this->pathCine = homedir + cine;
+    this->pathEndocardium = this->homedir + this->endocardium;
+    this->pathRadius = this->homedir + this->radius;
+    this->pathSlices = this->homedir + this->slices;
+    this->pathHough = this->homedir + this->hough;
+    this->pathCine = this->homedir + this->cine;
 
 }
 

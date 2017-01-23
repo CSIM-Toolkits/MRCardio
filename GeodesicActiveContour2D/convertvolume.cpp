@@ -4,9 +4,24 @@
 #include <string.h>
 #include <QString>
 #include <iostream>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 using namespace std;
 convertVolume::convertVolume()
 {
+    this->pw = getpwuid(getuid());
+
+    this->homedir = this->pw->pw_dir;
+
+    this->segmentedFinal = "/temp/segmentedFinal_";
+
+    this->pathSegmentedFinal = this->homedir + this->segmentedFinal;
+
+    this->output = "/temp/output.tif";
+    this->pathOutput = this->homedir + this->output;
+
 }
 typedef unsigned char PixelType;
 typedef itk::Image<PixelType,3> ImageType;
@@ -25,7 +40,7 @@ ImageType::Pointer convertVolume::Convert(int first, int last){
       typedef itk::NumericSeriesFileNames    NameGeneratorType;
 
       NameGeneratorType::Pointer nameGenerator = NameGeneratorType::New();
-      string format = "/home/gustavo/temp/segmented2_%03d.tif";
+      string format = this->pathSegmentedFinal + "%03d.tif";
       nameGenerator->SetSeriesFormat(format);
 
       nameGenerator->SetStartIndex( (first)+1 );
@@ -45,7 +60,7 @@ ImageType::Pointer convertVolume::Convert(int first, int last){
 
       reader->SetFileNames( names  );
       reader->Update();
-      writer->SetFileName("/home/gustavo/temp/output.tif");
+      writer->SetFileName(this->pathOutput);
       writer->SetInput(reader->GetOutput());
       writer->Update();
       typedef itk::Image<unsigned char,3> ImageType2;
