@@ -18,15 +18,71 @@
 #include <itkGradientMagnitudeImageFilter.h>
 #include <itkAndImageFilter.h>
 #include "utils.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 using namespace std;
 
 segment::segment()
 {
+    this->pw = getpwuid(getuid());
+
+    this->homedir = this->pw->pw_dir;
+
+    this->endocardium = "/temp/endocardium.txt";
+    this->radius = "/temp/radius.txt";
+    this->slices = "/temp/slices.txt";
+    this->segmented = "/temp/segmented_";
+    this->segmentedFinal = "/temp/segmentedFinal_";
+    this->cine = "/temp/cine_";
+
+    this->gacFilter = "/temp/GACFilter.tif";
+    this->gacGradient = "/temp/GACGradient.tif";
+    this->gacSigmoid = "/temp/GACSigmoid.tif";
+    this->gacMap = "/temp/GACMap.tif";
+
+    this->gacFilterFinal = "/temp/GACFilterFinal.tif";
+    this->gacGradientFinal = "/temp/GACGradientFinal.tif";
+    this->gacSigmoidFinal = "/temp/GACSigmoidFinal.tif";
+    this->gacMapFinal = "/temp/GACMapFinal.tif";
+
+    this->gacGradientMHA = "/temp/GACGradient.mha";
+    this->gacSigmoidMHA = "/temp/GACSigmoid.mha";
+    this->gacMapMHA = "/temp/GACMap.mha";
+
+    this->gacGradientMHAFinal = "/temp/GACGradientFinal.mha";
+    this->gacSigmoidMHAFinal = "/temp/GACSigmoidFinal.mha";
+    this->gacMapMHAFinal = "/temp/GACMapFinal.mha";
+
+    this->pathEndocardium = this->homedir + this->endocardium;
+    this->pathRadius = this->homedir + this->radius;
+    this->pathSlices = this->homedir + this->slices;
+    this->pathSegmented = this->homedir + this->segmented;
+    this->pathSegmentedFinal = this->homedir + this->segmentedFinal;
+    this->pathCine = this->homedir + this->cine;
+
+    this->pathGacFilter = this->homedir + this->gacFilter;
+    this->pathGacGradient = this->homedir + this->gacGradient;
+    this->pathGacSigmoid = this->homedir + this->gacSigmoid;
+    this->pathGacMap = this->homedir + this->gacMap;
+
+    this->pathGacFilterFinal = this->homedir + this->gacFilterFinal;
+    this->pathGacGradientFinal = this->homedir + this->gacGradientFinal;
+    this->pathGacSigmoidFinal = this->homedir + this->gacSigmoidFinal;
+    this->pathGacMapFinal = this->homedir + this->gacMapFinal;
+
+    this->pathGacGradientMHA = this->homedir + this->gacGradientMHA;
+    this->pathGacSigmoidMHA = this->homedir + this->gacSigmoidMHA;
+    this->pathGacMapMHA = this->homedir + this->gacMapMHA;
+
+    this->pathGacGradientMHAFinal = this->homedir + this->gacGradientMHAFinal;
+    this->pathGacSigmoidMHAFinal = this->homedir + this->gacSigmoidMHAFinal;
+    this->pathGacMapMHAFinal = this->homedir + this->gacMapMHAFinal;
 }
 
 void segment::InternalEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance){
-    ifstream myfile ("/home/gustavo/temp/endocardium.txt");
+    ifstream endocardiumFile (this->pathEndocardium.c_str());
     for(int i =first; i<last;i++){
         typedef   float           InternalPixelType;
         const     unsigned int    Dimension = 2;
@@ -49,17 +105,16 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
         ReaderType::Pointer reader = ReaderType::New();
         WriterType::Pointer writer = WriterType::New();
         //WriterType::Pointer writer_out = WriterType::New();
-        stringstream ss;
+        stringstream stringFileCine;
 
-        string name = "/home/gustavo/temp/cine_";
-        string type = ".tif";
+        string typeTiff = ".tif";
 
-        ss<<name<<(i+1)<<type;
+        stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
 
-        string filename = ss.str();
-        ss.str("");
+        string cineFile = stringFileCine.str();
+        stringFileCine.str("");
 
-        reader->SetFileName(filename);
+        reader->SetFileName(cineFile);
         reader->Update();
 
         InternalImageType::Pointer val = reader->GetOutput();
@@ -134,9 +189,9 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
         int x;
         int y;
 
-        if (myfile.is_open())
+        if (endocardiumFile.is_open())
         {
-            getline (myfile,line);
+            getline (endocardiumFile,line);
             string cmd = line;
             string arg;
             string::size_type pos = cmd.find(' ');
@@ -178,25 +233,25 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
         WriterType::Pointer writer4 = WriterType::New();
         caster1->SetInput( smoothing->GetOutput() );
         writer1->SetInput( caster1->GetOutput() );
-        writer1->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput1.tif");
+        writer1->SetFileName(this->pathGacFilter);
         caster1->SetOutputMinimum(   0 );
         caster1->SetOutputMaximum( 255 );
         writer1->Update();
         caster2->SetInput( gradientMagnitude->GetOutput() );
         writer2->SetInput( caster2->GetOutput() );
-        writer2->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput2.tif");
+        writer2->SetFileName(this->pathGacGradient);
         caster2->SetOutputMinimum(   0 );
         caster2->SetOutputMaximum( 255 );
         writer2->Update();
         caster3->SetInput( sigmoid->GetOutput() );
         writer3->SetInput( caster3->GetOutput() );
-        writer3->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput3.tif");
+        writer3->SetFileName(this->pathGacSigmoid);
         caster3->SetOutputMinimum(   0 );
         caster3->SetOutputMaximum( 255 );
         writer3->Update();
         caster4->SetInput( fastMarching->GetOutput() );
         writer4->SetInput( caster4->GetOutput() );
-        writer4->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput4.tif");
+        writer4->SetFileName(this->pathGacMap);
         caster4->SetOutputMinimum(   0 );
         caster4->SetOutputMaximum( 255 );
 
@@ -204,19 +259,16 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
                     reader->GetOutput()->GetBufferedRegion().GetSize() );
         reader->Update();
 
-        stringstream ss2;
-
-        string name2 = "/home/gustavo/temp/segmented_";
-        string type2 = ".tif";
+        stringstream stringFileSegmented;
 
         if(i<9)
-            ss2<<name2<<"00"<<(i+1)<<type2;
+            stringFileSegmented<<this->pathSegmented<<"00"<<(i+1)<<typeTiff;
         if(i>=9 && i<99)
-            ss2<<name2<<"0"<<(i+1)<<type2;
+            stringFileSegmented<<this->pathSegmented<<"0"<<(i+1)<<typeTiff;
         if(i>=99)
-            ss2<<name2<<(i+1)<<type2;
-        string filename2 = ss2.str();
-        ss2.str("");
+            stringFileSegmented<<this->pathSegmented<<(i+1)<<typeTiff;
+        string segmentedFile = stringFileSegmented.str();
+        stringFileSegmented.str("");
 
         typedef itk::GradientMagnitudeImageFilter<OutputImageType, OutputImageType >  GradientType;
         GradientType::Pointer gradient = GradientType::New();
@@ -225,7 +277,7 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
 
         try
         {
-            writer->SetFileName(filename2);
+            writer->SetFileName(segmentedFile);
             writer->SetInput( thresholder->GetOutput() );
             writer->Update();
         }
@@ -246,24 +298,24 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
         typedef itk::ImageFileWriter< InternalImageType > InternalWriterType;
         InternalWriterType::Pointer mapWriter = InternalWriterType::New();
         mapWriter->SetInput( fastMarching->GetOutput() );
-        mapWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput4.mha");
+        mapWriter->SetFileName(this->pathGacMapMHA);
         mapWriter->Update();
         InternalWriterType::Pointer speedWriter = InternalWriterType::New();
         speedWriter->SetInput( sigmoid->GetOutput() );
-        speedWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput3.mha");
+        speedWriter->SetFileName(this->pathGacSigmoidMHA);
         speedWriter->Update();
         InternalWriterType::Pointer gradientWriter = InternalWriterType::New();
         gradientWriter->SetInput( gradientMagnitude->GetOutput() );
-        gradientWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput2.mha");
+        gradientWriter->SetFileName(this->pathGacGradientMHA);
         gradientWriter->Update();
     }
-    myfile.close();
+    endocardiumFile.close();
 
 }
 
 void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance){
-    ifstream myfile ("/home/gustavo/temp/endocardium.txt");
-    ifstream myfile2 ("/home/gustavo/temp/radius.txt");
+    ifstream endocardiumFile (this->pathEndocardium.c_str());
+    ifstream radiusFile (this->pathRadius.c_str());
     for(int i =first; i<last;i++){
         typedef   float           InternalPixelType;
         const     unsigned int    Dimension = 2;
@@ -286,17 +338,16 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
         ReaderType::Pointer reader = ReaderType::New();
         WriterType::Pointer writer = WriterType::New();
         //WriterType::Pointer writer_out = WriterType::New();
-        stringstream ss;
+        stringstream stringFileCine;
 
-        string name = "/home/gustavo/temp/cine_";
-        string type = ".tif";
+        string typeTiff = ".tif";
 
-        ss<<name<<(i+1)<<type;
+        stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
 
-        string filename = ss.str();
-        ss.str("");
+        string cineFile = stringFileCine.str();
+        stringFileCine.str("");
 
-        reader->SetFileName(filename);
+        reader->SetFileName(cineFile);
         reader->Update();
 
         InternalImageType::Pointer val = reader->GetOutput();
@@ -372,9 +423,9 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
         int x;
         int y;
         int radius;
-        if (myfile.is_open())
+        if (endocardiumFile.is_open())
         {
-            getline (myfile,line);
+            getline (endocardiumFile,line);
             string cmd = line;
             string arg;
             string::size_type pos = cmd.find(' ');
@@ -385,9 +436,9 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             x = atoi(cmd.c_str());
             y = atoi(arg.c_str());
         }
-        if (myfile2.is_open())
+        if (radiusFile.is_open())
         {
-            getline(myfile2,line2);
+            getline(radiusFile,line2);
             radius = atoi(line2.c_str());
         }
 
@@ -421,25 +472,25 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
         WriterType::Pointer writer4 = WriterType::New();
         caster1->SetInput( smoothing->GetOutput() );
         writer1->SetInput( caster1->GetOutput() );
-        writer1->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput1_2.tif");
+        writer1->SetFileName(this->pathGacFilterFinal);
         caster1->SetOutputMinimum(   0 );
         caster1->SetOutputMaximum( 255 );
         writer1->Update();
         caster2->SetInput( gradientMagnitude->GetOutput() );
         writer2->SetInput( caster2->GetOutput() );
-        writer2->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput2_2.tif");
+        writer2->SetFileName(this->pathGacGradientFinal);
         caster2->SetOutputMinimum(   0 );
         caster2->SetOutputMaximum( 255 );
         writer2->Update();
         caster3->SetInput( sigmoid->GetOutput() );
         writer3->SetInput( caster3->GetOutput() );
-        writer3->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput3_2.tif");
+        writer3->SetFileName(this->pathGacSigmoidFinal);
         caster3->SetOutputMinimum(   0 );
         caster3->SetOutputMaximum( 255 );
         writer3->Update();
         caster4->SetInput( fastMarching->GetOutput() );
         writer4->SetInput( caster4->GetOutput() );
-        writer4->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput4_2.tif");
+        writer4->SetFileName(this->pathGacMapFinal);
         caster4->SetOutputMinimum(   0 );
         caster4->SetOutputMaximum( 255 );
 
@@ -458,15 +509,15 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
         typedef itk::ImageFileWriter< InternalImageType > InternalWriterType;
         InternalWriterType::Pointer mapWriter = InternalWriterType::New();
         mapWriter->SetInput( fastMarching->GetOutput() );
-        mapWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput4_2.mha");
+        mapWriter->SetFileName(this->pathGacMapMHAFinal);
         mapWriter->Update();
         InternalWriterType::Pointer speedWriter = InternalWriterType::New();
         speedWriter->SetInput( sigmoid->GetOutput() );
-        speedWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput3_2.mha");
+        speedWriter->SetFileName(this->pathGacSigmoidMHAFinal);
         speedWriter->Update();
         InternalWriterType::Pointer gradientWriter = InternalWriterType::New();
         gradientWriter->SetInput( gradientMagnitude->GetOutput() );
-        gradientWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput2_2.mha");
+        gradientWriter->SetFileName(this->pathGacGradientMHAFinal);
         gradientWriter->Update();
 
         CastFilterType::Pointer caster5 = CastFilterType::New();
@@ -481,19 +532,16 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
         andFilter->SetInput(1, thresholder->GetOutput());
         andFilter->Update();
 
-        stringstream ss2;
-
-        string name2 = "/home/gustavo/temp/segmentedFinal_";
-        string type2 = ".tif";
+        stringstream stringFileSegmented;
 
         if(i<9)
-            ss2<<name2<<"00"<<(i+1)<<type2;
+            stringFileSegmented<<this->pathSegmentedFinal<<"00"<<(i+1)<<typeTiff;
         if(i>=9 && i<99)
-            ss2<<name2<<"0"<<(i+1)<<type2;
+            stringFileSegmented<<this->pathSegmentedFinal<<"0"<<(i+1)<<typeTiff;
         if(i>=99)
-            ss2<<name2<<(i+1)<<type2;
-        string filename2 = ss2.str();
-        ss2.str("");
+            stringFileSegmented<<this->pathSegmentedFinal<<(i+1)<<typeTiff;
+        string segmentedFile = stringFileSegmented.str();
+        stringFileSegmented.str("");
 
 //        typedef itk::GradientMagnitudeImageFilter<OutputImageType, OutputImageType >  GradientType;
 //        GradientType::Pointer gradient = GradientType::New();
@@ -502,7 +550,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
         try
         {
-            writer->SetFileName(filename2);
+            writer->SetFileName(segmentedFile);
             writer->SetInput(andFilter->GetOutput() );
             writer->Update();
         }
@@ -513,12 +561,12 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
         }
 
     }
-    myfile.close();
+    endocardiumFile.close();
 
 }
 
 void segment::InternalELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance){
-    ifstream myfile ("/home/gustavo/temp/endocardium.txt");
+    ifstream endocardiumFile (this->pathEndocardium.c_str());
     for(int i =first; i<last;i++){
         typedef   float           InternalPixelType;
         const     unsigned int    Dimension = 2;
@@ -541,17 +589,16 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
         ReaderType::Pointer reader = ReaderType::New();
         WriterType::Pointer writer = WriterType::New();
         //WriterType::Pointer writer_out = WriterType::New();
-        stringstream ss;
+        stringstream stringFileCine;
 
-        string name = "/home/gustavo/temp/cine_";
-        string type = ".tif";
+        string typeTiff = ".tif";
 
-        ss<<name<<(i+1)<<type;
+        stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
 
-        string filename = ss.str();
-        ss.str("");
+        string cineFile = stringFileCine.str();
+        stringFileCine.str("");
 
-        reader->SetFileName(filename);
+        reader->SetFileName(cineFile);
         reader->Update();
 
         InternalImageType::Pointer val = reader->GetOutput();
@@ -626,9 +673,9 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
         int x;
         int y;
 
-        if (myfile.is_open())
+        if (endocardiumFile.is_open())
         {
-            getline (myfile,line);
+            getline (endocardiumFile,line);
             string cmd = line;
             string arg;
             string::size_type pos = cmd.find(' ');
@@ -674,25 +721,25 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
         WriterType::Pointer writer4 = WriterType::New();
         caster1->SetInput( smoothing->GetOutput() );
         writer1->SetInput( caster1->GetOutput() );
-        writer1->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput1.tif");
+        writer1->SetFileName(this->pathGacFilter);
         caster1->SetOutputMinimum(   0 );
         caster1->SetOutputMaximum( 255 );
         writer1->Update();
         caster2->SetInput( gradientMagnitude->GetOutput() );
         writer2->SetInput( caster2->GetOutput() );
-        writer2->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput2.tif");
+        writer2->SetFileName(this->pathGacGradient);
         caster2->SetOutputMinimum(   0 );
         caster2->SetOutputMaximum( 255 );
         writer2->Update();
         caster3->SetInput( sigmoid->GetOutput() );
         writer3->SetInput( caster3->GetOutput() );
-        writer3->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput3.tif");
+        writer3->SetFileName(this->pathGacSigmoid);
         caster3->SetOutputMinimum(   0 );
         caster3->SetOutputMaximum( 255 );
         writer3->Update();
         caster4->SetInput( fastMarching->GetOutput() );
         writer4->SetInput( caster4->GetOutput() );
-        writer4->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput4.tif");
+        writer4->SetFileName(this->pathGacMap);
         caster4->SetOutputMinimum(   0 );
         caster4->SetOutputMaximum( 255 );
 
@@ -700,19 +747,16 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
                     reader->GetOutput()->GetBufferedRegion().GetSize() );
         reader->Update();
 
-        stringstream ss2;
-
-        string name2 = "/home/gustavo/temp/segmented_";
-        string type2 = ".tif";
+        stringstream stringFileSegmented;
 
         if(i<9)
-            ss2<<name2<<"00"<<(i+1)<<type2;
+            stringFileSegmented<<this->pathSegmented<<"00"<<(i+1)<<typeTiff;
         if(i>=9 && i<99)
-            ss2<<name2<<"0"<<(i+1)<<type2;
+            stringFileSegmented<<this->pathSegmented<<"0"<<(i+1)<<typeTiff;
         if(i>=99)
-            ss2<<name2<<(i+1)<<type2;
-        string filename2 = ss2.str();
-        ss2.str("");
+            stringFileSegmented<<this->pathSegmented<<(i+1)<<typeTiff;
+        string segmentedFile = stringFileSegmented.str();
+        stringFileSegmented.str("");
 
         typedef itk::GradientMagnitudeImageFilter<OutputImageType, OutputImageType >  GradientType;
         GradientType::Pointer gradient = GradientType::New();
@@ -721,7 +765,7 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
 
         try
         {
-            writer->SetFileName(filename2);
+            writer->SetFileName(segmentedFile);
             writer->SetInput( thresholder->GetOutput() );
             writer->Update();
         }
@@ -742,24 +786,24 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
         typedef itk::ImageFileWriter< InternalImageType > InternalWriterType;
         InternalWriterType::Pointer mapWriter = InternalWriterType::New();
         mapWriter->SetInput( fastMarching->GetOutput() );
-        mapWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput4.mha");
+        mapWriter->SetFileName(this->pathGacMapMHA);
         mapWriter->Update();
         InternalWriterType::Pointer speedWriter = InternalWriterType::New();
         speedWriter->SetInput( sigmoid->GetOutput() );
-        speedWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput3.mha");
+        speedWriter->SetFileName(this->pathGacSigmoidMHA);
         speedWriter->Update();
         InternalWriterType::Pointer gradientWriter = InternalWriterType::New();
         gradientWriter->SetInput( gradientMagnitude->GetOutput() );
-        gradientWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput2.mha");
+        gradientWriter->SetFileName(this->pathGacGradientMHA);
         gradientWriter->Update();
     }
-    myfile.close();
+    endocardiumFile.close();
 
 }
 
 void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance){
-    ifstream myfile ("/home/gustavo/temp/endocardium.txt");
-    ifstream myfile2 ("/home/gustavo/temp/radius.txt");
+    ifstream endocardiumFile (this->pathEndocardium.c_str());
+    ifstream radiusFile (this->pathRadius.c_str());
     for(int i =first; i<last;i++){
         typedef   float           InternalPixelType;
         const     unsigned int    Dimension = 2;
@@ -783,17 +827,16 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         ReaderType::Pointer readerS = ReaderType::New();
         WriterType::Pointer writer = WriterType::New();
         //WriterType::Pointer writer_out = WriterType::New();
-        stringstream ss;
+        stringstream stringFileCine;
 
-        string name = "/home/gustavo/temp/cine_";
-        string type = ".tif";
+        string typeTiff = ".tif";
 
-        ss<<name<<(i+1)<<type;
+        stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
 
-        string filename = ss.str();
-        ss.str("");
+        string cineFile = stringFileCine.str();
+        stringFileCine.str("");
 
-        reader->SetFileName(filename);
+        reader->SetFileName(cineFile);
         reader->Update();
 
         InternalImageType::Pointer val = reader->GetOutput();
@@ -868,9 +911,9 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         int x;
         int y;
         int radius;
-        if (myfile.is_open())
+        if (endocardiumFile.is_open())
         {
-            getline (myfile,line);
+            getline (endocardiumFile,line);
             string cmd = line;
             string arg;
             string::size_type pos = cmd.find(' ');
@@ -881,27 +924,24 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             x = atoi(cmd.c_str());
             y = atoi(arg.c_str());
         }
-        if (myfile2.is_open())
+        if (radiusFile.is_open())
         {
-            getline(myfile2,line2);
+            getline(radiusFile,line2);
             radius = atoi(line2.c_str());
         }
 
         stringstream segment;
 
-        string nameS = "/home/gustavo/temp/segmented_";
-        string typeS = ".tif";
-
         if(i<9)
-            segment<<nameS<<"00"<<(i+1)<<typeS;
+            segment<<this->pathSegmented<<"00"<<(i+1)<<typeTiff;
         if(i>=9 && i<99)
-            segment<<nameS<<"0"<<(i+1)<<typeS;
+            segment<<this->pathSegmented<<"0"<<(i+1)<<typeTiff;
         if(i>=99)
-            segment<<nameS<<(i+1)<<typeS;
-        string filenameS = segment.str();
+            segment<<this->pathSegmented<<(i+1)<<typeTiff;
+        string filenameSegmented = segment.str();
         segment.str("");
 
-        readerS->SetFileName(filenameS);
+        readerS->SetFileName(filenameSegmented);
         readerS->Update();
 
         InternalImageType::Pointer valS = readerS->GetOutput();
@@ -943,25 +983,25 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         WriterType::Pointer writer4 = WriterType::New();
         caster1->SetInput( smoothing->GetOutput() );
         writer1->SetInput( caster1->GetOutput() );
-        writer1->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput1_2.tif");
+        writer1->SetFileName(this->pathGacFilterFinal);
         caster1->SetOutputMinimum(   0 );
         caster1->SetOutputMaximum( 255 );
         writer1->Update();
         caster2->SetInput( gradientMagnitude->GetOutput() );
         writer2->SetInput( caster2->GetOutput() );
-        writer2->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput2_2.tif");
+        writer2->SetFileName(this->pathGacGradientFinal);
         caster2->SetOutputMinimum(   0 );
         caster2->SetOutputMaximum( 255 );
         writer2->Update();
         caster3->SetInput( sigmoid->GetOutput() );
         writer3->SetInput( caster3->GetOutput() );
-        writer3->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput3_2.tif");
+        writer3->SetFileName(this->pathGacSigmoidFinal);
         caster3->SetOutputMinimum(   0 );
         caster3->SetOutputMaximum( 255 );
         writer3->Update();
         caster4->SetInput( fastMarching->GetOutput() );
         writer4->SetInput( caster4->GetOutput() );
-        writer4->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput4_2.tif");
+        writer4->SetFileName(this->pathGacMapFinal);
         caster4->SetOutputMinimum(   0 );
         caster4->SetOutputMaximum( 255 );
 
@@ -980,15 +1020,15 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         typedef itk::ImageFileWriter< InternalImageType > InternalWriterType;
         InternalWriterType::Pointer mapWriter = InternalWriterType::New();
         mapWriter->SetInput( fastMarching->GetOutput() );
-        mapWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput4_2.mha");
+        mapWriter->SetFileName(this->pathGacMapMHAFinal);
         mapWriter->Update();
         InternalWriterType::Pointer speedWriter = InternalWriterType::New();
         speedWriter->SetInput( sigmoid->GetOutput() );
-        speedWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput3_2.mha");
+        speedWriter->SetFileName(this->pathGacSigmoidMHAFinal);
         speedWriter->Update();
         InternalWriterType::Pointer gradientWriter = InternalWriterType::New();
         gradientWriter->SetInput( gradientMagnitude->GetOutput() );
-        gradientWriter->SetFileName("/home/gustavo/temp/GeodesicActiveContourImageFilterOutput2_2.mha");
+        gradientWriter->SetFileName(this->pathGacGradientMHAFinal);
         gradientWriter->Update();
 
         CastFilterType::Pointer caster5 = CastFilterType::New();
@@ -1003,19 +1043,16 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         andFilter->SetInput(1, thresholder->GetOutput());
         andFilter->Update();
 
-        stringstream ss2;
-
-        string name2 = "/home/gustavo/temp/segmentedFinal_";
-        string type2 = ".tif";
+        stringstream stringFileSegmented;
 
         if(i<9)
-            ss2<<name2<<"00"<<(i+1)<<type2;
+            stringFileSegmented<<this->pathSegmentedFinal<<"00"<<(i+1)<<typeTiff;
         if(i>=9 && i<99)
-            ss2<<name2<<"0"<<(i+1)<<type2;
+            stringFileSegmented<<this->pathSegmentedFinal<<"0"<<(i+1)<<typeTiff;
         if(i>=99)
-            ss2<<name2<<(i+1)<<type2;
-        string filename2 = ss2.str();
-        ss2.str("");
+            stringFileSegmented<<this->pathSegmentedFinal<<(i+1)<<typeTiff;
+        string segmentedFile = stringFileSegmented.str();
+        stringFileSegmented.str("");
 
 //        typedef itk::GradientMagnitudeImageFilter<OutputImageType, OutputImageType >  GradientType;
 //        GradientType::Pointer gradient = GradientType::New();
@@ -1024,7 +1061,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
 
         try
         {
-            writer->SetFileName(filename2);
+            writer->SetFileName(segmentedFile);
             writer->SetInput(andFilter->GetOutput() );
             writer->Update();
         }
@@ -1035,6 +1072,6 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         }
 
     }
-    myfile.close();
+    endocardiumFile.close();
 
 }
