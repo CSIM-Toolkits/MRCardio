@@ -48,7 +48,9 @@ typedef InternalImageType::OffsetType OffsetType3D;
 typedef itk::AddImageFilter <InternalImageType3D> AddImageFilterType3D;
 typedef itk::MultiplyImageFilter<InternalImageType3D> MultiplyImageFilterType3D;
 
-int ExtractFeatures::Extract(OffsetType offset, InternalImageType::Pointer inputImage)
+int ExtractFeatures::Extract(OffsetType offset, InternalImageType::Pointer inputImage, double *entropy, double *energy,
+                             double *correlation, double *inertia, double *haralickCorrelation, double *inverseDifferenceMoment,
+                             double *clusterProminence, double *clusterShade)
 {    
     // principal variables
     //Gray Level Co-occurance Matrix Generator
@@ -78,22 +80,21 @@ int ExtractFeatures::Extract(OffsetType offset, InternalImageType::Pointer input
 
     featureCalc->SetInput(glcmGenerator->GetOutput());
     featureCalc->Update();
-    ofstream haralick2D("/home/gustavo/temp/haralick2D.txt");
-    if (haralick2D.is_open())
-    {
-        haralick2D<<"Entropy: "<<featureCalc->GetEntropy()<<endl;
-        haralick2D<<"Energy: "<<featureCalc->GetEnergy()<<endl;
-        haralick2D<<"Correlation: "<<featureCalc->GetCorrelation()<<endl;
-        haralick2D<<"Inertia: "<<featureCalc->GetInertia()<<endl;
-        haralick2D<<"HaralickCorrelation: "<<featureCalc->GetHaralickCorrelation()<<endl;
-        haralick2D<<"InverseDifferenceMoment: "<<featureCalc->GetInverseDifferenceMoment()<<endl;
-        haralick2D<<"ClusterProminence: "<<featureCalc->GetClusterProminence()<<endl;
-        haralick2D<<"ClusterShade: "<<featureCalc->GetClusterShade()<<endl;
-    }
-    haralick2D.close();
+
+    *entropy = featureCalc->GetEntropy();
+    *energy = featureCalc->GetEnergy();
+    *correlation = featureCalc->GetCorrelation();
+    *inertia = featureCalc->GetInertia();
+    *haralickCorrelation = featureCalc->GetHaralickCorrelation();
+    *inverseDifferenceMoment = featureCalc->GetInverseDifferenceMoment();
+    *clusterProminence = featureCalc->GetClusterProminence();
+    *clusterShade = featureCalc->GetClusterShade();
+
 }
 
-int ExtractFeatures::Extract3D(OffsetType3D offset3D, InternalImageType3D::Pointer inputImage3D)
+int ExtractFeatures::Extract3D(OffsetType3D offset3D, InternalImageType3D::Pointer inputImage3D, double *entropy, double *energy,
+                               double *correlation, double *inertia, double *haralickCorrelation, double *inverseDifferenceMoment,
+                               double *clusterProminence, double *clusterShade)
 {
     // principal variables
     //Gray Level Co-occurance Matrix Generator
@@ -125,19 +126,14 @@ int ExtractFeatures::Extract3D(OffsetType3D offset3D, InternalImageType3D::Point
     featureCalc3D->SetInput(glcmGenerator3D->GetOutput());
     featureCalc3D->Update();
 
-    ofstream haralick3D("/home/gustavo/temp/haralick3D.txt");
-    if (haralick3D.is_open())
-    {
-        haralick3D<<"Entropy: "<<featureCalc3D->GetEntropy()<<endl;
-        haralick3D<<"Energy: "<<featureCalc3D->GetEnergy()<<endl;
-        haralick3D<<"Correlation: "<<featureCalc3D->GetCorrelation()<<endl;
-        haralick3D<<"Inertia: "<<featureCalc3D->GetInertia()<<endl;
-        haralick3D<<"HaralickCorrelation: "<<featureCalc3D->GetHaralickCorrelation()<<endl;
-        haralick3D<<"InverseDifferenceMoment: "<<featureCalc3D->GetInverseDifferenceMoment()<<endl;
-        haralick3D<<"ClusterProminence: "<<featureCalc3D->GetClusterProminence()<<endl;
-        haralick3D<<"ClusterShade: "<<featureCalc3D->GetClusterShade()<<endl;
-    }
-    haralick3D.close();
+    *entropy = featureCalc3D->GetEntropy();
+    *energy = featureCalc3D->GetEnergy();
+    *correlation = featureCalc3D->GetCorrelation();
+    *inertia = featureCalc3D->GetInertia();
+    *haralickCorrelation = featureCalc3D->GetHaralickCorrelation();
+    *inverseDifferenceMoment = featureCalc3D->GetInverseDifferenceMoment();
+    *clusterProminence = featureCalc3D->GetClusterProminence();
+    *clusterShade = featureCalc3D->GetClusterShade();
 }
 
 

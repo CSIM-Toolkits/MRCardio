@@ -28,7 +28,9 @@ public:
     typedef InternalImageType::OffsetType OffsetType;
     typedef itk::AddImageFilter <InternalImageType> AddImageFilterType;
     typedef itk::MultiplyImageFilter<InternalImageType> MultiplyImageFilterType;
-    int Extract(OffsetType offset, InternalImageType::Pointer inputImage);
+    int Extract(OffsetType offset, InternalImageType::Pointer inputImage, double *entropy, double *energy,
+                double *correlation, double *inertia, double *haralickCorrelation, double *inverseDifferenceMoment,
+                double *clusterProminence, double *clusterShade);
 
     typedef itk::Image<float, 3> InternalImageType3D;
     typedef itk::Image<unsigned char, 3> VisualizingImageType3D;
@@ -40,7 +42,9 @@ public:
     typedef InternalImageType3D::OffsetType OffsetType3D;
     typedef itk::AddImageFilter <InternalImageType3D> AddImageFilterType3D;
     typedef itk::MultiplyImageFilter<InternalImageType3D> MultiplyImageFilterType3D;
-    int Extract3D(OffsetType3D offset3D, InternalImageType3D::Pointer inputImage3D);
+    int Extract3D(OffsetType3D offset3D, InternalImageType3D::Pointer inputImage3D, double *entropy, double *energy,
+                  double *correlation, double *inertia, double *haralickCorrelation, double *inverseDifferenceMoment,
+                  double *clusterProminence, double *clusterShade);
 };
 
 #endif // EXTRACTFEATURES_H
