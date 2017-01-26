@@ -100,7 +100,7 @@ int ExtractFeatures::Extract3D(OffsetType3D offset3D, InternalImageType3D::Point
     //Gray Level Co-occurance Matrix Generator
     Image2CoOccuranceType3D::Pointer glcmGenerator3D=Image2CoOccuranceType3D::New();
     glcmGenerator3D->SetOffset(offset3D);
-    glcmGenerator3D->SetNumberOfBinsPerAxis(16); //reasonable number of bins
+    glcmGenerator3D->SetNumberOfBinsPerAxis(256); //reasonable number of bins
     glcmGenerator3D->SetPixelValueMinMax(0, 255); //for input UCHAR pixel type
     Hist2FeaturesType3D::Pointer featureCalc3D=Hist2FeaturesType3D::New();
     //Region Of Interest
@@ -136,4 +136,106 @@ int ExtractFeatures::Extract3D(OffsetType3D offset3D, InternalImageType3D::Point
     *clusterShade = featureCalc3D->GetClusterShade();
 }
 
+int ExtractFeatures::ExtractRunLength3D(InternalImageType3D::Pointer inputImage3D, double *shortRunEmphasis, double *longRunEmphasis,
+                                        double *greyLevelNonuniformity, double *runLengthNonuniformity, double *lowGrayLevelRunEmphasis,
+                                        double *highGreyLevelRunEmphasis, double *shortRunLowGreyLevelEmphasis,
+                                        double *shortRunHighGreyLevelEmphasis, double *longRunLowGreyLevelEmphasis,
+                                        double *longRunHighGreyLevelEmphasis)
+{
+    const unsigned int ImageDimension = 3;
+    typedef float PixelType;
+    typedef float RealType;
+
+    typedef itk::Image<PixelType, ImageDimension> ImageType;
+    typedef itk::Image<RealType, ImageDimension> RealImageType;
+
+
+    typedef itk::Statistics::DenseFrequencyContainer2 HistogramFrequencyContainerType;
+
+    typedef itk::Statistics::ScalarImageToRunLengthFeaturesFilter
+            <RealImageType, HistogramFrequencyContainerType> RunLengthFilterType;
+    RunLengthFilterType::Pointer runLengthFilter = RunLengthFilterType::New();
+    runLengthFilter->SetInput(inputImage3D);
+
+    ImageType::Pointer mask = NULL;
+    PixelType label = itk::NumericTraits<PixelType>::One;
+
+
+    unsigned int numberOfBins = 256;
+    runLengthFilter->SetNumberOfBinsPerAxis( numberOfBins );
+
+
+    itk::ImageRegionIteratorWithIndex<ImageType> ItI( inputImage3D,
+                                                      inputImage3D->GetLargestPossibleRegion() );
+
+    PixelType maxValue = itk::NumericTraits<PixelType>::NonpositiveMin();
+    PixelType minValue = itk::NumericTraits<PixelType>::max();
+
+    typedef itk::BoundingBox<unsigned long,
+            ImageDimension, RealType> BoundingBoxType;
+    BoundingBoxType::Pointer bbox = BoundingBoxType::New();
+    BoundingBoxType::PointsContainerPointer points
+            = BoundingBoxType::PointsContainer::New();
+    itk::Point<RealType, ImageDimension> point;
+
+    unsigned int idx = 0;
+
+    for( ItI.GoToBegin(); !ItI.IsAtEnd(); ++ItI )
+    {
+        if ( !mask || ( mask->GetPixel( ItI.GetIndex() ) == label ) )
+        {
+            if ( ItI.Get() < minValue )
+            {
+                minValue = ItI.Get();
+            }
+            else if ( ItI.Get() > maxValue )
+            {
+                maxValue = ItI.Get();
+            }
+            inputImage3D->TransformIndexToPhysicalPoint( ItI.GetIndex(), point );
+            points->InsertElement( idx++, point );
+        }
+    }
+    bbox->SetPoints( points );
+    bbox->ComputeBoundingBox();
+    BoundingBoxType::PointType pointMin = bbox->GetMinimum();
+    BoundingBoxType::PointType pointMax = bbox->GetMaximum();
+
+    runLengthFilter->SetPixelValueMinMax( minValue, maxValue );
+    runLengthFilter->SetDistanceValueMinMax( 0, pointMin.EuclideanDistanceTo( pointMax ) );
+    runLengthFilter->SetNumberOfBinsPerAxis( numberOfBins );
+    runLengthFilter->FastCalculationsOff();
+
+    try
+    {
+        runLengthFilter->Update();
+
+        RunLengthFilterType::FeatureValueVectorPointer means =
+                runLengthFilter->GetFeatureMeans();
+        const RunLengthFilterType::FeatureNameVector* names =
+                runLengthFilter->GetRequestedFeatures();
+
+        RunLengthFilterType::FeatureValueVector::ConstIterator mIt =
+                means->Begin();
+        RunLengthFilterType::FeatureNameVector::ConstIterator nIt =
+                names->Begin();
+
+        *shortRunEmphasis = mIt.Value(); ++mIt;
+        *longRunEmphasis = mIt.Value(); ++mIt;
+        *greyLevelNonuniformity = mIt.Value(); ++mIt;
+        *runLengthNonuniformity = mIt.Value(); ++mIt;
+        *lowGrayLevelRunEmphasis = mIt.Value(); ++mIt;
+        *highGreyLevelRunEmphasis = mIt.Value(); ++mIt;
+        *shortRunLowGreyLevelEmphasis = mIt.Value(); ++mIt;
+        *shortRunHighGreyLevelEmphasis = mIt.Value(); ++mIt;
+        *longRunLowGreyLevelEmphasis = mIt.Value(); ++mIt;
+        *longRunHighGreyLevelEmphasis = mIt.Value(); ++mIt;
+
+        return EXIT_SUCCESS;
+    }
+    catch(...)
+    {
+        return EXIT_FAILURE;
+    }
+}
 

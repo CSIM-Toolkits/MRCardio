@@ -24,7 +24,7 @@ int DoIt( int argc, char * argv[], TPixel )
 {
     PARSE_ARGS;
 
-    if(dimension == "2D"){
+    if(dimension == "Haralick Features 2D"){
         typedef float InputPixelType;
         typedef float OutputPixelType;
 
@@ -103,7 +103,7 @@ int DoIt( int argc, char * argv[], TPixel )
             haralick2D.close();
         }
     }
-    else{
+    if(dimension == "Haralick Features 3D"){
 
         ofstream haralick3D("/home/gustavo/temp/haralick3D.txt");
         if (haralick3D.is_open())
@@ -166,6 +166,68 @@ int DoIt( int argc, char * argv[], TPixel )
 
         }
         haralick3D.close();
+    }
+    if(dimension == "Run Length Features 3D"){
+
+        ofstream runLength3D("/home/gustavo/temp/runLength3D.txt");
+        if (runLength3D.is_open())
+        {
+            double shortRunEmphasis;
+            double longRunEmphasis;
+            double greyLevelNonuniformity;
+            double runLengthNonuniformity;
+            double lowGrayLevelRunEmphasis;
+            double highGreyLevelRunEmphasis;
+            double shortRunLowGreyLevelEmphasis;
+            double shortRunHighGreyLevelEmphasis;
+            double longRunLowGreyLevelEmphasis;
+            double longRunHighGreyLevelEmphasis;
+
+            typedef float InputPixelType3D;
+            typedef float OutputPixelType3D;
+
+            const unsigned int Dimension3D = 3;
+
+            typedef itk::Image<InputPixelType3D,  Dimension3D> InputImageType3D;
+            typedef itk::Image<OutputPixelType3D, Dimension3D> OutputImageType3D;
+
+            typedef itk::ImageFileReader<InputImageType3D>  ReaderType3D;
+
+            typename ReaderType3D::Pointer reader3D = ReaderType3D::New();
+
+            reader3D->SetFileName( inputVolume.c_str() );
+            reader3D->Update();
+            typedef itk::Image<float,3> ImageType3D;
+            ImageType3D::Pointer imag3D = reader3D->GetOutput();
+            ExtractFeatures hac3D;
+
+            typedef itk::Image<float, 3> InternalImageType3D;
+            typedef itk::Neighborhood<float, 3> NeighborhoodType3D;
+            NeighborhoodType3D neighborhood3D;
+            typedef InternalImageType3D::OffsetType OffsetType3D;
+            neighborhood3D.SetRadius(1);
+            unsigned int centerIndex3D = neighborhood3D.GetCenterNeighborhoodIndex();
+            OffsetType3D offset3D;
+            const char* volume3D = inputVolume.c_str();
+
+            hac3D.ExtractRunLength3D(imag3D, &shortRunEmphasis, &longRunEmphasis, &greyLevelNonuniformity,
+                                     &runLengthNonuniformity, &lowGrayLevelRunEmphasis, &highGreyLevelRunEmphasis,
+                                     &shortRunLowGreyLevelEmphasis, &shortRunHighGreyLevelEmphasis, &longRunLowGreyLevelEmphasis,
+                                     &longRunHighGreyLevelEmphasis);
+            runLength3D<<"ShortRunEmphasis: "<<shortRunEmphasis<<endl;
+            runLength3D<<"LongRunEmphasis: "<<longRunEmphasis<<endl;
+            runLength3D<<"GreyLevelNonuniformity: "<<greyLevelNonuniformity<<endl;
+            runLength3D<<"RunLengthNonuniformity: "<<runLengthNonuniformity<<endl;
+            runLength3D<<"LowGrayLevelRunEmphasis: "<<lowGrayLevelRunEmphasis<<endl;
+            runLength3D<<"HighGreyLevelRunEmphasis: "<<highGreyLevelRunEmphasis<<endl;
+            runLength3D<<"ShortRunLowGreyLevelEmphasis: "<<shortRunLowGreyLevelEmphasis<<endl;
+            runLength3D<<"ShortRunHighGreyLevelEmphasis: "<<shortRunHighGreyLevelEmphasis<<endl;
+            runLength3D<<"LongRunLowGreyLevelEmphasis: "<<longRunLowGreyLevelEmphasis<<endl;
+            runLength3D<<"LongRunHighGreyLevelEmphasis: "<<longRunHighGreyLevelEmphasis<<endl;
+            runLength3D<<"------------------------------------------"<<endl;
+
+        }
+        runLength3D.close();
     }
     //hac.Extract(offset,imag);
 

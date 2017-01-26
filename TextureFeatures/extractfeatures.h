@@ -13,6 +13,13 @@
 #include "itkMultiplyImageFilter.h"
 #include "itkRegionOfInterestImageFilter.h"
 
+#include "itkBoundingBox.h"
+#include "itkImageRegionIteratorWithIndex.h"
+#include "itkPointSet.h"
+
+#include "itkScalarImageToRunLengthFeaturesFilter.h"
+#include "itkDenseFrequencyContainer2.h"
+
 class ExtractFeatures
 {
 public:
@@ -45,6 +52,10 @@ public:
     int Extract3D(OffsetType3D offset3D, InternalImageType3D::Pointer inputImage3D, double *entropy, double *energy,
                   double *correlation, double *inertia, double *haralickCorrelation, double *inverseDifferenceMoment,
                   double *clusterProminence, double *clusterShade);
+
+    int ExtractRunLength3D(InternalImageType3D::Pointer inputImage3D, double *shortRunEmphasis, double *longRunEmphasis,
+                  double *greyLevelNonuniformity, double *runLengthNonuniformity, double *lowGrayLevelRunEmphasis, double *highGreyLevelRunEmphasis,
+                  double *shortRunLowGreyLevelEmphasis, double *shortRunHighGreyLevelEmphasis, double *longRunLowGreyLevelEmphasis, double *longRunHighGreyLevelEmphasis);
 };
 
 #endif // EXTRACTFEATURES_H
