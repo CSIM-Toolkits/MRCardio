@@ -53,6 +53,10 @@ public:
                   double *correlation, double *inertia, double *haralickCorrelation, double *inverseDifferenceMoment,
                   double *clusterProminence, double *clusterShade);
 
+    int ExtractRunLength2D(InternalImageType::Pointer inputImage, double *shortRunEmphasis, double *longRunEmphasis,
+                  double *greyLevelNonuniformity, double *runLengthNonuniformity, double *lowGrayLevelRunEmphasis, double *highGreyLevelRunEmphasis,
+                  double *shortRunLowGreyLevelEmphasis, double *shortRunHighGreyLevelEmphasis, double *longRunLowGreyLevelEmphasis, double *longRunHighGreyLevelEmphasis);
+
     int ExtractRunLength3D(InternalImageType3D::Pointer inputImage3D, double *shortRunEmphasis, double *longRunEmphasis,
                   double *greyLevelNonuniformity, double *runLengthNonuniformity, double *lowGrayLevelRunEmphasis, double *highGreyLevelRunEmphasis,
                   double *shortRunLowGreyLevelEmphasis, double *shortRunHighGreyLevelEmphasis, double *longRunLowGreyLevelEmphasis, double *longRunHighGreyLevelEmphasis);

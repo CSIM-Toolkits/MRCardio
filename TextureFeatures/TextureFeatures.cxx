@@ -229,6 +229,105 @@ int DoIt( int argc, char * argv[], TPixel )
         }
         runLength3D.close();
     }
+    if(dimension == "Run Length Features 2D"){
+        typedef float InputPixelType;
+        typedef float OutputPixelType;
+
+        const unsigned int Dimension = 2;
+        string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
+        ofstream runLength2D("/home/gustavo/temp/runLength2D.txt");
+        if (runLength2D.is_open())
+        {
+            for(int i =1; i<100;i++){
+
+                typedef itk::Image<InputPixelType,  Dimension> InputImageType;
+                typedef itk::Image<OutputPixelType, Dimension> OutputImageType;
+
+                typedef itk::ImageFileReader<InputImageType>  ReaderType;
+
+                typename ReaderType::Pointer reader = ReaderType::New();
+                typename ReaderType::Pointer readerS = ReaderType::New();
+
+                reader->SetFileName( inputVolume.c_str() );
+                reader->Update();
+                typedef itk::Image<float,2> ImageType;
+                string typeTiff = ".tif";
+                stringstream segment;
+                if(i<9)
+                    segment<<pathSegmented<<"00"<<(i+1)<<typeTiff;
+                if(i>=9 && i<99)
+                    segment<<pathSegmented<<"0"<<(i+1)<<typeTiff;
+                if(i>=99)
+                    segment<<pathSegmented<<(i+1)<<typeTiff;
+                string filenameSegmented = segment.str();
+                segment.str("");
+
+                readerS->SetFileName(filenameSegmented);
+                readerS->Update();
+                ImageType::Pointer imag = readerS->GetOutput();
+                ExtractFeatures hac;
+
+                double shortRunEmphasis;
+                double longRunEmphasis;
+                double greyLevelNonuniformity;
+                double runLengthNonuniformity;
+                double lowGrayLevelRunEmphasis;
+                double highGreyLevelRunEmphasis;
+                double shortRunLowGreyLevelEmphasis;
+                double shortRunHighGreyLevelEmphasis;
+                double longRunLowGreyLevelEmphasis;
+                double longRunHighGreyLevelEmphasis;
+
+                typedef float InputPixelType2D;
+                typedef float OutputPixelType2D;
+
+                const unsigned int Dimension2D = 2;
+
+                typedef itk::Image<InputPixelType2D,  Dimension2D> InputImageType2D;
+                typedef itk::Image<OutputPixelType2D, Dimension2D> OutputImageType2D;
+
+                typedef itk::ImageFileReader<InputImageType2D>  ReaderType2D;
+
+                typename ReaderType2D::Pointer reader2D = ReaderType2D::New();
+
+                reader2D->SetFileName( inputVolume.c_str() );
+                reader2D->Update();
+                typedef itk::Image<float,2> ImageType2D;
+                ImageType2D::Pointer imag2D = reader2D->GetOutput();
+                ExtractFeatures hac2D;
+
+                typedef itk::Image<float, 2> InternalImageType2D;
+                typedef itk::Neighborhood<float, 3> NeighborhoodType2D;
+                NeighborhoodType2D neighborhood2D;
+                typedef InternalImageType2D::OffsetType OffsetType2D;
+                neighborhood2D.SetRadius(1);
+                unsigned int centerIndex2D = neighborhood2D.GetCenterNeighborhoodIndex();
+                OffsetType2D offset2D;
+                const char* volume2D = inputVolume.c_str();
+
+                hac2D.ExtractRunLength2D(imag2D, &shortRunEmphasis, &longRunEmphasis, &greyLevelNonuniformity,
+                                         &runLengthNonuniformity, &lowGrayLevelRunEmphasis, &highGreyLevelRunEmphasis,
+                                         &shortRunLowGreyLevelEmphasis, &shortRunHighGreyLevelEmphasis, &longRunLowGreyLevelEmphasis,
+                                         &longRunHighGreyLevelEmphasis);
+                runLength2D<<"Image: "<<i<<endl;
+                runLength2D<<"________________"<<endl;
+                runLength2D<<endl;
+                runLength2D<<"ShortRunEmphasis: "<<shortRunEmphasis<<endl;
+                runLength2D<<"LongRunEmphasis: "<<longRunEmphasis<<endl;
+                runLength2D<<"GreyLevelNonuniformity: "<<greyLevelNonuniformity<<endl;
+                runLength2D<<"RunLengthNonuniformity: "<<runLengthNonuniformity<<endl;
+                runLength2D<<"LowGrayLevelRunEmphasis: "<<lowGrayLevelRunEmphasis<<endl;
+                runLength2D<<"HighGreyLevelRunEmphasis: "<<highGreyLevelRunEmphasis<<endl;
+                runLength2D<<"ShortRunLowGreyLevelEmphasis: "<<shortRunLowGreyLevelEmphasis<<endl;
+                runLength2D<<"ShortRunHighGreyLevelEmphasis: "<<shortRunHighGreyLevelEmphasis<<endl;
+                runLength2D<<"LongRunLowGreyLevelEmphasis: "<<longRunLowGreyLevelEmphasis<<endl;
+                runLength2D<<"LongRunHighGreyLevelEmphasis: "<<longRunHighGreyLevelEmphasis<<endl;
+                runLength2D<<"------------------------------------------"<<endl;
+
+            }
+            runLength2D.close();
+        }
+    }
     //hac.Extract(offset,imag);
 
     /*typedef itk::SmoothingRecursiveGaussianImageFilter<
