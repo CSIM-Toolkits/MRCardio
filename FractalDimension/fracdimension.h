@@ -6,10 +6,10 @@ class fracdimension
 {
 public:
     fracdimension();
-    typedef unsigned char PixelType;
+    typedef unsigned int PixelType;
     typedef itk::Image<PixelType,3> ImageType;
-    double GetDimension(ImageType::Pointer Image);
-    double GetMinkowskiDimension();
+    double GetBoxCountingDimension2D(ImageType::Pointer image);
+    double GetBoxCountingDimension3D(ImageType::Pointer image);
     void MorphologicalGradient(ImageType::Pointer Image);
     void GradientMagnitude(ImageType::Pointer Image, const char* volume_out);
     double GetDBCDimension(ImageType::Pointer Image);

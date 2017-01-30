@@ -23,7 +23,7 @@ int DoIt( int argc, char * argv[], T )
 {
     PARSE_ARGS;
 
-    typedef    unsigned char InputPixelType;
+    typedef    unsigned int InputPixelType;
     typedef    T     OutputPixelType;
 
     typedef itk::Image<InputPixelType,  3> InputImageType;
@@ -45,13 +45,13 @@ int DoIt( int argc, char * argv[], T )
 
     const char* volume_out = outputVolume.c_str();
 
-    typedef itk::Image<unsigned char,3> ImageType;
+    typedef itk::Image<unsigned int,3> ImageType;
     ImageType::Pointer imag = reader->GetOutput();
     fracdimension dim;
     double dimens;
-    dimens = dim.GetDBCDimension(imag);
+    //dimens = dim.GetDBCDimension(imag);
     //dim.GradientMagnitude(imag, volume_out);
-    //dimens = dim.GetMinkowskiDimension();
+    dimens = dim.GetBoxCountingDimension3D(imag);
     cout<<"Dimension: "<<dimens<<endl;
     return EXIT_SUCCESS;
 }
