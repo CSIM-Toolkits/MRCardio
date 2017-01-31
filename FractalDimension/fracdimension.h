@@ -2,18 +2,23 @@
 #define FRACDIMENSION_H
 
 #include <itkImage.h>
+#include <math.h>
+#define REAL double
+inline static REAL sqr(REAL x) {
+        return x*x;
+    }
+
 class fracdimension
 {
 public:
     fracdimension();
     typedef unsigned int PixelType;
     typedef itk::Image<PixelType,3> ImageType;
-    double GetBoxCountingDimension2D(ImageType::Pointer image);
+    typedef itk::Image<PixelType,2> ImageType2D;
+    double GetBoxCountingDimension2D(ImageType2D::Pointer image);
     double GetBoxCountingDimension3D(ImageType::Pointer image);
-    void MorphologicalGradient(ImageType::Pointer Image);
-    void GradientMagnitude(ImageType::Pointer Image, const char* volume_out);
     double GetDBCDimension(ImageType::Pointer Image);
-    ImageType::Pointer edge;
+    int linreg(int n, const REAL x[], const REAL y[], REAL* m, REAL* b, REAL* r);
 };
 
 #endif // FRACDIMENSION_H
