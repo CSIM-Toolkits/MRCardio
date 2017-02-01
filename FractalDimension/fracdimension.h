@@ -3,10 +3,6 @@
 
 #include <itkImage.h>
 #include <math.h>
-#define REAL double
-inline static REAL sqr(REAL x) {
-        return x*x;
-    }
 
 class fracdimension
 {
@@ -18,7 +14,7 @@ public:
     double GetBoxCountingDimension2D(ImageType2D::Pointer image);
     double GetBoxCountingDimension3D(ImageType::Pointer image);
     double GetDBCDimension(ImageType::Pointer Image);
-    int linreg(int n, const REAL x[], const REAL y[], REAL* m, REAL* b, REAL* r);
+    void linreg(int n, double x[], double y[], double* m, double* b);
 };
 
 #endif // FRACDIMENSION_H

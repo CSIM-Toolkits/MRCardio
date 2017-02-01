@@ -43,9 +43,9 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
 
     typedef unsigned int PixelType;
 
-    typedef itk::Image< PixelType, 2> ImageType2D;
+    typedef itk::Image< PixelType, 2> ImageType;
 
-    typedef itk::ShapedNeighborhoodIterator<ImageType2D> IteratorType;
+    typedef itk::ShapedNeighborhoodIterator<ImageType> IteratorType;
 
     double dim = 0.0;
     int cont_A = 0;
@@ -53,59 +53,70 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
     double sum_la = 0.0;
     bool isZero = false;
     bool isElement = false;
-
-    typedef itk::BinaryBallStructuringElement< PixelType, 2>
-            StructuringElementType;
-    StructuringElementType structuringElement;
-    structuringElement.SetRadius(2);
-    structuringElement.CreateStructuringElement();
-
-    IteratorType iterator(structuringElement.GetRadius(), image, image->GetLargestPossibleRegion());
-    iterator.CreateActiveListFromNeighborhood(structuringElement);
-    //iterator.NeedToUseBoundaryConditionOff();
-
-    const ImageType2D::SizeType region = image->GetLargestPossibleRegion().GetSize();
+    const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
     double M = region[0];
-    double r = 2/M;
+    double r = 0;
+    int k = 1;
+    double *vetNR = new double[10];
+    double *vetR = new double[10];
 
-    IteratorType::IndexListType indexList = iterator.GetActiveIndexList();
-    IteratorType::IndexListType::const_iterator
-            listIterator = indexList.begin();
+    double s = (pow((1+(k*2)),2)/2);
+    while(s < (M/2)){
 
-    for( iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator )
-    {
-        IteratorType::ConstIterator ci = iterator.Begin();
-        isZero = false;
-        isElement = false;
-        while( !ci.IsAtEnd() )
+        r = k/M;
+        cont_A = 0;
+        dim = 0;
+
+        typedef itk::BinaryBallStructuringElement< PixelType, 2>
+                StructuringElementType;
+        StructuringElementType structuringElement;
+        structuringElement.SetRadius(k);
+        structuringElement.CreateStructuringElement();
+
+        IteratorType iterator(structuringElement.GetRadius(), image, image->GetLargestPossibleRegion());
+        iterator.CreateActiveListFromNeighborhood(structuringElement);
+        //iterator.NeedToUseBoundaryConditionOff();
+
+
+        IteratorType::IndexListType indexList = iterator.GetActiveIndexList();
+        IteratorType::IndexListType::const_iterator
+                listIterator = indexList.begin();
+
+        for( iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator )
         {
-            if(ci.Get() == 0){
-                isZero = true;
-            }
-            if(ci.Get() > 0){
-                isElement = true;
-            }
-            //            std::cout << "Centered at " << iterator.GetIndex() << std::endl;
-            //            std::cout << "Neighborhood index " << ci.GetNeighborhoodIndex()
-            //                      << " is offset " << ci.GetNeighborhoodOffset()
-            //                      << " and has value " << ci.Get()
-            //                      << " The real index is "
-            //                      << iterator.GetIndex() + ci.GetNeighborhoodOffset()
-            //                      << std::endl;
-            ++ci;
-        }
-        if(isElement){
-            cont_A++;
-        }
-    }
-    //    cout<<"NR: "<<cont_A<<endl;
-    //    cout<<"LOG NR: "<<log(cont_A)<<endl;
-    //    cout<<"r: "<<r<<endl;
-    //    cout<<"1/r: "<<1/r<<endl;
-    //    cout<<"log(1/r): "<<log(1/r)<<endl;
-    dim = ((log(cont_A)) / (log(1/r)));
-    return dim;
+            IteratorType::ConstIterator ci = iterator.Begin();
+            isZero = false;
+            isElement = false;
+            while( !ci.IsAtEnd() )
+            {
 
+                if(ci.Get() == 0){
+                    isZero = true;
+                }
+                if(ci.Get() !=0){
+                    isElement = true;
+                }
+
+                ++ci;
+            }
+            if(isElement){
+                cont_A++;
+            }
+        }
+
+        vetNR[k] = (log(cont_A));
+        vetR[k] = (log(1/r));
+        dim = ((log(cont_A)) / (log(1/r)));
+        k++;
+        s = (pow((1+(k*2)),2)/2);
+
+    }
+    double m,b;
+    linreg(k-1,vetR,vetNR,&m,&b);
+    free(vetR);
+    free(vetNR);
+    dim = -m;
+    return dim;
 }
 
 /**
@@ -171,41 +182,26 @@ double fracdimension::GetBoxCountingDimension3D(ImageType::Pointer image){
                 if(ci.Get() !=0){
                     isElement = true;
                 }
-                //                            std::cout << "Centered at " << iterator.GetIndex() << std::endl;
-                //                            std::cout << "Neighborhood index " << ci.GetNeighborhoodIndex()
-                //                              << " is offset " << ci.GetNeighborhoodOffset()
-                //                              << " and has value " << ci.Get()
-                //                              << " The real index is "
-                //                              << iterator.GetIndex() + ci.GetNeighborhoodOffset()
-                //                              << std::endl;
+
                 ++ci;
             }
             if(isElement){
                 cont_A++;
             }
         }
-        //        cout<<"NR: "<<cont_A<<endl;
-        //        cout<<"LOG NR: "<<log(cont_A)<<endl;
-        //        cout<<"r: "<<r<<endl;
-        //        cout<<"1/r: "<<1/r<<endl;
-        //        cout<<"log(1/r): "<<log(1/r)<<endl;
 
         vetNR[k] = (log(cont_A));
         vetR[k] = (log(1/r));
-        cout<<endl<<"NR: "<<vetNR[k]<<endl;
-        cout<<endl<<"r: "<<vetR[k]<<endl;
         dim = ((log(cont_A)) / (log(1/r)));
-        //      cout<<"DIM"<<dim<<endl;
-        //cout<<"K"<<k<<endl;
         k++;
         s = (pow((1+(k*2)),2)/2);
 
     }
-    REAL m,b,coef;
-    linreg(k,vetNR,vetR,&m,&b,&coef);
-    cout<<"M = "<<m<<endl;
-    cout<<"B = "<<b<<endl;
-    cout<<"R = "<<coef<<endl;
+    double m,b;
+    linreg(k-1,vetR,vetNR,&m,&b);
+    free(vetR);
+    free(vetNR);
+    dim = -m;
     return dim;
 
 }
@@ -306,39 +302,31 @@ double fracdimension::GetDBCDimension(ImageType::Pointer Image){
 
 }
 
-int fracdimension::linreg(int n, const REAL x[], const REAL y[], REAL* m, REAL* b, REAL* r)
+void fracdimension::linreg(int n, double x[], double y[], double* m, double* b)
 {
-    REAL   sumx = 0.0;                        /* sum of x                      */
-    REAL   sumx2 = 0.0;                       /* sum of x**2                   */
-    REAL   sumxy = 0.0;                       /* sum of x * y                  */
-    REAL   sumy = 0.0;                        /* sum of y                      */
-    REAL   sumy2 = 0.0;                       /* sum of y**2                   */
+    double   sumx = 0.0;                        /* sum of x                      */
+    double   sumx2 = 0.0;                       /* sum of x**2                   */
+    double   sumxy = 0.0;                       /* sum of x * y                  */
+    double   sumy = 0.0;                        /* sum of y                      */
+    double   sumy2 = 0.0;                       /* sum of y**2                   */
 
-    for (int i=0;i<n;i++)
+    for (int i=1;i<=n;i++)
     {
         sumx  += x[i];
-        sumx2 += sqr(x[i]);
+        sumx2 += pow(x[i],2);
         sumxy += x[i] * y[i];
         sumy  += y[i];
-        sumy2 += sqr(y[i]);
+        sumy2 += pow(y[i],2);
     }
 
-    REAL denom = (n * sumx2 - sqr(sumx));
+    double denom = (n * sumx2 - pow(sumx,2));
     if (denom == 0) {
         // singular matrix. can't solve the problem.
         *m = 0;
         *b = 0;
-        if (r) *r = 0;
-        return 1;
     }
 
     *m = (n * sumxy  -  sumx * sumy) / denom;
     *b = (sumy * sumx2  -  sumx * sumxy) / denom;
-    if (r!=NULL) {
-        *r = (sumxy - sumx * sumy / n) /          /* compute correlation coeff     */
-                sqrt((sumx2 - sqr(sumx)/n) *
-                     (sumy2 - sqr(sumy)/n));
-    }
 
-    return 0;
 }

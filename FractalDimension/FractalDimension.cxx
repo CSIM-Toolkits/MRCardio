@@ -7,6 +7,7 @@
 
 #include "FractalDimensionCLP.h"
 #include "fracdimension.h"
+#include "itkGradientMagnitudeImageFilter.h"
 #include <iostream>
 
 // Use an anonymous namespace to keep class types and function names
@@ -24,7 +25,7 @@ int DoIt( int argc, char * argv[], T )
     PARSE_ARGS;
 
     if(dimension == "Box Counting 2D"){
-        string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
+        string pathSegmented = "/home/gustavo/temp/segmented_";
         ofstream boxCounting2D("/home/gustavo/temp/boxCounting2D.txt");
 
         if (boxCounting2D.is_open())
@@ -66,7 +67,21 @@ int DoIt( int argc, char * argv[], T )
 
                 readerS->SetFileName(filenameSegmented);
                 readerS->Update();
-                ImageType2D::Pointer imag = readerS->GetOutput();
+
+                // Setup types
+                typedef itk::Image< unsigned int,  2 >  UnsignedCharImageType;
+                typedef itk::Image< unsigned int,  2 >   FloatImageType;
+
+                typedef itk::GradientMagnitudeImageFilter<
+                        UnsignedCharImageType, FloatImageType >  filterType;
+
+
+                // Create and setup a gradient filter
+                filterType::Pointer gradientFilter = filterType::New();
+                gradientFilter->SetInput( readerS->GetOutput() );
+                gradientFilter->Update();
+
+                ImageType2D::Pointer imag = gradientFilter->GetOutput();
 
                 fracdimension dim;
                 double dimens;
