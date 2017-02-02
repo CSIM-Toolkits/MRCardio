@@ -278,7 +278,7 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
         try
         {
             writer->SetFileName(segmentedFile);
-            writer->SetInput( thresholder->GetOutput() );
+            writer->SetInput( gradient->GetOutput() );
             writer->Update();
         }
         catch( itk::ExceptionObject & excep )
@@ -543,15 +543,15 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
         string segmentedFile = stringFileSegmented.str();
         stringFileSegmented.str("");
 
-//        typedef itk::GradientMagnitudeImageFilter<OutputImageType, OutputImageType >  GradientType;
-//        GradientType::Pointer gradient = GradientType::New();
-//        gradient->SetInput(thresholder->GetOutput());
-//        gradient->Update();
+        typedef itk::GradientMagnitudeImageFilter<OutputImageType, OutputImageType >  GradientType;
+        GradientType::Pointer gradient = GradientType::New();
+        gradient->SetInput(thresholder->GetOutput());
+        gradient->Update();
 
         try
         {
             writer->SetFileName(segmentedFile);
-            writer->SetInput(andFilter->GetOutput() );
+            writer->SetInput(gradient->GetOutput() );
             writer->Update();
         }
         catch( itk::ExceptionObject & excep )

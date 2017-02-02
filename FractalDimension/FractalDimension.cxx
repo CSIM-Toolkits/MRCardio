@@ -25,7 +25,7 @@ int DoIt( int argc, char * argv[], T )
     PARSE_ARGS;
 
     if(dimension == "Box Counting 2D"){
-        string pathSegmented = "/home/gustavo/temp/segmented_";
+        string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
         ofstream boxCounting2D("/home/gustavo/temp/boxCounting2D.txt");
 
         if (boxCounting2D.is_open())
