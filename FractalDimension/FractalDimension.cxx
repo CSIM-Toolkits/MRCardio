@@ -127,6 +127,109 @@ int DoIt( int argc, char * argv[], T )
 
     }
 
+    if(dimension == "Differencial Box Counting 2D"){
+        string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
+        ofstream boxCounting2D("/home/gustavo/temp/DBC2D.txt");
+
+        if (boxCounting2D.is_open())
+        {
+            for(int i =1; i<100;i++){
+                typedef    unsigned int InputPixelType;
+                typedef    T     OutputPixelType;
+
+                typedef itk::Image<InputPixelType,  2> InputImageType;
+                typedef itk::Image<OutputPixelType, 2> OutputImageType;
+
+                typedef itk::ImageFileReader<InputImageType>  ReaderType;
+                typedef itk::ImageFileWriter<OutputImageType> WriterType;
+
+                typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
+
+                typename ReaderType::Pointer reader = ReaderType::New();
+                itk::PluginFilterWatcher watchReader(reader, "Read Volume",
+                                                     CLPProcessInformation);
+
+                reader->SetFileName( inputVolume.c_str() );
+                reader->Update();
+
+                typename ReaderType::Pointer readerS = ReaderType::New();
+
+                reader->SetFileName( inputVolume.c_str() );
+                reader->Update();
+                typedef itk::Image<unsigned int,2> ImageType2D;
+                string typeTiff = ".tif";
+                stringstream segment;
+                if(i<9)
+                    segment<<pathSegmented<<"00"<<(i+1)<<typeTiff;
+                if(i>=9 && i<99)
+                    segment<<pathSegmented<<"0"<<(i+1)<<typeTiff;
+                if(i>=99)
+                    segment<<pathSegmented<<(i+1)<<typeTiff;
+                string filenameSegmented = segment.str();
+                segment.str("");
+
+                readerS->SetFileName(filenameSegmented);
+                readerS->Update();
+
+                // Setup types
+                typedef itk::Image< unsigned int,  2 >  UnsignedCharImageType;
+                typedef itk::Image< unsigned int,  2 >   FloatImageType;
+
+                typedef itk::GradientMagnitudeImageFilter<
+                        UnsignedCharImageType, FloatImageType >  filterType;
+
+
+                // Create and setup a gradient filter
+                filterType::Pointer gradientFilter = filterType::New();
+                gradientFilter->SetInput( readerS->GetOutput() );
+                gradientFilter->Update();
+
+                ImageType2D::Pointer imag = gradientFilter->GetOutput();
+
+                fracdimension dim;
+                double dimens;
+                dimens = dim.GetDBCDimension2D(imag);
+                //cout<<"Dimension: "<<dimens<<endl;
+                boxCounting2D<<"Image: "<<i<<" :"<<dimens<<endl;
+            }
+            boxCounting2D.close();
+        }
+    }
+
+    if(dimension == "Differencial Box Counting 3D"){
+        typedef    unsigned int InputPixelType;
+        typedef    T     OutputPixelType;
+
+        typedef itk::Image<InputPixelType,  3> InputImageType;
+        typedef itk::Image<OutputPixelType, 3> OutputImageType;
+
+        typedef itk::ImageFileReader<InputImageType>  ReaderType;
+        typedef itk::ImageFileWriter<OutputImageType> WriterType;
+
+        typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
+
+        typename ReaderType::Pointer reader = ReaderType::New();
+        itk::PluginFilterWatcher watchReader(reader, "Read Volume",
+                                             CLPProcessInformation);
+
+        reader->SetFileName( inputVolume.c_str() );
+        reader->Update();
+
+        typedef itk::ImageRegionIterator< InputImageType > ImageIteratorType;
+
+        const char* volume_out = outputVolume.c_str();
+
+        typedef itk::Image<unsigned int,3> ImageType;
+        ImageType::Pointer imag = reader->GetOutput();
+        fracdimension dim;
+        double dimens;
+        //dimens = dim.GetDBCDimension(imag);
+        //dim.GradientMagnitude(imag, volume_out);
+        dimens = dim.GetDBCDimension3D(imag);
+        cout<<"Dimension: "<<dimens<<endl;
+
+    }
+
     return EXIT_SUCCESS;
 }
 

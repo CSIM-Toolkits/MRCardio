@@ -169,99 +169,78 @@ double fracdimension::GetBoxCountingDimension3D(ImageType::Pointer image){
     return dim;
 }
 
-double fracdimension::GetDBCDimension(ImageType::Pointer Image){
+double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
+    typedef unsigned int PixelType;
+
+    typedef itk::Image< PixelType, 2> ImageType;
+
+    typedef itk::ShapedNeighborhoodIterator<ImageType> IteratorType;
+
     double dim = 0.0;
-    int r = 2;
     int cont_A = 0;
     int cont_elem = 0;
     double sum_la = 0.0;
-    int nr = 0;
-    int min = 9999;
-    int auxMin = 0;
-    int auxMax = 0;
-    int max = 0;
-    typedef unsigned int PixelType;
-    typedef itk::Image<PixelType,3> ImageType;
-    typedef itk::ShapedNeighborhoodIterator<ImageType> IteratorType;
-    typedef itk::ConstNeighborhoodIterator<ImageType> ShapedNeighborhoodIteratorType;
-    typedef itk::FlatStructuringElement<3> FlatStructuringElementType;
-    FlatStructuringElementType::RadiusType r1;
-    r1.Fill(r);
-    //ShapedNeighborhoodIteratorType::RadiusType radius;
-    //radius.Fill(3);
-    itk::Size<3> radius;
-    radius.Fill(2);
-
-    IteratorType iterator(radius,Image,Image->GetLargestPossibleRegion());
-
-    IteratorType::OffsetType top = {{0,-1}};
-    iterator.ActivateOffset((top));
-    //IteratorType::OffsetType bottom = {{0,1}};
-    //iterator.ActivateOffset(bottom);
-    IteratorType::OffsetType left = {{-1,0}};
-    iterator.ActivateOffset(left);
-    //IteratorType::OffsetType right = {{1,0}};
-    //iterator.ActivateOffset((right));
-
-    //IteratorType::OffsetType topr = {{1,-1}};
-    //iterator.ActivateOffset((topr));
-    //IteratorType::OffsetType bottomr = {{1,1}};
-    //iterator.ActivateOffset(bottomr);
-    IteratorType::OffsetType topl = {{-1,-1}};
-    iterator.ActivateOffset(topl);
-    //IteratorType::OffsetType bottoml = {{-1,1}};
-    //iterator.ActivateOffset((bottoml));
-    IteratorType::OffsetType center = {{0,0}};
-    iterator.ActivateOffset((center));
-
-    /*IteratorType::OffsetType one = {{0,-2}};
-    iterator.ActivateOffset((one));
-    IteratorType::OffsetType two = {{2,0}};
-    iterator.ActivateOffset((two));
-    IteratorType::OffsetType three = {{0,2}};
-    iterator.ActivateOffset((three));
-    IteratorType::OffsetType four = {{-2,0}};
-    iterator.ActivateOffset((four));*/
-    ofstream myfile ("/home/gustavo/temp/dimensions.txt");
-    if (myfile.is_open())
-    {
-
-        //IteratorType::ConstIterator es = iterator.Begin();
-        for(iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator){
-            int cont_elem = 0;
-            IteratorType::ConstIterator es = iterator.Begin();
-            while(!es.IsAtEnd()){
-
-                auxMin = es.Get();
-                auxMax = es.Get();
-                if(auxMin < min){
-                    min = auxMin;
+    bool isZero = false;
+    bool isElement = false;
+    const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
+    double M = region[0];
+    double r = 0;
+    int k = 1;
+    double *vetNR = new double[10];
+    double *vetR = new double[10];
+    int levelSize = (int) (255/region[0]);
+    double s = (pow((1+(k*2)),2)/2);
+    while(s < (M/2)){
+        double min = 9999;
+        double max = 0;
+        int box = s*levelSize;
+        int cont_I = 0;
+        cont_A = 0;
+        dim = 0;
+        int cont = 0;
+        for(int a=0; a<region[0]; a = a + (1+((k-1)*2))){
+            for(int b= 0; b<region[1]; b = b + (1+((k-1)*2))){
+                isElement = false;
+                for(int c = 0; c<(1+((k-1)*2)); c++){
+                    for(int d = 0; d<(1+((k-1)*2)); d++){
+                        const ImageType::IndexType index = {{a+c,b+d}};
+                        if(((a+c) >= 0) && ((a+c) <= region[0]) && ((b+d) >= 0) && ((b+d) <= region[1])){
+                            double minB = image->GetPixel(index);
+                            double maxB = image->GetPixel(index);
+                            if(minB < min){
+                                min = minB;
+                            }
+                            if(maxB > max){
+                                max = maxB;
+                            }
+                        }
+                    }
                 }
-                if(auxMax > max){
-                    max = auxMax;
+                if(max > 0){
+                    int positionMax = max/((int)(box));
+                    int positionMin = min/((int)(box));
+                    cont_A = cont_A + (((positionMax+1)-(positionMin+1)) +1);
+                    cont++;
                 }
-                cont_elem++;
-                es++;
-                //cout<<"MIN: "<<min<<"  Element: "<<cont_elem<<endl;
-                //cout<<"MAX: "<<max<<endl;
-
-                //cout<<"CONT: "<<cont_elem<<endl;
             }
-            nr = nr + (((int)(max/2) - (int)(min/2)) + 1);
-            myfile<<"NR: "<<nr<<endl;
-            //cout<<"NR: "<<auxMin<<endl;
-            min = 9999;
-            auxMin = 0;
-            auxMax = 0;
-            max = 0;
-
         }
+
+        r = (1+((k-1)*2))/M;
+        vetNR[k] = (log(cont_A));
+        vetR[k] = (log(r));
+        k++;
+        s = (pow((1+(k*2)),2)/2);
+
     }
-
-    dim = ((log(nr))/(2.10));
-    myfile.close();
-
+    double m,b;
+    linreg(k-1,vetR,vetNR,&m,&b);
+    free(vetR);
+    free(vetNR);
+    dim = m;
     return dim;
+}
+
+double fracdimension::GetDBCDimension3D(ImageType::Pointer Image){
 
 }
 
