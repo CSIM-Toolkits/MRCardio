@@ -32,7 +32,6 @@ fracdimension::fracdimension()
 {
 }
 
-
 /**
  * @brief fracdimension::GetBoxCountingDimension2D
  * Computing Box Counting for 2D images
@@ -61,35 +60,16 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
     double *vetR = new double[10];
 
     double s = (pow((1+(k*2)),2)/2);
-    while(s < (M/2)){
-
-
+    while(s < (M)){
         cont_A = 0;
         dim = 0;
-
-//        typedef itk::BinaryBallStructuringElement< PixelType, 2>
-//                StructuringElementType;
-//        StructuringElementType structuringElement;
-//        structuringElement.SetRadius(k);
-//        structuringElement.CreateStructuringElement();
-
-//        IteratorType iterator(structuringElement.GetRadius(), image, image->GetLargestPossibleRegion());
-//        iterator.CreateActiveListFromNeighborhood(structuringElement);
-        //iterator.NeedToUseBoundaryConditionOff();
-
-
-//        IteratorType::IndexListType indexList = iterator.GetActiveIndexList();
-//        IteratorType::IndexListType::const_iterator
-//                listIterator = indexList.begin();
         int cont = 0;
-//        iterator.GoToBegin();
         for(int a=0; a<region[0]; a = a + (1+((k-1)*2))){
             for(int b= 0; b<region[1]; b = b + (1+((k-1)*2))){
                 isElement = false;
                 for(int c = 0; c<(1+((k-1)*2)); c++){
                     for(int d = 0; d<(1+((k-1)*2)); d++){
                         const ImageType::IndexType index = {{a+c,b+d}};
-                        //cout<<"Index "<<index<<endl;
                         if(((a+c) >= 0) && ((a+c) <= region[0]) && ((b+d) >= 0) && ((b+d) <= region[1])){
                             if(image->GetPixel(index) > 0){
                                 isElement = true;
@@ -103,25 +83,19 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
                 cont++;
             }
         }
-//        cout<<"K= "<<k<<endl;
-//        cout<<"CONT = "<<cont<<endl;
-//        cout<<"X = "<<region[0]<<endl;
-//        cout<<"Y = "<<region[1]<<endl;
+
         r = (1+((k-1)*2))/M;
-        cout<<endl<<"_____"<<endl<<cont_A<<endl;
         vetNR[k] = (log(cont_A));
-        vetR[k] = (log(1/r));
-        //dim = ((log(cont_A)) / (log(1/r)));
+        vetR[k] = (log(r));
         k++;
         s = (pow((1+(k*2)),2)/2);
 
     }
-    cout<<"K = "<<k<<endl;
     double m,b;
     linreg(k-1,vetR,vetNR,&m,&b);
     free(vetR);
     free(vetNR);
-    dim = m;
+    dim = -m;
     return dim;
 }
 
@@ -132,7 +106,6 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
  * @return dim
  */
 double fracdimension::GetBoxCountingDimension3D(ImageType::Pointer image){
-
     typedef unsigned int PixelType;
 
     typedef itk::Image< PixelType, 3> ImageType;
@@ -153,52 +126,37 @@ double fracdimension::GetBoxCountingDimension3D(ImageType::Pointer image){
     double *vetR = new double[10];
 
     double s = (pow((1+(k*2)),2)/2);
-    while(s < (M/2)){
-
-        r = k/M;
+    while(s < (M)){
         cont_A = 0;
         dim = 0;
-
-        typedef itk::BinaryBallStructuringElement< PixelType, 3>
-                StructuringElementType;
-        StructuringElementType structuringElement;
-        structuringElement.SetRadius(k);
-        structuringElement.CreateStructuringElement();
-
-        IteratorType iterator(structuringElement.GetRadius(), image, image->GetLargestPossibleRegion());
-        iterator.CreateActiveListFromNeighborhood(structuringElement);
-        //iterator.NeedToUseBoundaryConditionOff();
-
-
-        IteratorType::IndexListType indexList = iterator.GetActiveIndexList();
-        IteratorType::IndexListType::const_iterator
-                listIterator = indexList.begin();
-
-        for( iterator.GoToBegin(); !iterator.IsAtEnd(); ++iterator )
-        {
-            IteratorType::ConstIterator ci = iterator.Begin();
-            isZero = false;
-            isElement = false;
-            while( !ci.IsAtEnd() )
-            {
-
-                if(ci.Get() == 0){
-                    isZero = true;
+        int cont = 0;
+        for(int a=0; a<region[0]; a = a + (1+((k-1)*2))){
+            for(int b= 0; b<region[1]; b = b + (1+((k-1)*2))){
+                for(int u= 0; u<region[2]; u = u + (1+((k-1)*2))){
+                    isElement = false;
+                    for(int c = 0; c<(1+((k-1)*2)); c++){
+                        for(int d = 0; d<(1+((k-1)*2)); d++){
+                            for(int e = 0; e<(1+((k-1)*2)); e++){
+                                const ImageType::IndexType index = {{a+c,b+d,u+e}};
+                                if(((a+c) >= 0) && ((a+c) <= region[0]) && ((b+d) >= 0) && ((b+d) <= region[1]) && ((u+e) >= 0) && ((u+e) <= region[2])){
+                                    if(image->GetPixel(index) > 0){
+                                        isElement = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(isElement){
+                        cont_A++;
+                    }
+                    cont++;
                 }
-                if(ci.Get() !=0){
-                    isElement = true;
-                }
-
-                ++ci;
-            }
-            if(isElement){
-                cont_A++;
             }
         }
 
+        r = (1+((k-1)*2))/M;
         vetNR[k] = (log(cont_A));
-        vetR[k] = (log(1/r));
-        dim = ((log(cont_A)) / (log(1/r)));
+        vetR[k] = (log(r));
         k++;
         s = (pow((1+(k*2)),2)/2);
 
@@ -209,7 +167,6 @@ double fracdimension::GetBoxCountingDimension3D(ImageType::Pointer image){
     free(vetNR);
     dim = -m;
     return dim;
-
 }
 
 double fracdimension::GetDBCDimension(ImageType::Pointer Image){
