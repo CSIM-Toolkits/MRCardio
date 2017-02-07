@@ -244,6 +244,66 @@ double fracdimension::GetDBCDimension3D(ImageType::Pointer Image){
 
 }
 
+double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
+    typedef unsigned int PixelType;
+
+    typedef itk::Image< PixelType, 2> ImageType;
+
+    typedef itk::ShapedNeighborhoodIterator<ImageType> IteratorType;
+
+    double dim = 0.0;
+    int cont_A = 0;
+    int cont_elem = 0;
+    double sum_la = 0.0;
+    bool isZero = false;
+    bool isElement = false;
+    const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
+    double M = region[0];
+    double r = 0;
+    int k = 1;
+    double *vetNR = new double[10];
+    double *vetR = new double[10];
+
+    double s = (pow((1+(k*2)),2)/2);
+    while(s < (M)){
+        cont_A = 0;
+        dim = 0;
+        int cont = 0;
+        for(int a=0; a<region[0]; a++){
+            for(int b= 0; b<region[1]; b++){
+                isElement = false;
+                for(int c = 0; c<(1+((k-1)*2)); c++){
+                    for(int d = 0; d<(1+((k-1)*2)); d++){
+                        const ImageType::IndexType index = {{a+c,b+d}};
+                        if(((a+c) >= 0) && ((a+c) <= region[0]) && ((b+d) >= 0) && ((b+d) <= region[1])){
+                            if(image->GetPixel(index) > 0){
+                                isElement = true;
+                            }
+                        }
+                    }
+                }
+                if(isElement){
+                    cont_A++;
+                }
+                cont++;
+            }
+        }
+
+        r = (1+((k-1)*2))/M;
+        vetNR[k] = (log(cont_A));
+        vetR[k] = (log(r));
+        k++;
+        s = (pow((1+(k*2)),2)/2);
+
+    }
+    double m,b;
+    linreg(k-1,vetR,vetNR,&m,&b);
+    free(vetR);
+    free(vetNR);
+    dim = -m;
+    return dim;
+}
+
 void fracdimension::linreg(int n, double x[], double y[], double* m, double* b)
 {
     double   sumx = 0.0;                        /* sum of x                      */

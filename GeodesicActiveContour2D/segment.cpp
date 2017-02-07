@@ -551,7 +551,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
         try
         {
             writer->SetFileName(segmentedFile);
-            writer->SetInput(andFilter->GetOutput() );
+            writer->SetInput(gradient->GetOutput() );
             writer->Update();
         }
         catch( itk::ExceptionObject & excep )

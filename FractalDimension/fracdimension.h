@@ -15,6 +15,7 @@ public:
     double GetBoxCountingDimension3D(ImageType::Pointer image);
     double GetDBCDimension2D(ImageType2D::Pointer image);
     double GetDBCDimension3D(ImageType::Pointer image);
+    double GetMinkowskiDimension2D(ImageType2D::Pointer image);
     void linreg(int n, double x[], double y[], double* m, double* b);
 };
 
