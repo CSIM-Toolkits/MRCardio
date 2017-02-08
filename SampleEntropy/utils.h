@@ -10,7 +10,7 @@ public:
 
     typedef float PixelTypeFloat;
     typedef unsigned char PixelTypeUC;
-    typedef itk::Image<PixelTypeUC,3> ImageType;
+    typedef itk::Image<PixelTypeUC,2> ImageType;
 
     double GetPixel(ImageType::Pointer image, double x, double y);
     double GetPixel(ImageType::Pointer image, double x, double y, double z);

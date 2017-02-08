@@ -18,104 +18,128 @@ using namespace std;
 namespace
 {
 
-template <typename TPixel>
-int DoIt( int argc, char * argv[], TPixel )
+template <class T>
+int DoIt( int argc, char * argv[], T)
 {
-  PARSE_ARGS;
+    PARSE_ARGS;
 
-  typedef unsigned char InputPixelType;
-  typedef TPixel OutputPixelType;
+    string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
+    ofstream sampleEntropy("/home/gustavo/temp/sampleEntropy2D.txt");
 
-  const unsigned int Dimension = 3;
+    if (sampleEntropy.is_open())
+    {
+        for(int i =1; i<100;i++){
+            typedef    unsigned char InputPixelType;
+            typedef    T     OutputPixelType;
 
-  typedef itk::Image<InputPixelType,  Dimension> InputImageType;
-  typedef itk::Image<OutputPixelType, Dimension> OutputImageType;
+            typedef itk::Image<InputPixelType,  2> InputImageType;
+            typedef itk::Image<OutputPixelType, 2> OutputImageType;
 
-  typedef itk::ImageFileReader<InputImageType>  ReaderType;
+            typedef itk::ImageFileReader<InputImageType>  ReaderType;
+            typedef itk::ImageFileWriter<OutputImageType> WriterType;
 
-  typename ReaderType::Pointer reader = ReaderType::New();
+            typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
 
-  reader->SetFileName( inputVolume.c_str() );
-  reader->Update();
+            typename ReaderType::Pointer reader = ReaderType::New();
+            itk::PluginFilterWatcher watchReader(reader, "Read Volume",
+                                                 CLPProcessInformation);
 
-  typedef itk::Image<unsigned char,3> ImageType;
-  ImageType::Pointer imag_out = ImageType::New();
-  imag_out = reader->GetOutput();
-  SampEn sampleEntropy;
+            reader->SetFileName( inputVolume.c_str() );
+            reader->Update();
 
-  double result = sampleEntropy.calcSampleEn3D(imag_out, m , r);
-  /*typedef itk::ImageFileWriter<OutputImageType> WriterType;
-  typename WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( outputVolume.c_str() );
-  writer->SetInput( filter->GetOutput() );
-  writer->SetUseCompression(1);
-  writer->Update();
-  */
-  return EXIT_SUCCESS;
-}
+            typename ReaderType::Pointer readerS = ReaderType::New();
 
+            reader->SetFileName( inputVolume.c_str() );
+            reader->Update();
+            typedef itk::Image<unsigned char,2> ImageType2D;
+            string typeTiff = ".tif";
+            stringstream segment;
+            if(i<9)
+                segment<<pathSegmented<<"00"<<(i+1)<<typeTiff;
+            if(i>=9 && i<99)
+                segment<<pathSegmented<<"0"<<(i+1)<<typeTiff;
+            if(i>=99)
+                segment<<pathSegmented<<(i+1)<<typeTiff;
+            string filenameSegmented = segment.str();
+            segment.str("");
+
+            readerS->SetFileName(filenameSegmented);
+            readerS->Update();
+
+            ImageType2D::Pointer imag = readerS->GetOutput();
+
+            SampEn sampleEntropy2D;
+            double result = sampleEntropy2D.calcSampleEn2D(imag, m , r);
+            //cout<<"Dimension: "<<dimens<<endl;
+            sampleEntropy<<"Image: "<<i<<" :"<<result<<endl;
+        }
+        sampleEntropy.close();
+    }
+    return EXIT_SUCCESS;
 } // end of anonymous namespace
+
+}
 
 int main( int argc, char * argv[] )
 {
-  PARSE_ARGS;
+    PARSE_ARGS;
 
-  itk::ImageIOBase::IOPixelType     pixelType;
-  itk::ImageIOBase::IOComponentType componentType;
+    itk::ImageIOBase::IOPixelType     pixelType;
+    itk::ImageIOBase::IOComponentType componentType;
 
-  try
+    try
     {
-    itk::GetImageType(inputVolume, pixelType, componentType);
+        itk::GetImageType(inputVolume, pixelType, componentType);
 
-    // This filter handles all types on input, but only produces
-    // signed types
-    switch( componentType )
-      {
-      case itk::ImageIOBase::UCHAR:
-        return DoIt( argc, argv, static_cast<unsigned char>(0) );
-        break;
-      case itk::ImageIOBase::CHAR:
-        return DoIt( argc, argv, static_cast<signed char>(0) );
-        break;
-      case itk::ImageIOBase::USHORT:
-        return DoIt( argc, argv, static_cast<unsigned short>(0) );
-        break;
-      case itk::ImageIOBase::SHORT:
-        return DoIt( argc, argv, static_cast<short>(0) );
-        break;
-      case itk::ImageIOBase::UINT:
-        return DoIt( argc, argv, static_cast<unsigned int>(0) );
-        break;
-      case itk::ImageIOBase::INT:
-        return DoIt( argc, argv, static_cast<int>(0) );
-        break;
-      case itk::ImageIOBase::ULONG:
-        return DoIt( argc, argv, static_cast<unsigned long>(0) );
-        break;
-      case itk::ImageIOBase::LONG:
-        return DoIt( argc, argv, static_cast<long>(0) );
-        break;
-      case itk::ImageIOBase::FLOAT:
-        return DoIt( argc, argv, static_cast<float>(0) );
-        break;
-      case itk::ImageIOBase::DOUBLE:
-        return DoIt( argc, argv, static_cast<double>(0) );
-        break;
-      case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
-      default:
-        std::cerr << "Unknown input image pixel component type: ";
-        std::cerr << itk::ImageIOBase::GetComponentTypeAsString( componentType );
-        std::cerr << std::endl;
+        // This filter handles all types on input, but only produces
+        // signed types
+        switch( componentType )
+        {
+        case itk::ImageIOBase::UCHAR:
+            return DoIt( argc, argv, static_cast<unsigned char>(0) );
+            break;
+        case itk::ImageIOBase::CHAR:
+            return DoIt( argc, argv, static_cast<signed char>(0) );
+            break;
+        case itk::ImageIOBase::USHORT:
+            return DoIt( argc, argv, static_cast<unsigned short>(0) );
+            break;
+        case itk::ImageIOBase::SHORT:
+            return DoIt( argc, argv, static_cast<short>(0) );
+            break;
+        case itk::ImageIOBase::UINT:
+            return DoIt( argc, argv, static_cast<unsigned int>(0) );
+            break;
+        case itk::ImageIOBase::INT:
+            return DoIt( argc, argv, static_cast<int>(0) );
+            break;
+        case itk::ImageIOBase::ULONG:
+            return DoIt( argc, argv, static_cast<unsigned long>(0) );
+            break;
+        case itk::ImageIOBase::LONG:
+            return DoIt( argc, argv, static_cast<long>(0) );
+            break;
+        case itk::ImageIOBase::FLOAT:
+            return DoIt( argc, argv, static_cast<float>(0) );
+            break;
+        case itk::ImageIOBase::DOUBLE:
+            return DoIt( argc, argv, static_cast<double>(0) );
+            break;
+        case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
+        default:
+            std::cerr << "Unknown input image pixel component type: ";
+            std::cerr << itk::ImageIOBase::GetComponentTypeAsString( componentType );
+            std::cerr << std::endl;
+            return EXIT_FAILURE;
+            break;
+        }
+    }
+
+    catch( itk::ExceptionObject & excep )
+    {
+        std::cerr << argv[0] << ": exception caught !" << std::endl;
+        std::cerr << excep << std::endl;
         return EXIT_FAILURE;
-        break;
-      }
     }
-
-  catch( itk::ExceptionObject & excep )
-    {
-    std::cerr << argv[0] << ": exception caught !" << std::endl;
-    std::cerr << excep << std::endl;
-    return EXIT_FAILURE;
-    }
-  return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }

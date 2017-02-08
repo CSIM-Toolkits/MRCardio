@@ -74,7 +74,7 @@ double Utils::GetMean(ImageType::Pointer image){
 }
 
 double Utils::GetHeight(ImageType::Pointer image){
-    typedef itk::Image<unsigned char, 3>  ImageType;
+    typedef itk::Image<unsigned char, 2>  ImageType;
 
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
 
@@ -82,7 +82,7 @@ double Utils::GetHeight(ImageType::Pointer image){
 }
 
 double Utils::GetWidth(ImageType::Pointer image){
-    typedef itk::Image<unsigned char, 3>  ImageType;
+    typedef itk::Image<unsigned char, 2>  ImageType;
 
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
 
@@ -90,7 +90,7 @@ double Utils::GetWidth(ImageType::Pointer image){
 }
 
 double Utils::GetDepth(ImageType::Pointer image){
-    typedef itk::Image<unsigned char, 3>  ImageType;
+    typedef itk::Image<unsigned char, 2>  ImageType;
 
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
 
