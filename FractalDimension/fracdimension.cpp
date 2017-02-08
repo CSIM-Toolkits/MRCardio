@@ -255,8 +255,9 @@ double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
     int cont_A = 0;
     int cont_elem = 0;
     double sum_la = 0.0;
-    bool isZero = false;
     bool isElement = false;
+    bool isZero = false;
+    int contZero = 0;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
     double M = region[0];
     double r = 0;
@@ -268,10 +269,12 @@ double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
     while(s < (M)){
         cont_A = 0;
         dim = 0;
+        contZero = 0;
         int cont = 0;
-        for(int a=0; a<region[0]; a++){
-            for(int b= 0; b<region[1]; b++){
+        for(int a=0; a<region[0]; a = a + (1+((k-1)*2))){
+            for(int b= 0; b<region[1]; b = b + (1+((k-1)*2))){
                 isElement = false;
+                isZero = true;
                 for(int c = 0; c<(1+((k-1)*2)); c++){
                     for(int d = 0; d<(1+((k-1)*2)); d++){
                         const ImageType::IndexType index = {{a+c,b+d}};
@@ -279,11 +282,15 @@ double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
                             if(image->GetPixel(index) > 0){
                                 isElement = true;
                             }
+                            if(image->GetPixel(index) == 0){
+                                isZero = true;
+                                contZero++;
+                            }
                         }
                     }
                 }
-                if(isElement){
-                    cont_A++;
+                if(isElement && isZero){
+                    cont_A = cont_A + contZero;
                 }
                 cont++;
             }
@@ -300,7 +307,7 @@ double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
     linreg(k-1,vetR,vetNR,&m,&b);
     free(vetR);
     free(vetNR);
-    dim = -m;
+    dim = 2-m;
     return dim;
 }
 

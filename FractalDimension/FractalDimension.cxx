@@ -81,7 +81,7 @@ int DoIt( int argc, char * argv[], T )
                 gradientFilter->SetInput( readerS->GetOutput() );
                 gradientFilter->Update();
 
-                ImageType2D::Pointer imag = gradientFilter->GetOutput();
+                ImageType2D::Pointer imag = readerS->GetOutput();
 
                 fracdimension dim;
                 double dimens;
@@ -90,6 +90,75 @@ int DoIt( int argc, char * argv[], T )
                 boxCounting2D<<"Image: "<<i<<" :"<<dimens<<endl;
             }
             boxCounting2D.close();
+        }
+    }
+
+    if(dimension == "Minkowski 2D"){
+        string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
+        ofstream minkowski2D("/home/gustavo/temp/minkowski2D.txt");
+
+        if (minkowski2D.is_open())
+        {
+            for(int i =1; i<100;i++){
+                typedef    unsigned int InputPixelType;
+                typedef    T     OutputPixelType;
+
+                typedef itk::Image<InputPixelType,  2> InputImageType;
+                typedef itk::Image<OutputPixelType, 2> OutputImageType;
+
+                typedef itk::ImageFileReader<InputImageType>  ReaderType;
+                typedef itk::ImageFileWriter<OutputImageType> WriterType;
+
+                typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
+
+                typename ReaderType::Pointer reader = ReaderType::New();
+                itk::PluginFilterWatcher watchReader(reader, "Read Volume",
+                                                     CLPProcessInformation);
+
+                reader->SetFileName( inputVolume.c_str() );
+                reader->Update();
+
+                typename ReaderType::Pointer readerS = ReaderType::New();
+
+                reader->SetFileName( inputVolume.c_str() );
+                reader->Update();
+                typedef itk::Image<unsigned int,2> ImageType2D;
+                string typeTiff = ".tif";
+                stringstream segment;
+                if(i<9)
+                    segment<<pathSegmented<<"00"<<(i+1)<<typeTiff;
+                if(i>=9 && i<99)
+                    segment<<pathSegmented<<"0"<<(i+1)<<typeTiff;
+                if(i>=99)
+                    segment<<pathSegmented<<(i+1)<<typeTiff;
+                string filenameSegmented = segment.str();
+                segment.str("");
+
+                readerS->SetFileName(filenameSegmented);
+                readerS->Update();
+
+                // Setup types
+                typedef itk::Image< unsigned int,  2 >  UnsignedCharImageType;
+                typedef itk::Image< unsigned int,  2 >   FloatImageType;
+
+                typedef itk::GradientMagnitudeImageFilter<
+                        UnsignedCharImageType, FloatImageType >  filterType;
+
+
+                // Create and setup a gradient filter
+                filterType::Pointer gradientFilter = filterType::New();
+                gradientFilter->SetInput( readerS->GetOutput() );
+                gradientFilter->Update();
+
+                ImageType2D::Pointer imag = readerS->GetOutput();
+
+                fracdimension dim;
+                double dimens;
+                dimens = dim.GetMinkowskiDimension2D(imag);
+                //cout<<"Dimension: "<<dimens<<endl;
+                minkowski2D<<"Image: "<<i<<" :"<<dimens<<endl;
+            }
+            minkowski2D.close();
         }
     }
 
