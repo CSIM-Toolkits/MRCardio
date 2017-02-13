@@ -21,13 +21,13 @@ double Utils::GetPixel(ImageType::Pointer image, double x, double y){
     return pixelValue;
 }
 
-double Utils::GetPixel(ImageType::Pointer image, double x, double y, double z){
-    ImageType::IndexType pixelIndex;
+double Utils::GetPixel(ImageType3D::Pointer image, double x, double y, double z){
+    ImageType3D::IndexType pixelIndex;
 
     pixelIndex[0] = x;      // x position of the pixel
     pixelIndex[1] = y;      // y position of the pixel
     pixelIndex[2] = z;
-    ImageType::PixelType pixelValue = image->GetPixel( pixelIndex );
+    ImageType3D::PixelType pixelValue = image->GetPixel( pixelIndex );
 
     return pixelValue;
 }
@@ -88,11 +88,26 @@ double Utils::GetWidth(ImageType::Pointer image){
 
     return region[1];
 }
+double Utils::GetHeight3D(ImageType3D::Pointer image){
+    typedef itk::Image<unsigned char, 3>  ImageType3D;
 
-double Utils::GetDepth(ImageType::Pointer image){
-    typedef itk::Image<unsigned char, 2>  ImageType;
+    const ImageType3D::SizeType region = image->GetLargestPossibleRegion().GetSize();
 
-    const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
+    return region[0];
+}
+
+double Utils::GetWidth3D(ImageType3D::Pointer image){
+    typedef itk::Image<unsigned char, 3>  ImageType3D;
+
+    const ImageType3D::SizeType region = image->GetLargestPossibleRegion().GetSize();
+
+    return region[1];
+}
+
+double Utils::GetDepth3D(ImageType3D::Pointer image){
+    typedef itk::Image<unsigned char, 3>  ImageType3D;
+
+    const ImageType3D::SizeType region = image->GetLargestPossibleRegion().GetSize();
 
     return region[2];
 }

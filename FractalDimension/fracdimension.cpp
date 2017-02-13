@@ -169,6 +169,12 @@ double fracdimension::GetBoxCountingDimension3D(ImageType::Pointer image){
     return dim;
 }
 
+/**
+ * @brief fracdimension::GetDBCDimension2D
+ * Computing DBC Dimension for 2D images
+ * @param image
+ * @return dimension
+ */
 double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
     typedef unsigned int PixelType;
 
@@ -244,6 +250,12 @@ double fracdimension::GetDBCDimension3D(ImageType::Pointer Image){
 
 }
 
+/**
+ * @brief fracdimension::GetMinkowskiDimension2D
+ * Computing Minkowski Dimension for 2D images
+ * @param image
+ * @return dimension
+ */
 double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
     typedef unsigned int PixelType;
 

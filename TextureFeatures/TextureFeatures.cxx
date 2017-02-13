@@ -9,6 +9,11 @@
 #include "haralick.h"
 #include "iostream"
 #include "extractfeatures.h"
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 using namespace std;
 
 // Use an anonymous namespace to keep class types and function names
@@ -29,8 +34,16 @@ int DoIt( int argc, char * argv[], TPixel )
         typedef float OutputPixelType;
 
         const unsigned int Dimension = 2;
-        string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
-        ofstream haralick2D("/home/gustavo/temp/haralick2D.txt");
+
+        string pathSegmented = "/temp/segmentedFinal_";
+        string pathHaralick = "/temp/haralick2D.txt";
+
+        struct passwd *pw = getpwuid(getuid());
+        string homedir = pw->pw_dir;
+        string final = homedir + pathSegmented;
+        string finalHaralick = homedir + pathHaralick;
+        ofstream haralick2D(finalHaralick.c_str());
+
         if (haralick2D.is_open())
         {
             for(int i =1; i<100;i++){
@@ -49,11 +62,11 @@ int DoIt( int argc, char * argv[], TPixel )
                 string typeTiff = ".tif";
                 stringstream segment;
                 if(i<9)
-                    segment<<pathSegmented<<"00"<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
                 if(i>=9 && i<99)
-                    segment<<pathSegmented<<"0"<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<"0"<<(i+1)<<typeTiff;
                 if(i>=99)
-                    segment<<pathSegmented<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<(i+1)<<typeTiff;
                 string filenameSegmented = segment.str();
                 segment.str("");
 
@@ -105,7 +118,12 @@ int DoIt( int argc, char * argv[], TPixel )
     }
     if(dimension == "Haralick Features 3D"){
 
-        ofstream haralick3D("/home/gustavo/temp/haralick3D.txt");
+        string pathHaralick = "/temp/haralick3D.txt";
+
+        struct passwd *pw = getpwuid(getuid());
+        string homedir = pw->pw_dir;
+        string finalHaralick = homedir + pathHaralick;
+        ofstream haralick3D(finalHaralick.c_str());
         if (haralick3D.is_open())
         {
             double entropy;
@@ -169,7 +187,13 @@ int DoIt( int argc, char * argv[], TPixel )
     }
     if(dimension == "Run Length Features 3D"){
 
-        ofstream runLength3D("/home/gustavo/temp/runLength3D.txt");
+        string pathRunLength3D = "/temp/runLength3D.txt";
+
+        struct passwd *pw = getpwuid(getuid());
+        string homedir = pw->pw_dir;
+        string finalRunLength = homedir + pathRunLength3D;
+        ofstream runLength3D(finalRunLength.c_str());
+
         if (runLength3D.is_open())
         {
             double shortRunEmphasis;
@@ -234,8 +258,16 @@ int DoIt( int argc, char * argv[], TPixel )
         typedef float OutputPixelType;
 
         const unsigned int Dimension = 2;
-        string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
-        ofstream runLength2D("/home/gustavo/temp/runLength2D.txt");
+
+        string pathSegmented = "/temp/segmentedFinal_";
+        string pathRunLength = "/temp/runLength2D.txt";
+
+        struct passwd *pw = getpwuid(getuid());
+        string homedir = pw->pw_dir;
+        string final = homedir + pathSegmented;
+        string finalRunLength = homedir + pathRunLength;
+        ofstream runLength2D(finalRunLength.c_str());
+
         if (runLength2D.is_open())
         {
             for(int i =1; i<100;i++){
@@ -254,11 +286,11 @@ int DoIt( int argc, char * argv[], TPixel )
                 string typeTiff = ".tif";
                 stringstream segment;
                 if(i<9)
-                    segment<<pathSegmented<<"00"<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
                 if(i>=9 && i<99)
-                    segment<<pathSegmented<<"0"<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<"0"<<(i+1)<<typeTiff;
                 if(i>=99)
-                    segment<<pathSegmented<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<(i+1)<<typeTiff;
                 string filenameSegmented = segment.str();
                 segment.str("");
 

@@ -48,7 +48,7 @@ bool SampEn::isSimilarNext(ImageType::Pointer image, int x1, int y1, int x2, int
     return true;
 }
 
-bool SampEn::isSimilar3D(ImageType::Pointer image, int x1, int y1, int x2, int y2, int z1, int z2, int m, double r){
+bool SampEn::isSimilar3D(ImageType3D::Pointer image, int x1, int y1, int x2, int y2, int z1, int z2, int m, double r){
     Utils utils;
     for(int y = 0; y < m; y++){
         for(int x = 0; x < m; x++){
@@ -63,7 +63,7 @@ bool SampEn::isSimilar3D(ImageType::Pointer image, int x1, int y1, int x2, int y
     return true;
 }
 
-bool SampEn::isSimilarNext3D(ImageType::Pointer image, int x1, int y1, int x2, int y2, int z1, int z2, int m, double r){
+bool SampEn::isSimilarNext3D(ImageType3D::Pointer image, int x1, int y1, int x2, int y2, int z1, int z2, int m, double r){
     Utils utils;
     double diff;
     for(int y = 0; y <= m; y++){
@@ -107,13 +107,11 @@ double SampEn::calcSampleEn2D(ImageType::Pointer image, int m, double r){
             int yj = yi;
             int xj = xi + 1;
             while (xj < (nx - m)) {
-                if (isSimilar(image, xi, yi, xj, yj, m, tol)) {  // Similar for M?
+                if (isSimilar(image, xi, yi, xj, yj, m, tol)) {
                     B++;
                     Cim++;
 
-                    // Are they still similar for the next point?
-                    //if(similar(image,xi,yi,xj,yj,m+1,tol))  // Similar for M?
-                    if (isSimilarNext(image, xi, yi, xj, yj, m, tol)) { // Similar for M?
+                    if (isSimilarNext(image, xi, yi, xj, yj, m, tol)) {
                         A++;
                         Cim1++;
                     }
@@ -123,13 +121,11 @@ double SampEn::calcSampleEn2D(ImageType::Pointer image, int m, double r){
 
             for (yj = yi + 1; yj < (ny - m); yj++) {
                 for (xj = 0; xj < (nx - m); xj++) {
-                    if (isSimilar(image, xi, yi, xj, yj, m, tol)) {  // Similar for M?
+                    if (isSimilar(image, xi, yi, xj, yj, m, tol)) {
                         B++;
                         Cim++;
 
-                        // Are they still similar for the next point?
-                        //if(similar(image,xi,yi,xj,yj,m+1,tol))  // Similar for M?
-                        if (isSimilarNext(image, xi, yi, xj, yj, m, tol)) { // Similar for M?
+                        if (isSimilarNext(image, xi, yi, xj, yj, m, tol)) {
                             A++;
                             Cim1++;
                         }
@@ -152,13 +148,13 @@ double SampEn::calcSampleEn2D(ImageType::Pointer image, int m, double r){
     return sampleEntropy;
 }
 
-double SampEn::calcSampleEn3D(ImageType::Pointer image, int m, double r){
+double SampEn::calcSampleEn3D(ImageType3D::Pointer image, int m, double r){
     Utils utils;
     double sampleEntropy;
     double tol = r;
-    int nx = utils.GetWidth(image);
-    int ny = utils.GetHeight(image);
-    int nz = utils.GetDepth(image);
+    int nx = utils.GetWidth3D(image);
+    int ny = utils.GetHeight3D(image);
+    int nz = utils.GetDepth3D(image);
     int A = 0;
     int B = 0;
     int Cim, Cim1;
@@ -175,13 +171,11 @@ double SampEn::calcSampleEn3D(ImageType::Pointer image, int m, double r){
                 int yj = yi;
                 int xj = xi + 1;
                 while (xj < (nx - m)) {
-                    if (isSimilar3D(image, xi, yi, xj, yj, zi, zj, m, tol)) {  // Similar for M?
+                    if (isSimilar3D(image, xi, yi, xj, yj, zi, zj, m, tol)) {
                         B++;
                         Cim++;
 
-                        // Are they still similar for the next point?
-                        //if(similar(image,xi,yi,xj,yj,m+1,tol))  // Similar for M?
-                        if (isSimilarNext3D(image, xi, yi, xj, yj, zi, zj, m, tol)) { // Similar for M?
+                        if (isSimilarNext3D(image, xi, yi, xj, yj, zi, zj, m, tol)) {
                             A++;
                             Cim1++;
                         }
@@ -191,13 +185,11 @@ double SampEn::calcSampleEn3D(ImageType::Pointer image, int m, double r){
                 for (zj = zi + 1; zj < (nz - m); zj++) {
                     for (yj = yi + 1; yj < (ny - m); yj++) {
                         for (xj = 0; xj < (nx - m); xj++) {
-                            if (isSimilar3D(image, xi, yi, xj, yj, zi, zj, m, tol)) {  // Similar for M?
+                            if (isSimilar3D(image, xi, yi, xj, yj, zi, zj, m, tol)) {
                                 B++;
                                 Cim++;
 
-                                // Are they still similar for the next point?
-                                //if(similar(image,xi,yi,xj,yj,m+1,tol))  // Similar for M?
-                                if (isSimilarNext3D(image, xi, yi, xj, yj, zi, zj, m, tol)) { // Similar for M?
+                                if (isSimilarNext3D(image, xi, yi, xj, yj, zi, zj, m, tol)) {
                                     A++;
                                     Cim1++;
                                 }

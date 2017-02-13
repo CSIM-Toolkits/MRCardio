@@ -10,6 +10,9 @@
 #include "itkGradientMagnitudeImageFilter.h"
 #include <iostream>
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 // Use an anonymous namespace to keep class types and function names
 // from colliding when module is used as shared object module.  Every
 // thing should be in an anonymous namespace except for the module
@@ -25,8 +28,15 @@ int DoIt( int argc, char * argv[], T )
     PARSE_ARGS;
 
     if(dimension == "Box Counting 2D"){
-        string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
-        ofstream boxCounting2D("/home/gustavo/temp/boxCounting2D.txt");
+
+        string pathSegmented = "/temp/segmentedFinal_";
+        string pathBoxCounting = "/temp/boxCounting2D.txt";
+
+        struct passwd *pw = getpwuid(getuid());
+        string homedir = pw->pw_dir;
+        string final = homedir + pathSegmented;
+        string finalBoxCounting = homedir + pathBoxCounting;
+        ofstream boxCounting2D(finalBoxCounting.c_str());
 
         if (boxCounting2D.is_open())
         {
@@ -57,11 +67,11 @@ int DoIt( int argc, char * argv[], T )
                 string typeTiff = ".tif";
                 stringstream segment;
                 if(i<9)
-                    segment<<pathSegmented<<"00"<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
                 if(i>=9 && i<99)
-                    segment<<pathSegmented<<"0"<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<"0"<<(i+1)<<typeTiff;
                 if(i>=99)
-                    segment<<pathSegmented<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<(i+1)<<typeTiff;
                 string filenameSegmented = segment.str();
                 segment.str("");
 
@@ -94,8 +104,15 @@ int DoIt( int argc, char * argv[], T )
     }
 
     if(dimension == "Minkowski 2D"){
-        string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
-        ofstream minkowski2D("/home/gustavo/temp/minkowski2D.txt");
+
+        string pathSegmented = "/temp/segmentedFinal_";
+        string pathMinkowski = "/temp/minkowski2D.txt";
+
+        struct passwd *pw = getpwuid(getuid());
+        string homedir = pw->pw_dir;
+        string final = homedir + pathSegmented;
+        string finalMinkowski = homedir + pathMinkowski;
+        ofstream minkowski2D(finalMinkowski.c_str());
 
         if (minkowski2D.is_open())
         {
@@ -126,11 +143,11 @@ int DoIt( int argc, char * argv[], T )
                 string typeTiff = ".tif";
                 stringstream segment;
                 if(i<9)
-                    segment<<pathSegmented<<"00"<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
                 if(i>=9 && i<99)
-                    segment<<pathSegmented<<"0"<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<"0"<<(i+1)<<typeTiff;
                 if(i>=99)
-                    segment<<pathSegmented<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<(i+1)<<typeTiff;
                 string filenameSegmented = segment.str();
                 segment.str("");
 
@@ -197,8 +214,15 @@ int DoIt( int argc, char * argv[], T )
     }
 
     if(dimension == "Differencial Box Counting 2D"){
-        string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
-        ofstream boxCounting2D("/home/gustavo/temp/DBC2D.txt");
+
+        string pathSegmented = "/temp/segmentedFinal_";
+        string pathBoxCounting = "/temp/diffboxCounting2D.txt";
+
+        struct passwd *pw = getpwuid(getuid());
+        string homedir = pw->pw_dir;
+        string final = homedir + pathSegmented;
+        string finalDifferencialBoxCounting = homedir + pathBoxCounting;
+        ofstream boxCounting2D(finalDifferencialBoxCounting.c_str());
 
         if (boxCounting2D.is_open())
         {
@@ -229,11 +253,11 @@ int DoIt( int argc, char * argv[], T )
                 string typeTiff = ".tif";
                 stringstream segment;
                 if(i<9)
-                    segment<<pathSegmented<<"00"<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
                 if(i>=9 && i<99)
-                    segment<<pathSegmented<<"0"<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<"0"<<(i+1)<<typeTiff;
                 if(i>=99)
-                    segment<<pathSegmented<<(i+1)<<typeTiff;
+                    segment<<final.c_str()<<(i+1)<<typeTiff;
                 string filenameSegmented = segment.str();
                 segment.str("");
 

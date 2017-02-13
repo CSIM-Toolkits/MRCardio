@@ -9,6 +9,10 @@
 
 #include "iostream"
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 using namespace std;
 // Use an anonymous namespace to keep class types and function names
 // from colliding when module is used as shared object module.  Every
@@ -22,18 +26,85 @@ template <class T>
 int DoIt( int argc, char * argv[], T)
 {
     PARSE_ARGS;
+    if(dimension == "SampleEntropy 2D"){
 
-    string pathSegmented = "/home/gustavo/temp/segmentedFinal_";
-    ofstream sampleEntropy("/home/gustavo/temp/sampleEntropy2D.txt");
+        string pathSegmented = "/temp/segmentedFinal_";
+        string pathSampleEntropy = "/temp/sampleEntropy2D.txt";
 
-    if (sampleEntropy.is_open())
-    {
-        for(int i =1; i<100;i++){
+        struct passwd *pw = getpwuid(getuid());
+        string homedir = pw->pw_dir;
+        string final = homedir + pathSegmented;
+        string finalSampleEntropy = homedir + pathSampleEntropy;
+        ofstream sampleEntropy(finalSampleEntropy.c_str());
+
+        if (sampleEntropy.is_open())
+        {
+            for(int i =1; i<100;i++){
+                typedef    unsigned char InputPixelType;
+                typedef    T     OutputPixelType;
+
+                typedef itk::Image<InputPixelType,  2> InputImageType;
+                typedef itk::Image<OutputPixelType, 2> OutputImageType;
+
+                typedef itk::ImageFileReader<InputImageType>  ReaderType;
+                typedef itk::ImageFileWriter<OutputImageType> WriterType;
+
+                typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
+
+                typename ReaderType::Pointer reader = ReaderType::New();
+                itk::PluginFilterWatcher watchReader(reader, "Read Volume",
+                                                     CLPProcessInformation);
+
+                reader->SetFileName( inputVolume.c_str() );
+                reader->Update();
+
+                typename ReaderType::Pointer readerS = ReaderType::New();
+
+                reader->SetFileName( inputVolume.c_str() );
+                reader->Update();
+                typedef itk::Image<unsigned char,2> ImageType2D;
+                string typeTiff = ".tif";
+                stringstream segment;
+                if(i<9)
+                    segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
+                if(i>=9 && i<99)
+                    segment<<final.c_str()<<"0"<<(i+1)<<typeTiff;
+                if(i>=99)
+                    segment<<final.c_str()<<(i+1)<<typeTiff;
+                string filenameSegmented = segment.str();
+                segment.str("");
+
+                readerS->SetFileName(filenameSegmented);
+                readerS->Update();
+
+                ImageType2D::Pointer imag = readerS->GetOutput();
+
+                SampEn sampleEntropy2D;
+                double result = sampleEntropy2D.calcSampleEn2D(imag, m , r);
+                //cout<<"Dimension: "<<dimens<<endl;
+                sampleEntropy<<"Image: "<<i<<" :"<<result<<endl;
+            }
+            sampleEntropy.close();
+        }
+    }
+    if(dimension == "Sample Entropy 3D"){
+
+        string pathSegmented = "/temp/segmentedFinal_";
+        string pathSampleEntropy3D = "/temp/sampleEntropy3D.txt";
+
+        struct passwd *pw = getpwuid(getuid());
+        string homedir = pw->pw_dir;
+        string final = homedir + pathSegmented;
+        string finalSampleEntropy3D = homedir + pathSampleEntropy3D;
+        ofstream sampleEntropy(finalSampleEntropy3D.c_str());
+
+        if (sampleEntropy.is_open())
+        {
             typedef    unsigned char InputPixelType;
             typedef    T     OutputPixelType;
 
-            typedef itk::Image<InputPixelType,  2> InputImageType;
-            typedef itk::Image<OutputPixelType, 2> OutputImageType;
+            typedef itk::Image<InputPixelType,  3> InputImageType;
+            typedef itk::Image<OutputPixelType, 3> OutputImageType;
 
             typedef itk::ImageFileReader<InputImageType>  ReaderType;
             typedef itk::ImageFileWriter<OutputImageType> WriterType;
@@ -47,33 +118,18 @@ int DoIt( int argc, char * argv[], T)
             reader->SetFileName( inputVolume.c_str() );
             reader->Update();
 
-            typename ReaderType::Pointer readerS = ReaderType::New();
-
             reader->SetFileName( inputVolume.c_str() );
             reader->Update();
-            typedef itk::Image<unsigned char,2> ImageType2D;
-            string typeTiff = ".tif";
-            stringstream segment;
-            if(i<9)
-                segment<<pathSegmented<<"00"<<(i+1)<<typeTiff;
-            if(i>=9 && i<99)
-                segment<<pathSegmented<<"0"<<(i+1)<<typeTiff;
-            if(i>=99)
-                segment<<pathSegmented<<(i+1)<<typeTiff;
-            string filenameSegmented = segment.str();
-            segment.str("");
+            typedef itk::Image<unsigned char,3> ImageType3D;
 
-            readerS->SetFileName(filenameSegmented);
-            readerS->Update();
+            ImageType3D::Pointer imag = reader->GetOutput();
 
-            ImageType2D::Pointer imag = readerS->GetOutput();
-
-            SampEn sampleEntropy2D;
-            double result = sampleEntropy2D.calcSampleEn2D(imag, m , r);
+            SampEn sampleEntropy3D;
+            double result = sampleEntropy3D.calcSampleEn3D(imag, m , r);
             //cout<<"Dimension: "<<dimens<<endl;
-            sampleEntropy<<"Image: "<<i<<" :"<<result<<endl;
+            sampleEntropy<<"Image: "<<result<<endl;
+            sampleEntropy.close();
         }
-        sampleEntropy.close();
     }
     return EXIT_SUCCESS;
 } // end of anonymous namespace
