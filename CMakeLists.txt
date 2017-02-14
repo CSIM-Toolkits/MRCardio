@@ -30,6 +30,7 @@ add_subdirectory(GeodesicActiveContour2D)
 add_subdirectory(TextureFeatures)
 add_subdirectory(HARP)
 add_subdirectory(SampleEntropy)
+add_subdirectory(Strain)
 ## NEXT_MODULE
 
 #-----------------------------------------------------------------------------
