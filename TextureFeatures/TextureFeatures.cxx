@@ -43,10 +43,19 @@ int DoIt( int argc, char * argv[], TPixel )
         string final = homedir + pathSegmented;
         string finalHaralick = homedir + pathHaralick;
         ofstream haralick2D(finalHaralick.c_str());
-
+        string firstSlice;
+        string lastSlice;
+        string pathSlices = "/temp/slices.txt";
+        string slicesFile = homedir + pathSlices;
+                ifstream slices(slicesFile.c_str());
+                if(slices.is_open()){
+                    getline(slices,firstSlice);
+                    getline(slices, lastSlice);
+                }
+                slices.close();
         if (haralick2D.is_open())
         {
-            for(int i =1; i<100;i++){
+            for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
 
                 typedef itk::Image<InputPixelType,  Dimension> InputImageType;
                 typedef itk::Image<OutputPixelType, Dimension> OutputImageType;
@@ -267,10 +276,20 @@ int DoIt( int argc, char * argv[], TPixel )
         string final = homedir + pathSegmented;
         string finalRunLength = homedir + pathRunLength;
         ofstream runLength2D(finalRunLength.c_str());
+        string firstSlice;
+        string lastSlice;
+        string pathSlices = "/temp/slices.txt";
+        string slicesFile = homedir + pathSlices;
+                ifstream slices(slicesFile.c_str());
+                if(slices.is_open()){
+                    getline(slices,firstSlice);
+                    getline(slices, lastSlice);
+                }
+                slices.close();
 
         if (runLength2D.is_open())
         {
-            for(int i =1; i<100;i++){
+            for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
 
                 typedef itk::Image<InputPixelType,  Dimension> InputImageType;
                 typedef itk::Image<OutputPixelType, Dimension> OutputImageType;

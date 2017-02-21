@@ -28,19 +28,27 @@ int DoIt( int argc, char * argv[], T )
     PARSE_ARGS;
 
     if(dimension == "Box Counting 2D"){
-
+        string firstSlice;
+        string lastSlice;
         string pathSegmented = "/temp/segmentedFinal_";
         string pathBoxCounting = "/temp/boxCounting2D.txt";
+        string pathSlices = "/temp/slices.txt";
 
         struct passwd *pw = getpwuid(getuid());
         string homedir = pw->pw_dir;
         string final = homedir + pathSegmented;
         string finalBoxCounting = homedir + pathBoxCounting;
         ofstream boxCounting2D(finalBoxCounting.c_str());
-
+        string slicesFile = homedir + pathSlices;
+        ifstream slices(slicesFile.c_str());
+        if(slices.is_open()){
+            getline(slices,firstSlice);
+            getline(slices, lastSlice);
+        }
+        slices.close();
         if (boxCounting2D.is_open())
         {
-            for(int i =1; i<100;i++){
+            for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
                 typedef    unsigned int InputPixelType;
                 typedef    T     OutputPixelType;
 
@@ -104,7 +112,8 @@ int DoIt( int argc, char * argv[], T )
     }
 
     if(dimension == "Minkowski 2D"){
-
+        string firstSlice;
+        string lastSlice;
         string pathSegmented = "/temp/segmentedFinal_";
         string pathMinkowski = "/temp/minkowski2D.txt";
 
@@ -113,10 +122,17 @@ int DoIt( int argc, char * argv[], T )
         string final = homedir + pathSegmented;
         string finalMinkowski = homedir + pathMinkowski;
         ofstream minkowski2D(finalMinkowski.c_str());
-
+        string pathSlices = "/temp/slices.txt";
+        string slicesFile = homedir + pathSlices;
+                ifstream slices(slicesFile.c_str());
+                if(slices.is_open()){
+                    getline(slices,firstSlice);
+                    getline(slices, lastSlice);
+                }
+                slices.close();
         if (minkowski2D.is_open())
         {
-            for(int i =1; i<100;i++){
+            for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
                 typedef    unsigned int InputPixelType;
                 typedef    T     OutputPixelType;
 
@@ -214,7 +230,8 @@ int DoIt( int argc, char * argv[], T )
     }
 
     if(dimension == "Differencial Box Counting 2D"){
-
+        string firstSlice;
+        string lastSlice;
         string pathSegmented = "/temp/segmentedFinal_";
         string pathBoxCounting = "/temp/diffboxCounting2D.txt";
 
@@ -223,10 +240,17 @@ int DoIt( int argc, char * argv[], T )
         string final = homedir + pathSegmented;
         string finalDifferencialBoxCounting = homedir + pathBoxCounting;
         ofstream boxCounting2D(finalDifferencialBoxCounting.c_str());
-
+        string pathSlices = "/temp/slices.txt";
+        string slicesFile = homedir + pathSlices;
+                ifstream slices(slicesFile.c_str());
+                if(slices.is_open()){
+                    getline(slices,firstSlice);
+                    getline(slices, lastSlice);
+                }
+                slices.close();
         if (boxCounting2D.is_open())
         {
-            for(int i =1; i<100;i++){
+            for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
                 typedef    unsigned int InputPixelType;
                 typedef    T     OutputPixelType;
 
