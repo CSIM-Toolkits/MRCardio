@@ -135,8 +135,8 @@ double SampEn::calcSampleEn2D(ImageType::Pointer image, int m, double r){
 
             Cm += Cim / (den - 1);
             Cm1 += Cim1 / (den - 1);
-            cout<<"CM: "<<Cm<<endl;
-            cout<<"CM1: "<<Cm1<<endl;
+            //cout<<"CM: "<<Cm<<endl;
+            //cout<<"CM1: "<<Cm1<<endl;
         }
     }
     Cm /= den;

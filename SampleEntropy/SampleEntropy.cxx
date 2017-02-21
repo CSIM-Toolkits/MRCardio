@@ -26,7 +26,7 @@ template <class T>
 int DoIt( int argc, char * argv[], T)
 {
     PARSE_ARGS;
-    if(dimension == "SampleEntropy 2D"){
+    if(dimension == "Sample Entropy 2D"){
 
         string pathSegmented = "/temp/segmentedFinal_";
         string pathSampleEntropy = "/temp/sampleEntropy2D.txt";

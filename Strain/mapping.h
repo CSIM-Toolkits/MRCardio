@@ -6,6 +6,7 @@ class Mapping
 {
 public:
     Mapping();
+    void Execute();
 };
 
 #endif // MAPPING_H

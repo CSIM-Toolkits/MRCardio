@@ -26,6 +26,7 @@ set(MODULE_INCLUDE_DIRECTORIES
   )
 
 set(MODULE_SRCS
+    mapping.cpp
   )
 
 set(MODULE_TARGET_LIBRARIES
