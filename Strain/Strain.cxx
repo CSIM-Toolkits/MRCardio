@@ -5,6 +5,12 @@
 #include "itkPluginUtilities.h"
 
 #include "StrainCLP.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include "mapping.h"
+
+using namespace std;
 
 // Use an anonymous namespace to keep class types and function names
 // from colliding when module is used as shared object module.  Every
@@ -17,96 +23,145 @@ namespace
 template <class T>
 int DoIt( int argc, char * argv[], T )
 {
-  PARSE_ARGS;
+    PARSE_ARGS;
+    string pathSegmented = "/temp/segmentedFinal_";
 
-  typedef    T InputPixelType;
-  typedef    T OutputPixelType;
+    struct passwd *pw = getpwuid(getuid());
+    string homedir = pw->pw_dir;
+    string final = homedir + pathSegmented;
 
-  typedef itk::Image<InputPixelType,  3> InputImageType;
-  typedef itk::Image<OutputPixelType, 3> OutputImageType;
+    string firstSlice;
+    string lastSlice;
+    string pathSlices = "/temp/slices.txt";
+    string slicesFile = homedir + pathSlices;
+    ifstream slices(slicesFile.c_str());
+    if(slices.is_open()){
+        getline(slices,firstSlice);
+        getline(slices, lastSlice);
+    }
+    slices.close();
 
-  typedef itk::ImageFileReader<InputImageType>  ReaderType;
-  typedef itk::ImageFileWriter<OutputImageType> WriterType;
+    for(int i = atoi(firstSlice.c_str()); i < (atoi(lastSlice.c_str()) - 2);i++){
+        typedef    unsigned short InputPixelType;
+        typedef    T     OutputPixelType;
 
-  typedef itk::SmoothingRecursiveGaussianImageFilter<
-    InputImageType, OutputImageType>  FilterType;
+        typedef itk::Image<InputPixelType,  2> InputImageType;
+        typedef itk::Image<OutputPixelType, 2> OutputImageType;
 
-  typename ReaderType::Pointer reader = ReaderType::New();
+        typedef itk::ImageFileReader<InputImageType>  ReaderType;
+        typedef itk::ImageFileWriter<OutputImageType> WriterType;
 
-  reader->SetFileName( inputVolume.c_str() );
+        typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
 
-  typename FilterType::Pointer filter = FilterType::New();
-  filter->SetInput( reader->GetOutput() );
-  filter->SetSigma( sigma );
+        typename ReaderType::Pointer reader = ReaderType::New();
+        itk::PluginFilterWatcher watchReader(reader, "Read Volume",
+                                             CLPProcessInformation);
 
-  typename WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( outputVolume.c_str() );
-  writer->SetInput( filter->GetOutput() );
-  writer->SetUseCompression(1);
-  writer->Update();
+        reader->SetFileName( inputVolume.c_str() );
+        reader->Update();
 
-  return EXIT_SUCCESS;
+        typename ReaderType::Pointer readerFixed = ReaderType::New();
+        typename ReaderType::Pointer readerMoving = ReaderType::New();
+
+        typedef itk::Image<unsigned short,2> ImageType2D;
+        string typeTiff = ".tif";
+        stringstream segment;
+        stringstream segmentMoving;
+        if(i<8 && i <= (atoi(lastSlice.c_str()) - 2)){
+            segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
+            segmentMoving<<final.c_str()<<"00"<<(i+2)<<typeTiff;
+        }
+        if(i == 8 && i <= (atoi(lastSlice.c_str()) - 2)){
+            segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
+            segmentMoving<<final.c_str()<<"0"<<(i+2)<<typeTiff;
+        }
+        if(i>=9 && i<98 && i <= (atoi(lastSlice.c_str()) - 2)){
+            segment<<final.c_str()<<"0"<<(i+1)<<typeTiff;
+            segmentMoving<<final.c_str()<<"0"<<(i+2)<<typeTiff;
+        }
+        if(i == 98 && i <= (atoi(lastSlice.c_str()) - 2 )){
+            segment<<final.c_str()<<"0"<<(i+1)<<typeTiff;
+            segmentMoving<<final.c_str()<<(i+2)<<typeTiff;
+        }
+        string filenameSegmented = segment.str();
+        string filenameSegmentedMoving = segmentMoving.str();
+        segment.str("");
+        segmentMoving.str("");
+
+        readerFixed->SetFileName(filenameSegmented);
+        readerFixed->Update();
+
+        readerMoving->SetFileName(filenameSegmentedMoving);
+        readerMoving->Update();
+
+        ImageType2D::Pointer imagFixed = readerFixed->GetOutput();
+        ImageType2D::Pointer imagMoving = readerMoving->GetOutput();
+        Mapping map;
+        map.calcMapping(imagFixed, imagMoving, i);
+    }
+
+    return EXIT_SUCCESS;
 }
 
 } // end of anonymous namespace
 
 int main( int argc, char * argv[] )
 {
-  PARSE_ARGS;
+    PARSE_ARGS;
 
-  itk::ImageIOBase::IOPixelType     pixelType;
-  itk::ImageIOBase::IOComponentType componentType;
+    itk::ImageIOBase::IOPixelType     pixelType;
+    itk::ImageIOBase::IOComponentType componentType;
 
-  try
+    try
     {
-    itk::GetImageType(inputVolume, pixelType, componentType);
+        itk::GetImageType(inputVolume, pixelType, componentType);
 
-    // This filter handles all types on input, but only produces
-    // signed types
-    switch( componentType )
-      {
-      case itk::ImageIOBase::UCHAR:
-        return DoIt( argc, argv, static_cast<unsigned char>(0) );
-        break;
-      case itk::ImageIOBase::CHAR:
-        return DoIt( argc, argv, static_cast<char>(0) );
-        break;
-      case itk::ImageIOBase::USHORT:
-        return DoIt( argc, argv, static_cast<unsigned short>(0) );
-        break;
-      case itk::ImageIOBase::SHORT:
-        return DoIt( argc, argv, static_cast<short>(0) );
-        break;
-      case itk::ImageIOBase::UINT:
-        return DoIt( argc, argv, static_cast<unsigned int>(0) );
-        break;
-      case itk::ImageIOBase::INT:
-        return DoIt( argc, argv, static_cast<int>(0) );
-        break;
-      case itk::ImageIOBase::ULONG:
-        return DoIt( argc, argv, static_cast<unsigned long>(0) );
-        break;
-      case itk::ImageIOBase::LONG:
-        return DoIt( argc, argv, static_cast<long>(0) );
-        break;
-      case itk::ImageIOBase::FLOAT:
-        return DoIt( argc, argv, static_cast<float>(0) );
-        break;
-      case itk::ImageIOBase::DOUBLE:
-        return DoIt( argc, argv, static_cast<double>(0) );
-        break;
-      case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
-      default:
-        std::cout << "unknown component type" << std::endl;
-        break;
-      }
+        // This filter handles all types on input, but only produces
+        // signed types
+        switch( componentType )
+        {
+        case itk::ImageIOBase::UCHAR:
+            return DoIt( argc, argv, static_cast<unsigned char>(0) );
+            break;
+        case itk::ImageIOBase::CHAR:
+            return DoIt( argc, argv, static_cast<char>(0) );
+            break;
+        case itk::ImageIOBase::USHORT:
+            return DoIt( argc, argv, static_cast<unsigned short>(0) );
+            break;
+        case itk::ImageIOBase::SHORT:
+            return DoIt( argc, argv, static_cast<short>(0) );
+            break;
+        case itk::ImageIOBase::UINT:
+            return DoIt( argc, argv, static_cast<unsigned int>(0) );
+            break;
+        case itk::ImageIOBase::INT:
+            return DoIt( argc, argv, static_cast<int>(0) );
+            break;
+        case itk::ImageIOBase::ULONG:
+            return DoIt( argc, argv, static_cast<unsigned long>(0) );
+            break;
+        case itk::ImageIOBase::LONG:
+            return DoIt( argc, argv, static_cast<long>(0) );
+            break;
+        case itk::ImageIOBase::FLOAT:
+            return DoIt( argc, argv, static_cast<float>(0) );
+            break;
+        case itk::ImageIOBase::DOUBLE:
+            return DoIt( argc, argv, static_cast<double>(0) );
+            break;
+        case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
+        default:
+            std::cout << "unknown component type" << std::endl;
+            break;
+        }
     }
 
-  catch( itk::ExceptionObject & excep )
+    catch( itk::ExceptionObject & excep )
     {
-    std::cerr << argv[0] << ": exception caught !" << std::endl;
-    std::cerr << excep << std::endl;
-    return EXIT_FAILURE;
+        std::cerr << argv[0] << ": exception caught !" << std::endl;
+        std::cerr << excep << std::endl;
+        return EXIT_FAILURE;
     }
-  return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }

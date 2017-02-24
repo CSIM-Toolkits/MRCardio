@@ -43,55 +43,28 @@
 #include "itkHistogramMatchingImageFilter.h"
 #include "itkCastImageFilter.h"
 #include "itkWarpImageFilter.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+using namespace std;
 // Software Guide : EndCodeSnippet
 
 Mapping::Mapping()
 {
+    this->pw = getpwuid(getuid());
+
+    this->homedir = this->pw->pw_dir;
+
+    this->deformable = "/temp/deformable_";
+    this->vector = "/temp/vector_";
+    this->field = "/temp/field_";
+    this->pathDeformable = this->homedir + this->deformable;
+    this->pathVector = this->homedir + this->vector;
+    this->pathField = this->homedir + this->field;
 
 }
 
-//  The following section of code implements a Command observer
-//  that will monitor the evolution of the registration process.
-//
-class CommandIterationUpdate : public itk::Command
-{
-public:
-    typedef  CommandIterationUpdate                     Self;
-    typedef  itk::Command                               Superclass;
-    typedef  itk::SmartPointer<CommandIterationUpdate>  Pointer;
-    itkNewMacro( CommandIterationUpdate );
-protected:
-    CommandIterationUpdate() {};
-
-    typedef itk::Image< float, 2 >            InternalImageType;
-    typedef itk::Vector< float, 2 >           VectorPixelType;
-    typedef itk::Image<  VectorPixelType, 2 > DisplacementFieldType;
-
-    typedef itk::DemonsRegistrationFilter<
-    InternalImageType,
-    InternalImageType,
-    DisplacementFieldType>   RegistrationFilterType;
-
-public:
-
-    void Execute(itk::Object *caller, const itk::EventObject & event) ITK_OVERRIDE
-    {
-        Execute( (const itk::Object *)caller, event);
-    }
-
-    void Execute(const itk::Object * object, const itk::EventObject & event) ITK_OVERRIDE
-    {
-        const RegistrationFilterType * filter = static_cast< const RegistrationFilterType * >( object );
-        if( !(itk::IterationEvent().CheckEvent( &event )) )
-        {
-            return;
-        }
-        std::cout << filter->GetMetric() << std::endl;
-    }
-};
-
-
-void Mapping::Execute(){
+void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movingImag, int index){
 
     // Software Guide : BeginLatex
     //
@@ -102,6 +75,7 @@ void Mapping::Execute(){
     // Software Guide : BeginCodeSnippet
     const unsigned int Dimension = 2;
     typedef unsigned short PixelType;
+    string typeMha = ".mha";
 
     typedef itk::Image< PixelType, Dimension >  FixedImageType;
     typedef itk::Image< PixelType, Dimension >  MovingImageType;
@@ -110,13 +84,6 @@ void Mapping::Execute(){
     // Set up the file readers
     typedef itk::ImageFileReader< FixedImageType  > FixedImageReaderType;
     typedef itk::ImageFileReader< MovingImageType > MovingImageReaderType;
-
-    FixedImageReaderType::Pointer fixedImageReader   = FixedImageReaderType::New();
-    MovingImageReaderType::Pointer movingImageReader = MovingImageReaderType::New();
-
-    fixedImageReader->SetFileName("c");
-    movingImageReader->SetFileName("x");
-
 
     // Software Guide : BeginLatex
     //
@@ -139,8 +106,8 @@ void Mapping::Execute(){
     MovingImageCasterType::Pointer movingImageCaster
             = MovingImageCasterType::New();
 
-    fixedImageCaster->SetInput( fixedImageReader->GetOutput() );
-    movingImageCaster->SetInput( movingImageReader->GetOutput() );
+    fixedImageCaster->SetInput(fixedImag);
+    movingImageCaster->SetInput(movingImag);
     // Software Guide : EndCodeSnippet
 
     // Software Guide : BeginLatex
@@ -236,13 +203,6 @@ void Mapping::Execute(){
     RegistrationFilterType::Pointer filter = RegistrationFilterType::New();
     // Software Guide : EndCodeSnippet
 
-
-    // Create the Command observer and register it with the registration filter.
-    //
-    CommandIterationUpdate::Pointer observer = CommandIterationUpdate::New();
-    filter->AddObserver( itk::IterationEvent(), observer );
-
-
     // Software Guide : BeginLatex
     //
     // The input fixed image is simply the output of the fixed image casting
@@ -315,9 +275,9 @@ void Mapping::Execute(){
             double          >  InterpolatorType;
     WarperType::Pointer warper = WarperType::New();
     InterpolatorType::Pointer interpolator = InterpolatorType::New();
-    FixedImageType::Pointer fixedImage = fixedImageReader->GetOutput();
+    FixedImageType::Pointer fixedImage = fixedImag;
 
-    warper->SetInput( movingImageReader->GetOutput() );
+    warper->SetInput( movingImag );
     warper->SetInterpolator( interpolator );
     warper->SetOutputSpacing( fixedImage->GetSpacing() );
     warper->SetOutputOrigin( fixedImage->GetOrigin() );
@@ -352,7 +312,13 @@ void Mapping::Execute(){
     WriterType::Pointer      writer =  WriterType::New();
     CastFilterType::Pointer  caster =  CastFilterType::New();
 
-    writer->SetFileName("DeformableRegistration2Output.mha");
+    stringstream stringFileDeformable;
+    stringFileDeformable<<pathDeformable<<(index+1)<<typeMha;
+
+    string deformableFile = stringFileDeformable.str();
+    stringFileDeformable.str("");
+
+    writer->SetFileName(deformableFile);
 
     caster->SetInput( warper->GetOutput() );
     writer->SetInput( caster->GetOutput()   );
@@ -395,7 +361,14 @@ void Mapping::Execute(){
     // Software Guide : BeginCodeSnippet
     typedef itk::ImageFileWriter< DisplacementFieldType > FieldWriterType;
     FieldWriterType::Pointer fieldWriter = FieldWriterType::New();
-    fieldWriter->SetFileName("field.mha");
+
+    stringstream stringFileField;
+    stringFileField<<pathField<<(index+1)<<typeMha;
+
+    string fieldFile = stringFileField.str();
+    stringFileField.str("");
+
+    fieldWriter->SetFileName(fieldFile);
     fieldWriter->SetInput( filter->GetOutput() );
 
     fieldWriter->Update();
@@ -475,7 +448,13 @@ void Mapping::Execute(){
 
     writer3D->SetInput( vectorImage3D );
 
-    writer3D->SetFileName("2.mha");
+    stringstream stringFileVector;
+    stringFileVector<<pathVector<<(index+1)<<typeMha;
+
+    string vectorFile = stringFileVector.str();
+    stringFileVector.str("");
+
+    writer3D->SetFileName(vectorFile);
 
     try
     {
@@ -485,8 +464,5 @@ void Mapping::Execute(){
     {
         std::cerr << excp << std::endl;
     }
-
-
-
 
 }
