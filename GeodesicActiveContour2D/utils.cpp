@@ -118,3 +118,32 @@ void Utils::GetCenter(ImageType::Pointer image, int *x, int *y){
     *y = height;
 }
 
+double Utils::GetPerimeter(ImageTypeUC::Pointer image){
+    double perimeter = 0.0;
+    const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
+    for(int c = 0; c<region[0]; c++){
+        for(int d = 0; d<region[1]; d++){
+            const ImageType::IndexType index = {{c,d}};
+            if(image->GetPixel(index) > 0){
+                perimeter++;
+            }
+
+        }
+    }
+    return perimeter;
+}
+
+double Utils::GetArea(ImageTypeUC::Pointer image){
+    double area;
+    const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
+    for(int c = 0; c<region[0]; c++){
+        for(int d = 0; d<region[1]; d++){
+            const ImageType::IndexType index = {{c,d}};
+            if(image->GetPixel(index) > 0){
+                area++;
+            }
+
+        }
+    }
+    return area;
+}

@@ -24,6 +24,7 @@ public:
     string radius;
     string slices;
     string segmented;
+    string segmentedArea;
     string segmentedFinal;
     string cine;
     string gacFilter;
@@ -47,6 +48,7 @@ public:
     string pathRadius;
     string pathSlices;
     string pathSegmented;
+    string pathSegmentedArea;
     string pathSegmentedFinal;
     string pathCine;
     string pathGacFilter;
@@ -64,6 +66,11 @@ public:
     string pathGacGradientMHAFinal;
     string pathGacSigmoidMHAFinal;
     string pathGacMapMHAFinal;
+
+    string extractValues;
+    string extractValuesMyocardium;
+    string pathExtractValues;
+    string pathExtractValuesMyocardium;
 };
 
 #endif // SEGMENT_H

@@ -55,9 +55,9 @@ Mapping::Mapping()
 
     this->homedir = this->pw->pw_dir;
 
-    this->deformable = "/temp/deformable_";
-    this->vector = "/temp/vector_";
-    this->field = "/temp/field_";
+    this->deformable = "/temp/strain/deformable_";
+    this->vector = "/temp/strain/vector_";
+    this->field = "/temp/strain/field_";
     this->pathDeformable = this->homedir + this->deformable;
     this->pathVector = this->homedir + this->vector;
     this->pathField = this->homedir + this->field;
