@@ -204,8 +204,8 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
         cont_A = 0;
         dim = 0;
         int cont = 0;
-        for(int a=0; a<region[0]; a = a + ((2*k)-1)){
-            for(int b= 0; b<region[1]; b = b + ((2*k)-1)){
+        for(int a=0; a<region[0]; a = a + (1+((k-1)*2))){
+            for(int b= 0; b<region[1]; b = b + (1+((k-1)*2))){
                 isElement = false;
                 for(int c = 0; c<(1+((k-1)*2)); c++){
                     for(int d = 0; d<(1+((k-1)*2)); d++){
@@ -223,9 +223,9 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
                     }
                 }
                 if(max > 0){
-                    int positionMax = max;
-                    int positionMin = min;
-                    cont_A = cont_A + ceil(((positionMax)-(positionMin) +1)/((int)(box)));
+                    int positionMax = max/((int)(box));
+                    int positionMin = min/((int)(box));
+                    cont_A = cont_A + (((positionMax+1)-(positionMin+1)) +1);
                     cont++;
                 }
             }
