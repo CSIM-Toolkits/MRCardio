@@ -165,7 +165,7 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     // Software Guide : EndLatex
 
     // Software Guide : BeginCodeSnippet
-    matcher->SetNumberOfHistogramLevels( 1024 );
+    matcher->SetNumberOfHistogramLevels( 256 );
     matcher->SetNumberOfMatchPoints( 7 );
     // Software Guide : EndCodeSnippet
 

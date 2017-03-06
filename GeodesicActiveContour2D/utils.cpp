@@ -101,12 +101,14 @@ void Utils::GetSeed(ImageType::Pointer image, int centerX, int centerY, int *x, 
     double width = GetWidth(image);
     double height = GetHeight(image);
     double value = 9999;
+    bool a = false;
     for(int i = centerX; i > 0; i--){
-        value = (double) GetPixel(image, i, centerY);
-        if(value == 0){
-            *x = i;
+        value = (int) GetPixel(image, i, centerY);
+        int aux = i;
+        if(value == 0 && !a){
+            *x = aux;
             *y = centerY;
-            break;
+            a = true;
         }
     }
 }

@@ -781,8 +781,8 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
         int seedY;
         Utils utils;
         utils.GetCenter(val, &seedX, &seedY);
-        seedPosition.SetElement(0,72);
-        seedPosition.SetElement(1,55);
+        seedPosition.SetElement(0,x);
+        seedPosition.SetElement(1,y);
         //seedPosition.SetElement(2,(int)z);
         cout<<"X, Y = "<<seedX<<" "<<seedY<<endl;
         NodeType node;
@@ -1036,14 +1036,14 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         int seedX;
         int seedY;
         utils.GetSeed(valS, x, y, &seedX, &seedY);
-        //cout<<"SEED X: "<<seedX<<endl;
-        //cout<<"SEED Y: "<<seedY<<endl;
+        cout<<"SEED X: "<<seedX<<endl;
+        cout<<"SEED Y: "<<seedY<<endl;
 
         typedef FastMarchingFilterType::NodeContainer  NodeContainer;
         typedef FastMarchingFilterType::NodeType       NodeType;
         NodeContainer::Pointer seeds = NodeContainer::New();
         InternalImageType::IndexType  seedPosition;
-        seedPosition.SetElement(0, (seedX+4));
+        seedPosition.SetElement(0, (seedX - 5));
         seedPosition.SetElement(1,seedY);
         //seedPosition.SetElement(2,(int)z);
         cout<<"X, Y = "<<x<<" "<<y<<endl;
