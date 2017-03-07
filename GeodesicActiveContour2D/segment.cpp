@@ -383,6 +383,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             typedef  itk::ImageFileReader< InternalImageType > ReaderType;
             typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
             ReaderType::Pointer reader = ReaderType::New();
+            ReaderType::Pointer readerS = ReaderType::New();
             WriterType::Pointer writer = WriterType::New();
             //WriterType::Pointer writer_out = WriterType::New();
             stringstream stringFileCine;
@@ -489,12 +490,35 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 radius = atoi(line2.c_str());
             }
 
+            stringstream segment;
+
+            if(i<9)
+                segment<<this->pathSegmented<<"00"<<(i+1)<<typeTiff;
+            if(i>=9 && i<99)
+                segment<<this->pathSegmented<<"0"<<(i+1)<<typeTiff;
+            if(i>=99)
+                segment<<this->pathSegmented<<(i+1)<<typeTiff;
+            string filenameSegmented = segment.str();
+            segment.str("");
+
+            readerS->SetFileName(filenameSegmented);
+            readerS->Update();
+
+            InternalImageType::Pointer valS = readerS->GetOutput();
+
+            Utils utils;
+            int seedX;
+            int seedY;
+            utils.GetSeed(valS, x, y, &seedX, &seedY);
+            cout<<"SEED X: "<<seedX<<endl;
+            cout<<"SEED Y: "<<seedY<<endl;
+
             typedef FastMarchingFilterType::NodeContainer  NodeContainer;
             typedef FastMarchingFilterType::NodeType       NodeType;
             NodeContainer::Pointer seeds = NodeContainer::New();
             InternalImageType::IndexType  seedPosition;
-            seedPosition.SetElement(0,x);
-            seedPosition.SetElement(1,(y+(radius-2)));
+            seedPosition.SetElement(0,(seedX - 4));
+            seedPosition.SetElement(1,(seedY));
             //seedPosition.SetElement(2,(int)z);
             cout<<"X, Y = "<<x<<" "<<y<<endl;
             NodeType node;
@@ -1043,8 +1067,8 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         typedef FastMarchingFilterType::NodeType       NodeType;
         NodeContainer::Pointer seeds = NodeContainer::New();
         InternalImageType::IndexType  seedPosition;
-        seedPosition.SetElement(0, (seedX - 5));
-        seedPosition.SetElement(1,seedY);
+        seedPosition.SetElement(0, (seedX));
+        seedPosition.SetElement(1,seedY-5);
         //seedPosition.SetElement(2,(int)z);
         cout<<"X, Y = "<<x<<" "<<y<<endl;
         NodeType node;

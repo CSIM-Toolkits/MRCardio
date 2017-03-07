@@ -105,7 +105,7 @@ void Utils::GetSeed(ImageType::Pointer image, int centerX, int centerY, int *x, 
     for(int i = centerX; i > 0; i--){
         value = (int) GetPixel(image, i, centerY);
         int aux = i;
-        if(value == 0 && !a){
+        if(value > 0 && !a){
             *x = aux;
             *y = centerY;
             a = true;
