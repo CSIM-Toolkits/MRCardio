@@ -358,7 +358,7 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
 
 }
 
-void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance){
+void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance, bool up, bool down, bool left, bool hight){
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ofstream extractValuesMyocardium(this->pathExtractValuesMyocardium.c_str());
     ifstream radiusFile (this->pathRadius.c_str());
@@ -506,28 +506,78 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
             InternalImageType::Pointer valS = readerS->GetOutput();
 
-            Utils utils;
-            int seedX;
-            int seedY;
-            utils.GetSeed(valS, x, y, &seedX, &seedY);
-            cout<<"SEED X: "<<seedX<<endl;
-            cout<<"SEED Y: "<<seedY<<endl;
-
+            int contSeed = 0;
             typedef FastMarchingFilterType::NodeContainer  NodeContainer;
             typedef FastMarchingFilterType::NodeType       NodeType;
             NodeContainer::Pointer seeds = NodeContainer::New();
-            InternalImageType::IndexType  seedPosition;
-            seedPosition.SetElement(0,(seedX - 4));
-            seedPosition.SetElement(1,(seedY));
-            //seedPosition.SetElement(2,(int)z);
-            cout<<"X, Y = "<<x<<" "<<y<<endl;
-            NodeType node;
-            const double seedValue = - distance;
-            node.SetValue( seedValue );
-            node.SetIndex( seedPosition );
+            Utils utils;
 
             seeds->Initialize();
-            seeds->InsertElement( 0, node );
+
+            if(up){
+                int seedXUP;
+                int seedYUP;
+                utils.GetSeedUp(valS, x, y, &seedXUP, &seedYUP);
+                InternalImageType::IndexType  seedPositionUp;
+                seedPositionUp.SetElement(0,(seedXUP));
+                seedPositionUp.SetElement(1,(seedYUP - 4));
+
+                NodeType nodeUp;
+                const double seedValue = - distance;
+                nodeUp.SetValue( seedValue );
+                nodeUp.SetIndex( seedPositionUp );
+
+                seeds->InsertElement( contSeed, nodeUp );
+                contSeed++;
+            }
+            if(down){
+                int seedXDOWN;
+                int seedYDOWN;
+                utils.GetSeedDown(valS, x, y, &seedXDOWN, &seedYDOWN);
+                InternalImageType::IndexType  seedPositionDown;
+                seedPositionDown.SetElement(0,(seedXDOWN));
+                seedPositionDown.SetElement(1,(seedYDOWN + 4));
+
+                NodeType nodeDown;
+                const double seedValue = - distance;
+                nodeDown.SetValue( seedValue );
+                nodeDown.SetIndex( seedPositionDown );
+
+                seeds->InsertElement( contSeed, nodeDown );
+                contSeed++;
+            }
+            if(left){
+                int seedXLEFT;
+                int seedYLEFT;
+                utils.GetSeedLeft(valS, x, y, &seedXLEFT, &seedYLEFT);
+                InternalImageType::IndexType  seedPositionLeft;
+                seedPositionLeft.SetElement(0,(seedXLEFT - 4));
+                seedPositionLeft.SetElement(1,(seedYLEFT));
+
+                NodeType nodeLeft;
+                const double seedValue = - distance;
+                nodeLeft.SetValue( seedValue );
+                nodeLeft.SetIndex( seedPositionLeft );
+
+                seeds->InsertElement( contSeed, nodeLeft );
+                contSeed++;
+            }
+            if(hight){
+                int seedXHIGHT;
+                int seedYHIGHT;
+                utils.GetSeedHight(valS, x, y, &seedXHIGHT, &seedYHIGHT);
+                InternalImageType::IndexType  seedPositionHight;
+                seedPositionHight.SetElement(0,(seedXHIGHT + 4));
+                seedPositionHight.SetElement(1,(seedYHIGHT));
+
+                NodeType nodeHight;
+                const double seedValue = - distance;
+                nodeHight.SetValue( seedValue );
+                nodeHight.SetIndex( seedPositionHight );
+
+                seeds->InsertElement( contSeed, nodeHight );
+                contSeed++;
+            }
 
             fastMarching->SetTrialPoints(  seeds  );
 
@@ -911,7 +961,7 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
 
 }
 
-void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance){
+void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance, bool up, bool down, bool left, bool hight){
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ifstream radiusFile (this->pathRadius.c_str());
     for(int i =first; i<last;i++){
@@ -1056,29 +1106,78 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
 
         InternalImageType::Pointer valS = readerS->GetOutput();
 
-        Utils utils;
-        int seedX;
-        int seedY;
-        utils.GetSeed(valS, x, y, &seedX, &seedY);
-        cout<<"SEED X: "<<seedX<<endl;
-        cout<<"SEED Y: "<<seedY<<endl;
-
+        int contSeed = 0;
         typedef FastMarchingFilterType::NodeContainer  NodeContainer;
         typedef FastMarchingFilterType::NodeType       NodeType;
         NodeContainer::Pointer seeds = NodeContainer::New();
-        InternalImageType::IndexType  seedPosition;
-        seedPosition.SetElement(0, (seedX));
-        seedPosition.SetElement(1,seedY-5);
-        //seedPosition.SetElement(2,(int)z);
-        cout<<"X, Y = "<<x<<" "<<y<<endl;
-        NodeType node;
-        const double seedValue = - distance;
-        node.SetValue( seedValue );
-        node.SetIndex( seedPosition );
+        Utils utils;
 
         seeds->Initialize();
-        seeds->InsertElement( 0, node );
 
+        if(up){
+            int seedXUP;
+            int seedYUP;
+            utils.GetSeedUp(valS, x, y, &seedXUP, &seedYUP);
+            InternalImageType::IndexType  seedPositionUp;
+            seedPositionUp.SetElement(0,(seedXUP));
+            seedPositionUp.SetElement(1,(seedYUP - 4));
+
+            NodeType nodeUp;
+            const double seedValue = - distance;
+            nodeUp.SetValue( seedValue );
+            nodeUp.SetIndex( seedPositionUp );
+
+            seeds->InsertElement( contSeed, nodeUp );
+            contSeed++;
+        }
+        if(down){
+            int seedXDOWN;
+            int seedYDOWN;
+            utils.GetSeedDown(valS, x, y, &seedXDOWN, &seedYDOWN);
+            InternalImageType::IndexType  seedPositionDown;
+            seedPositionDown.SetElement(0,(seedXDOWN));
+            seedPositionDown.SetElement(1,(seedYDOWN + 4));
+
+            NodeType nodeDown;
+            const double seedValue = - distance;
+            nodeDown.SetValue( seedValue );
+            nodeDown.SetIndex( seedPositionDown );
+
+            seeds->InsertElement( contSeed, nodeDown );
+            contSeed++;
+        }
+        if(left){
+            int seedXLEFT;
+            int seedYLEFT;
+            utils.GetSeedLeft(valS, x, y, &seedXLEFT, &seedYLEFT);
+            InternalImageType::IndexType  seedPositionLeft;
+            seedPositionLeft.SetElement(0,(seedXLEFT - 4));
+            seedPositionLeft.SetElement(1,(seedYLEFT));
+
+            NodeType nodeLeft;
+            const double seedValue = - distance;
+            nodeLeft.SetValue( seedValue );
+            nodeLeft.SetIndex( seedPositionLeft );
+
+            seeds->InsertElement( contSeed, nodeLeft );
+            contSeed++;
+        }
+        if(hight){
+            int seedXHIGHT;
+            int seedYHIGHT;
+            utils.GetSeedHight(valS, x, y, &seedXHIGHT, &seedYHIGHT);
+            InternalImageType::IndexType  seedPositionHight;
+            seedPositionHight.SetElement(0,(seedXHIGHT + 4));
+            seedPositionHight.SetElement(1,(seedYHIGHT));
+
+            NodeType nodeHight;
+            const double seedValue = - distance;
+            nodeHight.SetValue( seedValue );
+            nodeHight.SetIndex( seedPositionHight );
+
+            seeds->InsertElement( contSeed, nodeHight );
+            contSeed++;
+        }
         fastMarching->SetTrialPoints(  seeds  );
 
         fastMarching->SetSpeedConstant( 1.0 );

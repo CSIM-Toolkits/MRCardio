@@ -97,7 +97,7 @@ double Utils::GetDepth(ImageType::Pointer image){
     return region[2];
 }
 
-void Utils::GetSeed(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
+void Utils::GetSeedLeft(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
     double width = GetWidth(image);
     double height = GetHeight(image);
     double value = 9999;
@@ -108,6 +108,54 @@ void Utils::GetSeed(ImageType::Pointer image, int centerX, int centerY, int *x, 
         if(value > 0 && !a){
             *x = aux;
             *y = centerY;
+            a = true;
+        }
+    }
+}
+
+void Utils::GetSeedHight(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
+    double width = GetWidth(image);
+    double height = GetHeight(image);
+    double value = 9999;
+    bool a = false;
+    for(int i = centerX; i < height; i++){
+        value = (int) GetPixel(image, i, centerY);
+        int aux = i;
+        if(value > 0 && !a){
+            *x = aux;
+            *y = centerY;
+            a = true;
+        }
+    }
+}
+
+void Utils::GetSeedUp(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
+    double width = GetWidth(image);
+    double height = GetHeight(image);
+    double value = 9999;
+    bool a = false;
+    for(int i = centerY; i > 0; i--){
+        value = (int) GetPixel(image, centerX, i);
+        int aux = i;
+        if(value > 0 && !a){
+            *x = centerX;
+            *y = aux;
+            a = true;
+        }
+    }
+}
+
+void Utils::GetSeedDown(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
+    double width = GetWidth(image);
+    double height = GetHeight(image);
+    double value = 9999;
+    bool a = false;
+    for(int i = centerY; i < width ; i++){
+        value = (int) GetPixel(image, centerX, i);
+        int aux = i;
+        if(value > 0 && !a){
+            *x = centerX;
+            *y = aux;
             a = true;
         }
     }

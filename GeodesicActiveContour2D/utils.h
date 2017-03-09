@@ -22,7 +22,10 @@ public:
     double GetHeight(ImageType::Pointer image);
     double GetWidth(ImageType::Pointer image);
     double GetDepth(ImageType::Pointer image);
-    void GetSeed(ImageType::Pointer image,int centerX, int centerY, int *x, int *y);
+    void GetSeedUp(ImageType::Pointer image,int centerX, int centerY, int *x, int *y);
+    void GetSeedDown(ImageType::Pointer image,int centerX, int centerY, int *x, int *y);
+    void GetSeedLeft(ImageType::Pointer image,int centerX, int centerY, int *x, int *y);
+    void GetSeedHight(ImageType::Pointer image,int centerX, int centerY, int *x, int *y);
     void GetCenter(ImageType::Pointer image, int *x, int *y);
     double GetPerimeter(ImageTypeUC::Pointer image);
     double GetArea(ImageTypeUC::Pointer image);

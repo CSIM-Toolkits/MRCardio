@@ -61,13 +61,29 @@ int DoIt( int argc, char * argv[], T )
     typedef itk::Image<unsigned char,3> ImageType;
     ImageType::Pointer imag_out = ImageType::New();
     segment seg;
+    bool up = false;
+    bool down = false;
+    bool left = false;
+    bool hight = false;
+    if(position0 == "yes"){
+        hight = true;
+    }
+    if(position90 == "yes"){
+        up = true;
+    }
+    if(position180 == "yes"){
+        left = true;
+    }
+    if(position270 == "yes"){
+        down = true;
+    }
     if(axis == "Eixo Curto"){
         seg.InternalEC(first,last,sigma,sigma_min,sigma_max,propagation,curvature,advection,rms,iterations,timestep,it,conductance,alpha,beta,distance);
-        seg.MyocardiumEC(first,last,sigma,sigma_min,sigma_max,propagation,curvature,advection,rms,iterations,timestep,it,conductance,alpha,beta,distance);
+        seg.MyocardiumEC(first,last,sigma,sigma_min,sigma_max,propagation,curvature,advection,rms,iterations,timestep,it,conductance,alpha,beta,distance, up, down, left, hight);
     }
     if(axis == "Eixo Longo Vertical"){
         seg.InternalELV(first,last,sigma,sigma_min,sigma_max,propagation,curvature,advection,rms,iterations,timestep,it,conductance,alpha,beta,distance);
-        seg.MyocardiumELV(first,last,sigma,sigma_min,sigma_max,propagation,curvature,advection,rms,iterations,timestep,it,conductance,alpha,beta,distance);
+        seg.MyocardiumELV(first,last,sigma,sigma_min,sigma_max,propagation,curvature,advection,rms,iterations,timestep,it,conductance,alpha,beta,distance, up, down, left, hight);
     }
     if(axis == "Eixo Longo Horizontal"){
 
