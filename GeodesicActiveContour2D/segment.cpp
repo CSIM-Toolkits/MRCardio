@@ -714,7 +714,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
             double area = extract.GetArea(imag_outArea);
             double perimeter = extract.GetPerimeter(imag_outPerimeter);
-            extractValuesMyocardium<<"Area of  Myocardium Image "<<i+1<<": "<<area<<endl;
+            extractValuesMyocardium<<"Area of Myocardium Image "<<i+1<<": "<<area<<endl;
             extractValuesMyocardium<<"Perimeter of Myocardium Image "<<i+1<<": "<<perimeter<<endl;
             extractValuesMyocardium<<"----------------------"<<endl;
 
@@ -727,238 +727,275 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
 void segment::InternalELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance){
     ifstream endocardiumFile (this->pathEndocardium.c_str());
-    for(int i =first; i<last;i++){
-        typedef   float           InternalPixelType;
-        const     unsigned int    Dimension = 2;
+    ofstream extractValues(this->pathExtractValues.c_str());
+    if (extractValues.is_open()){
+        for(int i =first; i<last;i++){
+            typedef   float           InternalPixelType;
+            const     unsigned int    Dimension = 2;
 
-        typedef itk::Image< InternalPixelType, Dimension >  InternalImageType;
+            typedef itk::Image< InternalPixelType, Dimension >  InternalImageType;
 
-        typedef unsigned char                            OutputPixelType;
-        typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
-        typedef itk::BinaryThresholdImageFilter<
-                InternalImageType,
-                OutputImageType    >       ThresholdingFilterType;
-        ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
-        thresholder->SetLowerThreshold( -1000.0 );
-        thresholder->SetUpperThreshold(     0.0 );
-        thresholder->SetOutsideValue(  0  );
-        thresholder->SetInsideValue(  255 );
+            typedef unsigned char                            OutputPixelType;
+            typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+            typedef itk::BinaryThresholdImageFilter<
+                    InternalImageType,
+                    OutputImageType    >       ThresholdingFilterType;
+            ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
+            thresholder->SetLowerThreshold( -1000.0 );
+            thresholder->SetUpperThreshold(     0.0 );
+            thresholder->SetOutsideValue(  0  );
+            thresholder->SetInsideValue(  255 );
 
-        typedef  itk::ImageFileReader< InternalImageType > ReaderType;
-        typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
-        ReaderType::Pointer reader = ReaderType::New();
-        WriterType::Pointer writer = WriterType::New();
-        //WriterType::Pointer writer_out = WriterType::New();
-        stringstream stringFileCine;
+            typedef  itk::ImageFileReader< InternalImageType > ReaderType;
+            typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
+            ReaderType::Pointer reader = ReaderType::New();
+            WriterType::Pointer writer = WriterType::New();
+            //WriterType::Pointer writer_out = WriterType::New();
+            stringstream stringFileCine;
 
-        string typeTiff = ".tif";
+            string typeTiff = ".tif";
 
-        stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
+            stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
 
-        string cineFile = stringFileCine.str();
-        stringFileCine.str("");
+            string cineFile = stringFileCine.str();
+            stringFileCine.str("");
 
-        reader->SetFileName(cineFile);
-        reader->Update();
+            reader->SetFileName(cineFile);
+            reader->Update();
 
-        InternalImageType::Pointer val = reader->GetOutput();
+            InternalImageType::Pointer val = reader->GetOutput();
 
-        typedef itk::RescaleIntensityImageFilter<
-                InternalImageType,
-                OutputImageType >   CastFilterType;
+            typedef itk::RescaleIntensityImageFilter<
+                    InternalImageType,
+                    OutputImageType >   CastFilterType;
 
-        typedef   itk::CurvatureAnisotropicDiffusionImageFilter<
-                InternalImageType,
-                InternalImageType >  SmoothingFilterType;
-        SmoothingFilterType::Pointer smoothing = SmoothingFilterType::New();
+            typedef   itk::CurvatureAnisotropicDiffusionImageFilter<
+                    InternalImageType,
+                    InternalImageType >  SmoothingFilterType;
+            SmoothingFilterType::Pointer smoothing = SmoothingFilterType::New();
 
-        typedef   itk::GradientMagnitudeRecursiveGaussianImageFilter<
-                InternalImageType,
-                InternalImageType >  GradientFilterType;
-        typedef   itk::SigmoidImageFilter<
-                InternalImageType,
-                InternalImageType >  SigmoidFilterType;
-        GradientFilterType::Pointer  gradientMagnitude = GradientFilterType::New();
-        SigmoidFilterType::Pointer sigmoid = SigmoidFilterType::New();
+            typedef   itk::GradientMagnitudeRecursiveGaussianImageFilter<
+                    InternalImageType,
+                    InternalImageType >  GradientFilterType;
+            typedef   itk::SigmoidImageFilter<
+                    InternalImageType,
+                    InternalImageType >  SigmoidFilterType;
+            GradientFilterType::Pointer  gradientMagnitude = GradientFilterType::New();
+            SigmoidFilterType::Pointer sigmoid = SigmoidFilterType::New();
 
-        sigmoid->SetOutputMinimum(sig_min);
-        sigmoid->SetOutputMaximum(sig_max);
+            sigmoid->SetOutputMinimum(sig_min);
+            sigmoid->SetOutputMaximum(sig_max);
 
-        typedef  itk::FastMarchingImageFilter<
-                InternalImageType,
-                InternalImageType >    FastMarchingFilterType;
+            typedef  itk::FastMarchingImageFilter<
+                    InternalImageType,
+                    InternalImageType >    FastMarchingFilterType;
 
-        FastMarchingFilterType::Pointer  fastMarching = FastMarchingFilterType::New();
-        //const InternalImageType * inputImage = reader->GetOutput();
-        const InternalImageType * inputImage = val;
-        fastMarching->SetOutputRegion( inputImage->GetBufferedRegion() );
-        fastMarching->SetOutputSpacing( inputImage->GetSpacing() );
-        fastMarching->SetOutputOrigin( inputImage->GetOrigin() );
-        fastMarching->SetOutputDirection( inputImage->GetDirection() );
+            FastMarchingFilterType::Pointer  fastMarching = FastMarchingFilterType::New();
+            //const InternalImageType * inputImage = reader->GetOutput();
+            const InternalImageType * inputImage = val;
+            fastMarching->SetOutputRegion( inputImage->GetBufferedRegion() );
+            fastMarching->SetOutputSpacing( inputImage->GetSpacing() );
+            fastMarching->SetOutputOrigin( inputImage->GetOrigin() );
+            fastMarching->SetOutputDirection( inputImage->GetDirection() );
 
-        typedef  itk::GeodesicActiveContourLevelSetImageFilter< InternalImageType,
-                InternalImageType >    GeodesicActiveContourFilterType;
-        GeodesicActiveContourFilterType::Pointer geodesicActiveContour =
-                GeodesicActiveContourFilterType::New();
+            typedef  itk::GeodesicActiveContourLevelSetImageFilter< InternalImageType,
+                    InternalImageType >    GeodesicActiveContourFilterType;
+            GeodesicActiveContourFilterType::Pointer geodesicActiveContour =
+                    GeodesicActiveContourFilterType::New();
 
-        const double propagationScaling = propagation;
-        //  Software Guide : BeginCodeSnippet
-        geodesicActiveContour->SetPropagationScaling( propagationScaling );
-        geodesicActiveContour->SetCurvatureScaling(curvature);
-        geodesicActiveContour->SetAdvectionScaling(advection);
+            const double propagationScaling = propagation;
+            //  Software Guide : BeginCodeSnippet
+            geodesicActiveContour->SetPropagationScaling( propagationScaling );
+            geodesicActiveContour->SetCurvatureScaling(curvature);
+            geodesicActiveContour->SetAdvectionScaling(advection);
 
-        geodesicActiveContour->SetMaximumRMSError(rms);
-        geodesicActiveContour->SetNumberOfIterations(iterations);
+            geodesicActiveContour->SetMaximumRMSError(rms);
+            geodesicActiveContour->SetNumberOfIterations(iterations);
 
-        smoothing->SetInput(val);
-        gradientMagnitude->SetInput( smoothing->GetOutput() );
-        sigmoid->SetInput( gradientMagnitude->GetOutput() );
-        geodesicActiveContour->SetInput(  fastMarching->GetOutput() );
-        geodesicActiveContour->SetFeatureImage( sigmoid->GetOutput() );
-        thresholder->SetInput( geodesicActiveContour->GetOutput() );
-        //ImageOut = thresholder->GetOutput();
-        //writer->SetInput( thresholder->GetOutput() );
+            smoothing->SetInput(val);
+            gradientMagnitude->SetInput( smoothing->GetOutput() );
+            sigmoid->SetInput( gradientMagnitude->GetOutput() );
+            geodesicActiveContour->SetInput(  fastMarching->GetOutput() );
+            geodesicActiveContour->SetFeatureImage( sigmoid->GetOutput() );
+            thresholder->SetInput( geodesicActiveContour->GetOutput() );
+            //ImageOut = thresholder->GetOutput();
+            //writer->SetInput( thresholder->GetOutput() );
 
-        smoothing->SetTimeStep(timestep);
-        smoothing->SetNumberOfIterations(it_dif);
-        smoothing->SetConductanceParameter(conductance);
+            smoothing->SetTimeStep(timestep);
+            smoothing->SetNumberOfIterations(it_dif);
+            smoothing->SetConductanceParameter(conductance);
 
-        const double sig = sigma;
-        gradientMagnitude->SetSigma(sig);
+            const double sig = sigma;
+            gradientMagnitude->SetSigma(sig);
 
-        sigmoid->SetAlpha( alpha );
-        sigmoid->SetBeta(  beta  );
+            sigmoid->SetAlpha( alpha );
+            sigmoid->SetBeta(  beta  );
 
-        string line;
-        int x;
-        int y;
+            string line;
+            int x;
+            int y;
 
-        if (endocardiumFile.is_open())
-        {
-            getline (endocardiumFile,line);
-            string cmd = line;
-            string arg;
-            string::size_type pos = cmd.find(' ');
-            if(cmd.npos != pos) {
-                arg = cmd.substr(pos + 1);
-                cmd = cmd.substr(0, pos);
+            if (endocardiumFile.is_open())
+            {
+                getline (endocardiumFile,line);
+                string cmd = line;
+                string arg;
+                string::size_type pos = cmd.find(' ');
+                if(cmd.npos != pos) {
+                    arg = cmd.substr(pos + 1);
+                    cmd = cmd.substr(0, pos);
+                }
+                x = atoi(cmd.c_str());
+                y = atoi(arg.c_str());
             }
-            x = atoi(cmd.c_str());
-            y = atoi(arg.c_str());
+
+            typedef FastMarchingFilterType::NodeContainer  NodeContainer;
+            typedef FastMarchingFilterType::NodeType       NodeType;
+            NodeContainer::Pointer seeds = NodeContainer::New();
+            InternalImageType::IndexType  seedPosition;
+            int seedX;
+            int seedY;
+            Utils utils;
+            utils.GetCenter(val, &seedX, &seedY);
+            seedPosition.SetElement(0,x);
+            seedPosition.SetElement(1,y);
+            //seedPosition.SetElement(2,(int)z);
+            cout<<"X, Y = "<<seedX<<" "<<seedY<<endl;
+            NodeType node;
+            const double seedValue = - distance;
+            node.SetValue( seedValue );
+            node.SetIndex( seedPosition );
+
+            seeds->Initialize();
+            seeds->InsertElement( 0, node );
+
+            fastMarching->SetTrialPoints(  seeds  );
+
+            fastMarching->SetSpeedConstant( 1.0 );
+
+            CastFilterType::Pointer caster1 = CastFilterType::New();
+            CastFilterType::Pointer caster2 = CastFilterType::New();
+            CastFilterType::Pointer caster3 = CastFilterType::New();
+            CastFilterType::Pointer caster4 = CastFilterType::New();
+            WriterType::Pointer writer1 = WriterType::New();
+            WriterType::Pointer writer2 = WriterType::New();
+            WriterType::Pointer writer3 = WriterType::New();
+            WriterType::Pointer writer4 = WriterType::New();
+            WriterType::Pointer writerArea = WriterType::New();
+            caster1->SetInput( smoothing->GetOutput() );
+            writer1->SetInput( caster1->GetOutput() );
+            writer1->SetFileName(this->pathGacFilter);
+            caster1->SetOutputMinimum(   0 );
+            caster1->SetOutputMaximum( 255 );
+            writer1->Update();
+            caster2->SetInput( gradientMagnitude->GetOutput() );
+            writer2->SetInput( caster2->GetOutput() );
+            writer2->SetFileName(this->pathGacGradient);
+            caster2->SetOutputMinimum(   0 );
+            caster2->SetOutputMaximum( 255 );
+            writer2->Update();
+            caster3->SetInput( sigmoid->GetOutput() );
+            writer3->SetInput( caster3->GetOutput() );
+            writer3->SetFileName(this->pathGacSigmoid);
+            caster3->SetOutputMinimum(   0 );
+            caster3->SetOutputMaximum( 255 );
+            writer3->Update();
+            caster4->SetInput( fastMarching->GetOutput() );
+            writer4->SetInput( caster4->GetOutput() );
+            writer4->SetFileName(this->pathGacMap);
+            caster4->SetOutputMinimum(   0 );
+            caster4->SetOutputMaximum( 255 );
+
+            fastMarching->SetOutputSize(
+                        reader->GetOutput()->GetBufferedRegion().GetSize() );
+            reader->Update();
+
+            stringstream stringFileSegmented;
+
+            if(i<9)
+                stringFileSegmented<<this->pathSegmented<<"00"<<(i+1)<<typeTiff;
+            if(i>=9 && i<99)
+                stringFileSegmented<<this->pathSegmented<<"0"<<(i+1)<<typeTiff;
+            if(i>=99)
+                stringFileSegmented<<this->pathSegmented<<(i+1)<<typeTiff;
+            string segmentedFile = stringFileSegmented.str();
+            stringFileSegmented.str("");
+
+            typedef itk::GradientMagnitudeImageFilter<OutputImageType, OutputImageType >  GradientType;
+            GradientType::Pointer gradient = GradientType::New();
+            gradient->SetInput(thresholder->GetOutput());
+            gradient->Update();
+
+            try
+            {
+                writer->SetFileName(segmentedFile);
+                writer->SetInput( gradient->GetOutput() );
+                writer->Update();
+            }
+            catch( itk::ExceptionObject & excep )
+            {
+                std::cerr << "Exception caught !" << std::endl;
+                std::cerr << excep << std::endl;
+            }
+
+            stringstream stringFileAreaSegmented;
+
+            if(i<9)
+                stringFileAreaSegmented<<this->pathSegmentedArea<<"00"<<(i+1)<<typeTiff;
+            if(i>=9 && i<99)
+                stringFileAreaSegmented<<this->pathSegmentedArea<<"0"<<(i+1)<<typeTiff;
+            if(i>=99)
+                stringFileAreaSegmented<<this->pathSegmentedArea<<(i+1)<<typeTiff;
+            string segmentedAreaFile = stringFileAreaSegmented.str();
+            stringFileAreaSegmented.str("");
+
+            try
+            {
+                writerArea->SetFileName(segmentedAreaFile);
+                writerArea->SetInput( thresholder->GetOutput() );
+                writerArea->Update();
+            }
+            catch( itk::ExceptionObject & excep )
+            {
+                std::cerr << "Exception caught !" << std::endl;
+                std::cerr << excep << std::endl;
+            }
+            OutputImageType::Pointer imag_outArea = OutputImageType::New();
+            imag_outArea = thresholder->GetOutput();
+            OutputImageType::Pointer imag_outPerimeter = OutputImageType::New();
+            imag_outPerimeter = gradient->GetOutput();
+            Utils extract;
+            double area = extract.GetArea(imag_outArea);
+            double perimeter = extract.GetPerimeter(imag_outPerimeter);
+            extractValues<<"Area of Image "<<i+1<<": "<<area<<endl;
+            extractValues<<"Perimeter of Image "<<i+1<<": "<<perimeter<<endl;
+            extractValues<<"----------------------"<<endl;
+
+            std::cout << std::endl;
+            std::cout << "Max. no. iterations: " << geodesicActiveContour->GetNumberOfIterations() << std::endl;
+            std::cout << "Max. RMS error: " << geodesicActiveContour->GetMaximumRMSError() << std::endl;
+            std::cout << std::endl;
+            std::cout << "No. elpased iterations: " << geodesicActiveContour->GetElapsedIterations() << std::endl;
+            std::cout << "RMS change: " << geodesicActiveContour->GetRMSChange() << std::endl;
+            writer4->Update();
+
+            typedef itk::ImageFileWriter< InternalImageType > InternalWriterType;
+            InternalWriterType::Pointer mapWriter = InternalWriterType::New();
+            mapWriter->SetInput( fastMarching->GetOutput() );
+            mapWriter->SetFileName(this->pathGacMapMHA);
+            mapWriter->Update();
+            InternalWriterType::Pointer speedWriter = InternalWriterType::New();
+            speedWriter->SetInput( sigmoid->GetOutput() );
+            speedWriter->SetFileName(this->pathGacSigmoidMHA);
+            speedWriter->Update();
+            InternalWriterType::Pointer gradientWriter = InternalWriterType::New();
+            gradientWriter->SetInput( gradientMagnitude->GetOutput() );
+            gradientWriter->SetFileName(this->pathGacGradientMHA);
+            gradientWriter->Update();
         }
-
-        typedef FastMarchingFilterType::NodeContainer  NodeContainer;
-        typedef FastMarchingFilterType::NodeType       NodeType;
-        NodeContainer::Pointer seeds = NodeContainer::New();
-        InternalImageType::IndexType  seedPosition;
-        int seedX;
-        int seedY;
-        Utils utils;
-        utils.GetCenter(val, &seedX, &seedY);
-        seedPosition.SetElement(0,x);
-        seedPosition.SetElement(1,y);
-        //seedPosition.SetElement(2,(int)z);
-        cout<<"X, Y = "<<seedX<<" "<<seedY<<endl;
-        NodeType node;
-        const double seedValue = - distance;
-        node.SetValue( seedValue );
-        node.SetIndex( seedPosition );
-
-        seeds->Initialize();
-        seeds->InsertElement( 0, node );
-
-        fastMarching->SetTrialPoints(  seeds  );
-
-        fastMarching->SetSpeedConstant( 1.0 );
-
-        CastFilterType::Pointer caster1 = CastFilterType::New();
-        CastFilterType::Pointer caster2 = CastFilterType::New();
-        CastFilterType::Pointer caster3 = CastFilterType::New();
-        CastFilterType::Pointer caster4 = CastFilterType::New();
-        WriterType::Pointer writer1 = WriterType::New();
-        WriterType::Pointer writer2 = WriterType::New();
-        WriterType::Pointer writer3 = WriterType::New();
-        WriterType::Pointer writer4 = WriterType::New();
-        caster1->SetInput( smoothing->GetOutput() );
-        writer1->SetInput( caster1->GetOutput() );
-        writer1->SetFileName(this->pathGacFilter);
-        caster1->SetOutputMinimum(   0 );
-        caster1->SetOutputMaximum( 255 );
-        writer1->Update();
-        caster2->SetInput( gradientMagnitude->GetOutput() );
-        writer2->SetInput( caster2->GetOutput() );
-        writer2->SetFileName(this->pathGacGradient);
-        caster2->SetOutputMinimum(   0 );
-        caster2->SetOutputMaximum( 255 );
-        writer2->Update();
-        caster3->SetInput( sigmoid->GetOutput() );
-        writer3->SetInput( caster3->GetOutput() );
-        writer3->SetFileName(this->pathGacSigmoid);
-        caster3->SetOutputMinimum(   0 );
-        caster3->SetOutputMaximum( 255 );
-        writer3->Update();
-        caster4->SetInput( fastMarching->GetOutput() );
-        writer4->SetInput( caster4->GetOutput() );
-        writer4->SetFileName(this->pathGacMap);
-        caster4->SetOutputMinimum(   0 );
-        caster4->SetOutputMaximum( 255 );
-
-        fastMarching->SetOutputSize(
-                    reader->GetOutput()->GetBufferedRegion().GetSize() );
-        reader->Update();
-
-        stringstream stringFileSegmented;
-
-        if(i<9)
-            stringFileSegmented<<this->pathSegmented<<"00"<<(i+1)<<typeTiff;
-        if(i>=9 && i<99)
-            stringFileSegmented<<this->pathSegmented<<"0"<<(i+1)<<typeTiff;
-        if(i>=99)
-            stringFileSegmented<<this->pathSegmented<<(i+1)<<typeTiff;
-        string segmentedFile = stringFileSegmented.str();
-        stringFileSegmented.str("");
-
-        typedef itk::GradientMagnitudeImageFilter<OutputImageType, OutputImageType >  GradientType;
-        GradientType::Pointer gradient = GradientType::New();
-        gradient->SetInput(thresholder->GetOutput());
-        gradient->Update();
-
-        try
-        {
-            writer->SetFileName(segmentedFile);
-            writer->SetInput( thresholder->GetOutput() );
-            writer->Update();
-        }
-        catch( itk::ExceptionObject & excep )
-        {
-            std::cerr << "Exception caught !" << std::endl;
-            std::cerr << excep << std::endl;
-        }
-
-        std::cout << std::endl;
-        std::cout << "Max. no. iterations: " << geodesicActiveContour->GetNumberOfIterations() << std::endl;
-        std::cout << "Max. RMS error: " << geodesicActiveContour->GetMaximumRMSError() << std::endl;
-        std::cout << std::endl;
-        std::cout << "No. elpased iterations: " << geodesicActiveContour->GetElapsedIterations() << std::endl;
-        std::cout << "RMS change: " << geodesicActiveContour->GetRMSChange() << std::endl;
-        writer4->Update();
-
-        typedef itk::ImageFileWriter< InternalImageType > InternalWriterType;
-        InternalWriterType::Pointer mapWriter = InternalWriterType::New();
-        mapWriter->SetInput( fastMarching->GetOutput() );
-        mapWriter->SetFileName(this->pathGacMapMHA);
-        mapWriter->Update();
-        InternalWriterType::Pointer speedWriter = InternalWriterType::New();
-        speedWriter->SetInput( sigmoid->GetOutput() );
-        speedWriter->SetFileName(this->pathGacSigmoidMHA);
-        speedWriter->Update();
-        InternalWriterType::Pointer gradientWriter = InternalWriterType::New();
-        gradientWriter->SetInput( gradientMagnitude->GetOutput() );
-        gradientWriter->SetFileName(this->pathGacGradientMHA);
-        gradientWriter->Update();
+        extractValues.close();
+        endocardiumFile.close();
     }
-    endocardiumFile.close();
-
 }
 
 void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance, bool up, bool down, bool left, bool hight){
