@@ -56,11 +56,11 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
     double M = region[0];
     double r = 0;
     int k = 1;
-    double *vetNR = new double[10];
-    double *vetR = new double[10];
+    double *vetNR = new double[40];
+    double *vetR = new double[40];
 
-    double s = (pow((1+(k*2)),2)/2);
-    while(s < (M)){
+    double s = (1+((k-1)*2));
+    while(s < (M/2)){
         cont_A = 0;
         dim = 0;
         int cont = 0;
@@ -88,7 +88,7 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
         vetNR[k] = (log(cont_A));
         vetR[k] = (log(r));
         k++;
-        s = (pow((1+(k*2)),2)/2);
+        s = (1+((k-1)*2));
 
     }
     double m,b;
@@ -122,10 +122,10 @@ double fracdimension::GetBoxCountingDimension3D(ImageType::Pointer image){
     double M = region[0];
     double r = 0;
     int k = 1;
-    double *vetNR = new double[10];
-    double *vetR = new double[10];
+    double *vetNR = new double[40];
+    double *vetR = new double[40];
 
-    double s = (pow((1+(k*2)),2)/2);
+    double s = (1+((k-1)*2));
     while(s < (M)){
         cont_A = 0;
         dim = 0;
@@ -158,7 +158,7 @@ double fracdimension::GetBoxCountingDimension3D(ImageType::Pointer image){
         vetNR[k] = (log(cont_A));
         vetR[k] = (log(r));
         k++;
-        s = (pow((1+(k*2)),2)/2);
+        s = (1+((k-1)*2));
 
     }
     double m,b;
@@ -192,14 +192,14 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
     double M = region[0];
     double r = 0;
     int k = 1;
-    double *vetNR = new double[10];
-    double *vetR = new double[10];
-    int levelSize = (int) (255/region[0]);
-    double s = (pow((1+(k*2)),2)/2);
+    double *vetNR = new double[40];
+    double *vetR = new double[40];
+    double s = (1+((k-1)*2));
     while(s < (M/2)){
-        double min = 9999;
+        double min = 999999;
         double max = 0;
-        int box = s*levelSize;
+        int levelSize = floor(M/s);
+        int box = floor(levelSize/255);
         int cont_I = 0;
         cont_A = 0;
         dim = 0;
@@ -223,9 +223,9 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
                     }
                 }
                 if(max > 0){
-                    int positionMax = max/((int)(box));
-                    int positionMin = min/((int)(box));
-                    cont_A = cont_A + (((positionMax+1)-(positionMin+1)) +1);
+                    int positionMax = max/levelSize;
+                    int positionMin = min/levelSize;
+                    cont_A = cont_A + (((positionMax)-(positionMin)) +1);
                     cont++;
                 }
             }
@@ -235,7 +235,7 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
         vetNR[k] = (log(cont_A));
         vetR[k] = (log(r));
         k++;
-        s = (pow((1+(k*2)),2)/2);
+        s = (1+((k-1)*2));
 
     }
     double m,b;
@@ -274,11 +274,11 @@ double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
     double M = region[0];
     double r = 0;
     int k = 1;
-    double *vetNR = new double[10];
-    double *vetR = new double[10];
+    double *vetNR = new double[40];
+    double *vetR = new double[40];
 
-    double s = (pow((1+(k*2)),2)/2);
-    while(s < (M)){
+    double s = (1+((k-1)*2));
+    while(s < (M/2)){
         cont_A = 0;
         dim = 0;
         contZero = 0;
@@ -312,7 +312,7 @@ double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
         vetNR[k] = (log(cont_A));
         vetR[k] = (log(r));
         k++;
-        s = (pow((1+(k*2)),2)/2);
+        s = (1+((k-1)*2));
 
     }
     double m,b;

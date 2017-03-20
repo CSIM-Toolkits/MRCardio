@@ -30,8 +30,18 @@ int DoIt( int argc, char * argv[], T )
     if(dimension == "Box Counting 2D"){
         string firstSlice;
         string lastSlice;
-        string pathSegmented = "/temp/segmentedFinal_";
-        string pathBoxCounting = "/temp/boxCounting2D.txt";
+        string pathSegmented;
+        string pathBoxCounting;
+
+        if(edge == "Epicardium"){
+            pathSegmented = "/temp/segmented_";
+            pathBoxCounting = "/temp/boxCountingEpicardium2D.txt";
+        }
+        else{
+            pathSegmented = "/temp/segmentedFinal_";
+            pathBoxCounting = "/temp/boxCountingEndocardium2D.txt";
+        }
+
         string pathSlices = "/temp/slices.txt";
 
         struct passwd *pw = getpwuid(getuid());
@@ -105,7 +115,7 @@ int DoIt( int argc, char * argv[], T )
                 double dimens;
                 dimens = dim.GetBoxCountingDimension2D(imag);
                 //cout<<"Dimension: "<<dimens<<endl;
-                boxCounting2D<<"Image: "<<i<<" :"<<dimens<<endl;
+                boxCounting2D<<"Image: "<<i+1<<" :"<<dimens<<endl;
             }
             boxCounting2D.close();
         }
@@ -114,8 +124,17 @@ int DoIt( int argc, char * argv[], T )
     if(dimension == "Minkowski 2D"){
         string firstSlice;
         string lastSlice;
-        string pathSegmented = "/temp/segmentedFinal_";
-        string pathMinkowski = "/temp/minkowski2D.txt";
+        string pathSegmented;
+        string pathMinkowski;
+
+        if(edge == "Epicardium"){
+            pathSegmented = "/temp/segmented_";
+            pathMinkowski = "/temp/minkowskiEpicardium2D.txt";
+        }
+        else{
+            pathSegmented = "/temp/segmentedFinal_";
+            pathMinkowski = "/temp/minkowskiEndocardium2D.txt";
+        }
 
         struct passwd *pw = getpwuid(getuid());
         string homedir = pw->pw_dir;
@@ -189,7 +208,7 @@ int DoIt( int argc, char * argv[], T )
                 double dimens;
                 dimens = dim.GetMinkowskiDimension2D(imag);
                 //cout<<"Dimension: "<<dimens<<endl;
-                minkowski2D<<"Image: "<<i<<" :"<<dimens<<endl;
+                minkowski2D<<"Image: "<<i+1<<" :"<<dimens<<endl;
             }
             minkowski2D.close();
         }
@@ -232,8 +251,18 @@ int DoIt( int argc, char * argv[], T )
     if(dimension == "Differencial Box Counting 2D"){
         string firstSlice;
         string lastSlice;
-        string pathSegmented = "/temp/segmentedFinal_";
-        string pathBoxCounting = "/temp/diffboxCounting2D.txt";
+
+        string pathSegmented;
+        string pathBoxCounting;
+
+        if(edge == "Epicardium"){
+            pathSegmented = "/temp/segmented_";
+            pathBoxCounting = "/temp/diffboxCountingEpicardium2D.txt";
+        }
+        else{
+            pathSegmented = "/temp/segmentedFinal_";
+            pathBoxCounting = "/temp/diffboxCountingEndocardium2D.txt";
+        }
 
         struct passwd *pw = getpwuid(getuid());
         string homedir = pw->pw_dir;
@@ -307,7 +336,7 @@ int DoIt( int argc, char * argv[], T )
                 double dimens;
                 dimens = dim.GetDBCDimension2D(imag);
                 //cout<<"Dimension: "<<dimens<<endl;
-                boxCounting2D<<"Image: "<<i<<" :"<<dimens<<endl;
+                boxCounting2D<<"Image: "<<i+1<<" :"<<dimens<<endl;
             }
             boxCounting2D.close();
         }

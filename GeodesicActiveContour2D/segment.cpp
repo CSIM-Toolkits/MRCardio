@@ -520,7 +520,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 utils.GetSeedUp(valS, x, y, &seedXUP, &seedYUP);
                 InternalImageType::IndexType  seedPositionUp;
                 seedPositionUp.SetElement(0,(seedXUP));
-                seedPositionUp.SetElement(1,(seedYUP - 4));
+                seedPositionUp.SetElement(1,(seedYUP - 3));
 
                 NodeType nodeUp;
                 const double seedValue = - distance;
@@ -536,7 +536,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 utils.GetSeedDown(valS, x, y, &seedXDOWN, &seedYDOWN);
                 InternalImageType::IndexType  seedPositionDown;
                 seedPositionDown.SetElement(0,(seedXDOWN));
-                seedPositionDown.SetElement(1,(seedYDOWN + 4));
+                seedPositionDown.SetElement(1,(seedYDOWN + 3));
 
                 NodeType nodeDown;
                 const double seedValue = - distance;
@@ -551,7 +551,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 int seedYLEFT;
                 utils.GetSeedLeft(valS, x, y, &seedXLEFT, &seedYLEFT);
                 InternalImageType::IndexType  seedPositionLeft;
-                seedPositionLeft.SetElement(0,(seedXLEFT - 4));
+                seedPositionLeft.SetElement(0,(seedXLEFT - 3));
                 seedPositionLeft.SetElement(1,(seedYLEFT));
 
                 NodeType nodeLeft;
@@ -567,7 +567,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 int seedYHIGHT;
                 utils.GetSeedHight(valS, x, y, &seedXHIGHT, &seedYHIGHT);
                 InternalImageType::IndexType  seedPositionHight;
-                seedPositionHight.SetElement(0,(seedXHIGHT + 4));
+                seedPositionHight.SetElement(0,(seedXHIGHT + 3));
                 seedPositionHight.SetElement(1,(seedYHIGHT));
 
                 NodeType nodeHight;
@@ -1157,7 +1157,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             utils.GetSeedUp(valS, x, y, &seedXUP, &seedYUP);
             InternalImageType::IndexType  seedPositionUp;
             seedPositionUp.SetElement(0,(seedXUP));
-            seedPositionUp.SetElement(1,(seedYUP - 4));
+            seedPositionUp.SetElement(1,(seedYUP - 3));
 
             NodeType nodeUp;
             const double seedValue = - distance;
@@ -1173,7 +1173,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             utils.GetSeedDown(valS, x, y, &seedXDOWN, &seedYDOWN);
             InternalImageType::IndexType  seedPositionDown;
             seedPositionDown.SetElement(0,(seedXDOWN));
-            seedPositionDown.SetElement(1,(seedYDOWN + 4));
+            seedPositionDown.SetElement(1,(seedYDOWN + 3));
 
             NodeType nodeDown;
             const double seedValue = - distance;
@@ -1188,7 +1188,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             int seedYLEFT;
             utils.GetSeedLeft(valS, x, y, &seedXLEFT, &seedYLEFT);
             InternalImageType::IndexType  seedPositionLeft;
-            seedPositionLeft.SetElement(0,(seedXLEFT - 4));
+            seedPositionLeft.SetElement(0,(seedXLEFT - 3));
             seedPositionLeft.SetElement(1,(seedYLEFT));
 
             NodeType nodeLeft;
@@ -1204,7 +1204,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             int seedYHIGHT;
             utils.GetSeedHight(valS, x, y, &seedXHIGHT, &seedYHIGHT);
             InternalImageType::IndexType  seedPositionHight;
-            seedPositionHight.SetElement(0,(seedXHIGHT + 4));
+            seedPositionHight.SetElement(0,(seedXHIGHT + 3));
             seedPositionHight.SetElement(1,(seedYHIGHT));
 
             NodeType nodeHight;
