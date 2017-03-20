@@ -198,7 +198,7 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
     while(s < (M/2)){
         double min = 999999;
         double max = 0;
-        int levelSize = floor(M/s);
+        int levelSize = floor(255/s);
         int box = floor(levelSize/255);
         int cont_I = 0;
         cont_A = 0;
@@ -223,8 +223,8 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
                     }
                 }
                 if(max > 0){
-                    int positionMax = max/levelSize;
-                    int positionMin = min/levelSize;
+                    int positionMax = ceil(max/s);
+                    int positionMin = ceil(min/s);
                     cont_A = cont_A + (((positionMax)-(positionMin)) +1);
                     cont++;
                 }
