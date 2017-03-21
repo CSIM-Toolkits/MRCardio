@@ -34,11 +34,11 @@ int DoIt( int argc, char * argv[], T )
         string pathBoxCounting;
 
         if(edge == "Epicardium"){
-            pathSegmented = "/temp/segmented_";
+            pathSegmented = "/temp/segmentedFinal_";
             pathBoxCounting = "/temp/boxCountingEpicardium2D.txt";
         }
         else{
-            pathSegmented = "/temp/segmentedFinal_";
+            pathSegmented = "/temp/segmented_";
             pathBoxCounting = "/temp/boxCountingEndocardium2D.txt";
         }
 
@@ -128,11 +128,11 @@ int DoIt( int argc, char * argv[], T )
         string pathMinkowski;
 
         if(edge == "Epicardium"){
-            pathSegmented = "/temp/segmented_";
+            pathSegmented = "/temp/segmentedFinal_";
             pathMinkowski = "/temp/minkowskiEpicardium2D.txt";
         }
         else{
-            pathSegmented = "/temp/segmentedFinal_";
+            pathSegmented = "/temp/segmented_";
             pathMinkowski = "/temp/minkowskiEndocardium2D.txt";
         }
 
@@ -256,11 +256,11 @@ int DoIt( int argc, char * argv[], T )
         string pathBoxCounting;
 
         if(edge == "Epicardium"){
-            pathSegmented = "/temp/segmented_";
+            pathSegmented = "/temp/segmentedFinal_";
             pathBoxCounting = "/temp/diffboxCountingEpicardium2D.txt";
         }
         else{
-            pathSegmented = "/temp/segmentedFinal_";
+            pathSegmented = "/temp/segmented_";
             pathBoxCounting = "/temp/diffboxCountingEndocardium2D.txt";
         }
 

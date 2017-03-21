@@ -210,7 +210,7 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
                 for(int c = 0; c<(1+((k-1)*2)); c++){
                     for(int d = 0; d<(1+((k-1)*2)); d++){
                         const ImageType::IndexType index = {{a+c,b+d}};
-                        if(((a+c) >= 0) && ((a+c) <= region[0]) && ((b+d) >= 0) && ((b+d) <= region[1])){
+                        if(((a+c) > 0) && ((a+c) < region[0]) && ((b+d) > 0) && ((b+d) < region[1])){
                             double minB = image->GetPixel(index);
                             double maxB = image->GetPixel(index);
                             if(minB < min){
