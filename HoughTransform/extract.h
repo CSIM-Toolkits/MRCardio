@@ -10,7 +10,7 @@ class Extract
 public:
     Extract();
 
-    void Execute(int first,int last,const char* volume);
+    void Execute(int first,int last,const char* volume, int minimum, int maximum);
 
     struct passwd *pw;
 

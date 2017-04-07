@@ -63,7 +63,7 @@ Extract::Extract()
 
 }
 
-void Extract::Execute(int first,int last,const char* volume){
+void Extract::Execute(int first,int last,const char* volume, int minimum, int maximum){
 
     typedef   unsigned char   PixelType;
     const     unsigned int    Dimension = 2;
@@ -162,8 +162,8 @@ void Extract::Execute(int first,int last,const char* volume){
         ImageType::Pointer localImage = extractImg->GetOutput();
         houghFilter->SetInput( extractImg->GetOutput() );
         houghFilter->SetNumberOfCircles(1);
-        houghFilter->SetMinimumRadius(10);
-        houghFilter->SetMaximumRadius(35);
+        houghFilter->SetMinimumRadius(minimum);
+        houghFilter->SetMaximumRadius(maximum);
         //houghFilter->SetSweepAngle(5);
 
         houghFilter->SetSigmaGradient(1);

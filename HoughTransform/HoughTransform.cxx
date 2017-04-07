@@ -44,7 +44,7 @@ int DoIt( int argc, char * argv[], T )
     ImageType::Pointer imag_out = ImageType::New();
     Extract ext;
 
-    ext.Execute(sliceBegin,sliceEnd,volume);
+    ext.Execute(sliceBegin,sliceEnd,volume, minimumRadius, maximumRadius);
 
     return EXIT_SUCCESS;
 }
