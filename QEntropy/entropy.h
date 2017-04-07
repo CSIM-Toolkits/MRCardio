@@ -8,7 +8,7 @@ class entropy
 public:
     entropy();
     typedef unsigned char PixelType;
-    typedef itk::Image<PixelType,3> ImageType;
+    typedef itk::Image<PixelType,2> ImageType;
     double Execute(ImageType::Pointer Image, double q_entropy);
     int t_final;
 };

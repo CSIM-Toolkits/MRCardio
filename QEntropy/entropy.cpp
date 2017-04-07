@@ -16,7 +16,7 @@ entropy::entropy()
 
 double entropy::Execute(ImageType::Pointer Image, double q_entropy){
     typedef unsigned char       PixelTypen;
-    const unsigned int          Dimension = 3;
+    const unsigned int          Dimension = 2;
 
     typedef itk::Image<PixelTypen, Dimension > ImageTypen;
 
