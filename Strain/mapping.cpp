@@ -39,7 +39,7 @@
 // Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
-#include "itkDemonsRegistrationFilter.h"
+#include "itkSymmetricForcesDemonsRegistrationFilter.h"
 #include "itkHistogramMatchingImageFilter.h"
 #include "itkCastImageFilter.h"
 #include "itkWarpImageFilter.h"
@@ -196,7 +196,7 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     // Software Guide : BeginCodeSnippet
     typedef itk::Vector< float, Dimension >           VectorPixelType;
     typedef itk::Image<  VectorPixelType, Dimension > DisplacementFieldType;
-    typedef itk::DemonsRegistrationFilter<
+    typedef itk::SymmetricForcesDemonsRegistrationFilter<
             InternalImageType,
             InternalImageType,
             DisplacementFieldType> RegistrationFilterType;
@@ -232,7 +232,7 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     // Software Guide : EndLatex
 
     // Software Guide : BeginCodeSnippet
-    filter->SetNumberOfIterations( 50 );
+    filter->SetNumberOfIterations( 5 );
     filter->SetStandardDeviations( 1.0 );
     // Software Guide : EndCodeSnippet
 
