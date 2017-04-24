@@ -72,7 +72,7 @@ int DoIt( int argc, char * argv[], T)
                 reader->SetFileName( inputVolume.c_str() );
                 reader->Update();
                 typedef itk::Image<unsigned char,2> ImageType2D;
-                string typeTiff = ".tif";
+                string typeTiff = ".png";
                 stringstream segment;
                 if(i<9)
                     segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;

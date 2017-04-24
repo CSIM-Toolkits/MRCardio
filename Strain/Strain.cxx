@@ -41,7 +41,7 @@ int DoIt( int argc, char * argv[], T )
     }
     slices.close();
 
-    for(int i = atoi(firstSlice.c_str()); i < (atoi(lastSlice.c_str()) - 2);i++){
+    for(int i = atoi(firstSlice.c_str()); i < (atoi(lastSlice.c_str()) - 4);i++){
         typedef    unsigned short InputPixelType;
         typedef    T     OutputPixelType;
 
@@ -84,7 +84,7 @@ int DoIt( int argc, char * argv[], T )
 //            segmentMoving<<final.c_str()<<(i+2)<<typeTiff;
 //        }
         segment<<final.c_str()<<(i+1)<<typeTiff;
-        segmentMoving<<final.c_str()<<(i+2)<<typeTiff;
+        segmentMoving<<final.c_str()<<(i+4)<<typeTiff;
         string filenameSegmented = segment.str();
         string filenameSegmentedMoving = segmentMoving.str();
         segment.str("");
