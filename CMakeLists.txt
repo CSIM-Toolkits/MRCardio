@@ -31,6 +31,7 @@ add_subdirectory(TextureFeatures)
 add_subdirectory(HARP)
 add_subdirectory(SampleEntropy)
 add_subdirectory(Strain)
+add_subdirectory(Tickness)
 ## NEXT_MODULE
 
 #-----------------------------------------------------------------------------
