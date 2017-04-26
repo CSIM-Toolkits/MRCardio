@@ -66,7 +66,7 @@ int ExtractFeatures::Extract(OffsetType offset, InternalImageType::Pointer input
 
     InternalImageType::RegionType window;
     InternalImageType::RegionType::SizeType size;
-    size.Fill(80);
+    size.Fill(70);
     window.SetSize(size);
 
     window.SetIndex(0,0);
