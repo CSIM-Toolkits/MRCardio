@@ -22,6 +22,9 @@
 #include <sys/types.h>
 #include <pwd.h>
 
+#include "itkOtsuThresholdImageFilter.h"
+#include "itkVotingBinaryIterativeHoleFillingImageFilter.h"
+
 using namespace std;
 
 segment::segment()
@@ -385,6 +388,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             ReaderType::Pointer reader = ReaderType::New();
             ReaderType::Pointer readerS = ReaderType::New();
             WriterType::Pointer writer = WriterType::New();
+            WriterType::Pointer writerFillHole = WriterType::New();
             //WriterType::Pointer writer_out = WriterType::New();
             stringstream stringFileCine;
 
@@ -399,6 +403,47 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             reader->Update();
 
             InternalImageType::Pointer val = reader->GetOutput();
+
+            typedef itk::OtsuThresholdImageFilter <InternalImageType, OutputImageType>
+                    FilterType;
+            FilterType::Pointer otsuFilter
+                    = FilterType::New();
+            otsuFilter->SetInput(val);
+            otsuFilter->Update(); // To compute threshold
+
+            typedef itk::VotingBinaryIterativeHoleFillingImageFilter<OutputImageType> FillHoleFilterType;
+            FillHoleFilterType::InputSizeType radiusF;
+            radiusF.Fill(3);
+            FillHoleFilterType::Pointer filterFillHole = FillHoleFilterType::New();
+            filterFillHole->SetInput( otsuFilter->GetOutput() );
+            filterFillHole->SetRadius( radiusF );
+            filterFillHole->SetMajorityThreshold(2);
+            filterFillHole->SetBackgroundValue(255);
+            filterFillHole->SetForegroundValue(0);
+            filterFillHole->SetMaximumNumberOfIterations(10);
+
+            stringstream stringFileSegmentedFillHole;
+
+            if(i<9)
+                stringFileSegmentedFillHole<<this->pathSegmentedFinal<<"FillHole"<<"00"<<(i+1)<<typeTiff;
+            if(i>=9 && i<99)
+                stringFileSegmentedFillHole<<this->pathSegmentedFinal<<"FillHole"<<"0"<<(i+1)<<typeTiff;
+            if(i>=99)
+                stringFileSegmentedFillHole<<this->pathSegmentedFinal<<"FillHole"<<(i+1)<<typeTiff;
+            string fillHoleFile = stringFileSegmentedFillHole.str();
+            stringFileSegmentedFillHole.str("");
+
+            try
+            {
+                writerFillHole->SetFileName(fillHoleFile);
+                writerFillHole->SetInput(filterFillHole->GetOutput() );
+                writerFillHole->Update();
+            }
+            catch( itk::ExceptionObject & excep )
+            {
+                std::cerr << "Exception caught !" << std::endl;
+                std::cerr << excep << std::endl;
+            }
 
             typedef itk::RescaleIntensityImageFilter<
                     InternalImageType,
@@ -504,7 +549,15 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             readerS->SetFileName(filenameSegmented);
             readerS->Update();
 
-            InternalImageType::Pointer valS = readerS->GetOutput();
+            typedef itk::RescaleIntensityImageFilter<OutputImageType, InternalImageType >   FillCastType;
+
+            FillCastType::Pointer filterFillCast = FillCastType::New();
+            filterFillCast->SetInput( filterFillHole->GetOutput() );
+            filterFillCast->SetOutputMinimum(   0 );
+            filterFillCast->SetOutputMaximum( 255 );
+            filterFillCast->Update();
+
+            InternalImageType::Pointer valS = filterFillCast->GetOutput();
 
             int contSeed = 0;
             typedef FastMarchingFilterType::NodeContainer  NodeContainer;

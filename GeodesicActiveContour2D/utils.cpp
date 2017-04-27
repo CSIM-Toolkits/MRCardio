@@ -108,9 +108,10 @@ void Utils::GetSeedLeft(ImageType::Pointer image, int centerX, int centerY, int 
         if(value > 0 && !a){
             *x = aux;
             *y = centerY;
-            if(((GetPixel(image, centerX, centerY) - GetPixel(image, i, centerY)) / GetPixel(image, centerX, centerY)) > 0.4 ){
+            a = true;
+            /*if(((GetPixel(image, centerX, centerY) - GetPixel(image, i, centerY)) / GetPixel(image, centerX, centerY)) > 0.4 ){
                 a = true;
-            }
+            }*/
         }
     }
 }
@@ -126,9 +127,10 @@ void Utils::GetSeedHight(ImageType::Pointer image, int centerX, int centerY, int
         if(value > 0 && !a){
             *x = aux;
             *y = centerY;
-            if(((GetPixel(image, centerX, centerY) - GetPixel(image, i, centerY)) / GetPixel(image, centerX, centerY)) > 0.4 ){
+            a = true;
+            /*if(((GetPixel(image, centerX, centerY) - GetPixel(image, i, centerY)) / GetPixel(image, centerX, centerY)) > 0.4 ){
                 a = true;
-            }
+            }*/
         }
     }
 }
@@ -144,9 +146,10 @@ void Utils::GetSeedUp(ImageType::Pointer image, int centerX, int centerY, int *x
         if(value > 0 && !a){
             *x = centerX;
             *y = aux;
-            if(((GetPixel(image, centerX, centerY) - GetPixel(image, centerX, i)) / GetPixel(image, centerX, centerY)) > 0.4 ){
+            a = true;
+            /*if(((GetPixel(image, centerX, centerY) - GetPixel(image, centerX, i)) / GetPixel(image, centerX, centerY)) > 0.4 ){
                 a = true;
-            }
+            }*/
         }
     }
 }
@@ -162,9 +165,10 @@ void Utils::GetSeedDown(ImageType::Pointer image, int centerX, int centerY, int 
         if(value > 0 && !a){
             *x = centerX;
             *y = aux;
-            if(((GetPixel(image, centerX, centerY) - GetPixel(image, centerX, i)) / GetPixel(image, centerX, centerY)) > 0.4 ){
+            a = true;
+            /*if(((GetPixel(image, centerX, centerY) - GetPixel(image, centerX, i)) / GetPixel(image, centerX, centerY)) > 0.4 ){
                 a = true;
-            }
+            }*/
         }
     }
 }
