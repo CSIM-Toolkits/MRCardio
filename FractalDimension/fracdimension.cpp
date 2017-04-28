@@ -242,7 +242,7 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
     linreg(k-1,vetR,vetNR,&m,&b);
     free(vetR);
     free(vetNR);
-    dim = m;
+    dim = -m;
     return dim;
 }
 
