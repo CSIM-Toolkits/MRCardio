@@ -6,6 +6,7 @@
 
 #include "SampleEntropyCLP.h"
 #include "sampen.h"
+#include "utils.h"
 
 #include "iostream"
 
@@ -89,7 +90,10 @@ int DoIt( int argc, char * argv[], T)
                 ImageType2D::Pointer imag = readerS->GetOutput();
 
                 SampEn sampleEntropy2D;
-                double result = sampleEntropy2D.calcSampleEn2D(imag, m , r);
+                Utils stand;
+                double std;
+                std = stand.GetStd(imag);
+                double result = sampleEntropy2D.calcSampleEn2D(imag, m , (r*std));
                 //cout<<"Dimension: "<<dimens<<endl;
                 sampleEntropy<<"Image: "<<i<<" :"<<result<<endl;
             }
