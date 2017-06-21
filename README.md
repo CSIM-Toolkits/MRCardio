@@ -1,6 +1,7 @@
+# MR Cardio
 This extension is focused to provide a set of modules of segmentation, registration and cardiac image analysis.
 
-*** Modules Descriptions ***
+# Modules Descriptions
 
 **AD:** This module allows the application of the anisotropic diffusion filter in cardiac images
 
@@ -19,3 +20,9 @@ This extension is focused to provide a set of modules of segmentation, registrat
 **Texture Features:** This module allows the measuring of Haralick Descriptors of myocardium in SPECT and MR images
 
 **Tickness:** This module allows the measuring of myocardial tickness in differents segments
+
+# Licenses
+
+Please, note that this code is under the following license
+
+ * Apache 2.0 - Read file: LICENSE
