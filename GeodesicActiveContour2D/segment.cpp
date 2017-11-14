@@ -122,7 +122,7 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
 
             string typeTiff = ".tif";
 
-            stringFileCine<<this->pathCine<<"00"<<(i+1)<<typeTiff;
+            stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
 
             string cineFile = stringFileCine.str();
             stringFileCine.str("");
@@ -394,7 +394,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
             string typeTiff = ".tif";
 
-            stringFileCine<<this->pathCine<<"00"<<(i+1)<<typeTiff;
+            stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
 
             string cineFile = stringFileCine.str();
             stringFileCine.str("");
@@ -808,7 +808,7 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
 
             string typeTiff = ".tif";
 
-            stringFileCine<<this->pathCine<<"00"<<(i+1)<<typeTiff;
+            stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
 
             string cineFile = stringFileCine.str();
             stringFileCine.str("");
@@ -1081,7 +1081,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
 
         string typeTiff = ".tif";
 
-        stringFileCine<<this->pathCine<<"00"<<(i+1)<<typeTiff;
+        stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
 
         string cineFile = stringFileCine.str();
         stringFileCine.str("");
