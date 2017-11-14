@@ -1,5 +1,5 @@
-#ifndef CONVERTVOLUME_H
-#define CONVERTVOLUME_H
+#ifndef CONVERT_H
+#define CONVERT_H
 
 #include "itkImage.h"
 #include "itkImageSeriesReader.h"
@@ -10,13 +10,13 @@
 #include <string>
 using namespace std;
 
-class convertVolume
+class convert
 {
 public:
-    convertVolume();
+    convert();
     typedef float PixelType;
     typedef itk::Image<PixelType,3> ImageType;
-    ImageType::Pointer Convert(int first, int last);
+    ImageType::Pointer ConvertImage(int first, int last);
 
     struct passwd *pw;
 
@@ -29,4 +29,4 @@ public:
 
 };
 
-#endif // CONVERTVOLUME_H
+#endif // CONVERT_H

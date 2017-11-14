@@ -1,6 +1,23 @@
+/*
+   Copyright 2016 Antonio Carlos da Silva Senra Filho
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 #include "itkImageFileWriter.h"
 
-#include "AnisotropicAnomalousDiffusionImageFilter.h"
+#include "itkAnisotropicAnomalousDiffusionImageFilter.h"
+#include "itkDiffusionEdgeOptimizationImageCalculator.h"
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkMinimumMaximumImageCalculator.h"
 #include "itkCastImageFilter.h"
@@ -25,8 +42,8 @@ int DoIt( int argc, char * argv[], T )
     typedef    float InputPixelType;
     typedef    T OutputPixelType;
 
-    typedef itk::Image<InputPixelType,  3> InputImageType;
-    typedef itk::Image<OutputPixelType, 3> OutputImageType;
+    typedef itk::Image<InputPixelType,  2> InputImageType;
+    typedef itk::Image<OutputPixelType, 2> OutputImageType;
 
     typedef itk::ImageFileReader<InputImageType>                        ReaderType;
     typedef itk::ImageFileWriter<OutputImageType>                       WriterType;
@@ -37,7 +54,7 @@ int DoIt( int argc, char * argv[], T )
     typedef itk::AnisotropicAnomalousDiffusionImageFilter<InputImageType, InputImageType> FilterType;
 
     typename ReaderType::Pointer reader = ReaderType::New();
-        itk::PluginFilterWatcher watchReader(reader, "Read Volume",CLPProcessInformation);
+    itk::PluginFilterWatcher watchReader(reader, "Read Volume",CLPProcessInformation);
 
     reader->SetFileName( inputVolume.c_str() );
     typename RescalerInputFilterType::Pointer input_rescaler = RescalerInputFilterType::New();
@@ -46,7 +63,34 @@ int DoIt( int argc, char * argv[], T )
     input_rescaler->SetOutputMinimum(0);
 
     typename FilterType::Pointer filter = FilterType::New();
-        itk::PluginFilterWatcher watchFilter(filter, "Anisotropic Anomalous Diffusion",CLPProcessInformation);
+    itk::PluginFilterWatcher watchFilter(filter, "Anisotropic Anomalous Diffusion",CLPProcessInformation);
+    filter->SetInput(input_rescaler->GetOutput());
+    if (useAutoConductance) {
+        std::cout<<"Automatic conductance adjustment...";
+        typedef itk::DiffusionEdgeOptimizationImageCalculator<InputImageType>   ConductanceOptimizationCalculator;
+        typename ConductanceOptimizationCalculator::Pointer optKappa = ConductanceOptimizationCalculator::New();
+        optKappa->SetImage(input_rescaler->GetOutput());
+        if (optFunction=="Canny") {
+            optKappa->SetOptimizationMethod(ConductanceOptimizationCalculator::CANNY);
+            std::cout<<"Canny method - Conductance = ";
+        }else if (optFunction=="MAD") {
+            optKappa->SetOptimizationMethod(ConductanceOptimizationCalculator::MAD);
+            std::cout<<"MAD method - Conductance = ";
+        }else if (optFunction=="Morphological") {
+            optKappa->SetOptimizationMethod(ConductanceOptimizationCalculator::MORPHOLOGICAL);
+            std::cout<<"Morphological method - Conductance = ";
+        }
+        optKappa->Compute();
+        filter->SetConductance(optKappa->GetKappa());
+        std::cout<<optKappa->GetKappa()<<std::endl;
+    }else{
+        std::cout<<"Manual conductance adjustment - Conductance = "<<conductance<<std::endl;
+        filter->SetConductance(conductance);
+    }
+    filter->SetIterations(iterations);
+    filter->SetTimeStep(timeStep);
+    filter->SetQ(q);
+    filter->Update();
 
     typename CastInput2OutputType::Pointer cast = CastInput2OutputType::New();
     cast->SetInput( filter->GetOutput() );
@@ -61,7 +105,7 @@ int DoIt( int argc, char * argv[], T )
     output_rescaler->SetOutputMinimum(imgValues->GetMinimum());
     output_rescaler->SetOutputMaximum(imgValues->GetMaximum());
     typename WriterType::Pointer writer = WriterType::New();
-        itk::PluginFilterWatcher watchWriter(writer, "Write Volume",CLPProcessInformation);
+    itk::PluginFilterWatcher watchWriter(writer, "Write Volume",CLPProcessInformation);
 
     writer->SetFileName( outputVolume.c_str() );
     writer->SetInput( output_rescaler->GetOutput() );

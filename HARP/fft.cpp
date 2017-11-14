@@ -11,6 +11,9 @@
 #include "itkRescaleIntensityImageFilter.h"
 #include <iostream>
 #include "fft.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 FFT::FFT()
 {
@@ -45,6 +48,17 @@ void FFT::Execute(ImageType::Pointer image){
     padFilter->SetInput(image);
 
     PadFilterType::SizeType padding;
+    const char *homedir;
+    homedir = getpwuid(getuid())->pw_dir;
+    string real;
+    string imag;
+    string mod;
+    real = "/temp/fft/real.png";
+    imag = "/temp/fft/imaginary.png";
+    mod = "/temp/fft/modulus.png";
+    string pathFileReal = homedir + real;
+    string pathFileImag = homedir + imag;
+    string pathFileMod = homedir + mod;
     // Input size is [48, 62, 42].  Pad to [48, 64, 48].
 
 
@@ -80,7 +94,7 @@ void FFT::Execute(ImageType::Pointer image){
     realRescaleFilter->Update();
     typedef itk::ImageFileWriter< UnsignedCharImageType > WriterType;
     WriterType::Pointer realWriter = WriterType::New();
-    realWriter->SetFileName("/home/gustavo/temp/fft/real.png");
+    realWriter->SetFileName(pathFileReal.c_str());
     realWriter->SetInput( realRescaleFilter->GetOutput() );
 
     realWriter->Update();
@@ -97,7 +111,7 @@ void FFT::Execute(ImageType::Pointer image){
     imaginaryRescaleFilter->SetOutputMaximum( itk::NumericTraits< UnsignedCharPixelType >::max() );
     imaginaryRescaleFilter->Update();
     WriterType::Pointer complexWriter = WriterType::New();
-    complexWriter->SetFileName("/home/gustavo/temp/fft/imaginary.png");
+    complexWriter->SetFileName(pathFileImag.c_str());
     complexWriter->SetInput( imaginaryRescaleFilter->GetOutput() );
 
     complexWriter->Update();
@@ -114,7 +128,7 @@ void FFT::Execute(ImageType::Pointer image){
     magnitudeRescaleFilter->SetOutputMaximum( itk::NumericTraits< UnsignedCharPixelType >::max() );
     magnitudeRescaleFilter->Update();
     WriterType::Pointer magnitudeWriter = WriterType::New();
-    magnitudeWriter->SetFileName("/home/gustavo/temp/fft/modulus.png");
+    magnitudeWriter->SetFileName(pathFileMod.c_str());
     magnitudeWriter->SetInput( magnitudeRescaleFilter->GetOutput() );
 
     magnitudeWriter->Update();

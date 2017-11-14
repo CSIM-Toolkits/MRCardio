@@ -1,6 +1,6 @@
 
 #-----------------------------------------------------------------------------
-set(MODULE_NAME AADImageFilter)
+set(MODULE_NAME Extract)
 
 #-----------------------------------------------------------------------------
 
@@ -26,6 +26,7 @@ set(MODULE_INCLUDE_DIRECTORIES
   )
 
 set(MODULE_SRCS
+    convert.cpp
   )
 
 set(MODULE_TARGET_LIBRARIES
@@ -38,10 +39,6 @@ SEMMacroBuildCLI(
   TARGET_LIBRARIES ${MODULE_TARGET_LIBRARIES}
   INCLUDE_DIRECTORIES ${MODULE_INCLUDE_DIRECTORIES}
   ADDITIONAL_SRCS ${MODULE_SRCS}
-itkAnisotropicAnomalousDiffusionImageFilter.h
-itkAnisotropicAnomalousDiffusionImageFilter.hxx
-itkDiffusionEdgeOptimizationImageCalculator.h
-itkDiffusionEdgeOptimizationImageCalculator.hxx
   )
 
 #-----------------------------------------------------------------------------

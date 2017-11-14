@@ -1,4 +1,4 @@
-#include "convertvolume.h"
+#include "convert.h"
 #include <string>
 #include "itkImage.h"
 #include <string.h>
@@ -9,7 +9,7 @@
 #include <pwd.h>
 
 using namespace std;
-convertVolume::convertVolume()
+convert::convert()
 {
     this->pw = getpwuid(getuid());
 
@@ -25,7 +25,7 @@ convertVolume::convertVolume()
 }
 typedef float PixelType;
 typedef itk::Image<PixelType,3> ImageType;
-ImageType::Pointer convertVolume::Convert(int first, int last){
+ImageType::Pointer convert::ConvertImage(int first, int last){
 
     typedef float   PixelType;
       const unsigned int Dimension = 3;
@@ -40,7 +40,7 @@ ImageType::Pointer convertVolume::Convert(int first, int last){
       typedef itk::NumericSeriesFileNames    NameGeneratorType;
 
       NameGeneratorType::Pointer nameGenerator = NameGeneratorType::New();
-      string format = this->pathSegmentedFinal + "%03d.tif";
+      string format = this->pathSegmentedFinal + "%03d.dcm";
       nameGenerator->SetSeriesFormat(format);
 
       nameGenerator->SetStartIndex( (first)+1 );

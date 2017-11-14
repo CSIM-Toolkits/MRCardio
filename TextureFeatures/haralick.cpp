@@ -10,6 +10,9 @@
 #include "itkMultiplyImageFilter.h"
 #include "itkRegionOfInterestImageFilter.h"
 #include <iostream>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 using namespace std;
 Haralick::Haralick()
@@ -30,6 +33,12 @@ typedef itk::MultiplyImageFilter<InternalImageType> MultiplyImageFilterType;
 
 void Haralick::Execute(ImageType::Pointer Image){
 
+    const char *homedir;
+    homedir = getpwuid(getuid())->pw_dir;
+    string pathFile;
+    pathFile = "/temp/";
+    string pathDir = homedir + pathFile;
+
     InternalImageType::Pointer image= Image;
     NeighborhoodType neighborhood;
     neighborhood.SetRadius(1);
@@ -37,9 +46,7 @@ void Haralick::Execute(ImageType::Pointer Image){
     OffsetType offset;
     typedef itk::ImageFileWriter<InternalImageType> WriterType;
     WriterType::Pointer writer=WriterType::New();
-    for ( unsigned int d = 0; d < centerIndex; d++ )
-    {
-
+    for ( unsigned int d = 0; d < centerIndex; d++ ){
         offset = neighborhood.GetOffset(d);
         InternalImageType::Pointer inertia=InternalImageType::New();
         InternalImageType::Pointer correlation=InternalImageType::New();
@@ -49,30 +56,28 @@ void Haralick::Execute(ImageType::Pointer Image){
         writer->SetInput(inertia);
         //  snprintf(buf, 100, "Inertia%u.mha", d); // Warning: call to int __builtin___snprintf_chk will always overflow destination buffer
         std::stringstream ssInertia;
-        ssInertia << "/home/gustavo/temp/" << "Inertia" << d << ".mha";
+        ssInertia << pathDir.c_str() << "Inertia" << d << ".mha";
         writer->SetFileName(ssInertia.str());
         writer->Update();
         writer->SetInput(correlation);
         std::stringstream ssCorrelation;
-        ssCorrelation << "/home/gustavo/temp/" << "Correlation" << d << ".mha";
+        ssCorrelation << pathDir.c_str() << "Correlation" << d << ".mha";
         writer->SetFileName(ssCorrelation.str());
         writer->Update();
         writer->SetInput(energy);
         std::stringstream ssEnergy;
-        ssEnergy << "/home/gustavo/temp/" << "Energy" << d << ".mha";
+        ssEnergy << pathDir.c_str() << "Energy" << d << ".mha";
         writer->SetFileName(ssEnergy.str());
         writer->Update();
         std::cout<<'\n';
     }
 
-
-
 }
 
 //calculate features for one offset
 void Haralick::calcTextureFeatureImage(OffsetType offset,
-                              InternalImageType::Pointer inputImage, InternalImageType::Pointer outInertia,
-                              InternalImageType::Pointer outCorrelation, InternalImageType::Pointer outEnergy)
+                                       InternalImageType::Pointer inputImage, InternalImageType::Pointer outInertia,
+                                       InternalImageType::Pointer outCorrelation, InternalImageType::Pointer outEnergy)
 {
     //allocate output images
     outInertia->CopyInformation(inputImage);

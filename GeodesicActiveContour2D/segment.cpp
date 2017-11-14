@@ -122,7 +122,7 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
 
             string typeTiff = ".tif";
 
-            stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
+            stringFileCine<<this->pathCine<<"00"<<(i+1)<<typeTiff;
 
             string cineFile = stringFileCine.str();
             stringFileCine.str("");
@@ -180,7 +180,7 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
             geodesicActiveContour->SetNumberOfIterations(iterations);
 
             smoothing->SetInput(val);
-            gradientMagnitude->SetInput( smoothing->GetOutput() );
+            gradientMagnitude->SetInput(smoothing->GetOutput());
             sigmoid->SetInput( gradientMagnitude->GetOutput() );
             geodesicActiveContour->SetInput(  fastMarching->GetOutput() );
             geodesicActiveContour->SetFeatureImage( sigmoid->GetOutput() );
@@ -394,7 +394,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
             string typeTiff = ".tif";
 
-            stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
+            stringFileCine<<this->pathCine<<"00"<<(i+1)<<typeTiff;
 
             string cineFile = stringFileCine.str();
             stringFileCine.str("");
@@ -493,7 +493,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             geodesicActiveContour->SetNumberOfIterations(iterations);
 
             smoothing->SetInput(val);
-            gradientMagnitude->SetInput( smoothing->GetOutput() );
+            gradientMagnitude->SetInput(smoothing->GetOutput());
             sigmoid->SetInput( gradientMagnitude->GetOutput() );
             geodesicActiveContour->SetInput(  fastMarching->GetOutput() );
             geodesicActiveContour->SetFeatureImage( sigmoid->GetOutput() );
@@ -644,7 +644,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             WriterType::Pointer writer2 = WriterType::New();
             WriterType::Pointer writer3 = WriterType::New();
             WriterType::Pointer writer4 = WriterType::New();
-            caster1->SetInput( smoothing->GetOutput() );
+            caster1->SetInput(smoothing->GetOutput());
             writer1->SetInput( caster1->GetOutput() );
             writer1->SetFileName(this->pathGacFilterFinal);
             caster1->SetOutputMinimum(   0 );
@@ -808,7 +808,7 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
 
             string typeTiff = ".tif";
 
-            stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
+            stringFileCine<<this->pathCine<<"00"<<(i+1)<<typeTiff;
 
             string cineFile = stringFileCine.str();
             stringFileCine.str("");
@@ -866,7 +866,7 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
             geodesicActiveContour->SetNumberOfIterations(iterations);
 
             smoothing->SetInput(val);
-            gradientMagnitude->SetInput( smoothing->GetOutput() );
+            gradientMagnitude->SetInput(smoothing->GetOutput());
             sigmoid->SetInput( gradientMagnitude->GetOutput() );
             geodesicActiveContour->SetInput(  fastMarching->GetOutput() );
             geodesicActiveContour->SetFeatureImage( sigmoid->GetOutput() );
@@ -935,7 +935,7 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
             WriterType::Pointer writer3 = WriterType::New();
             WriterType::Pointer writer4 = WriterType::New();
             WriterType::Pointer writerArea = WriterType::New();
-            caster1->SetInput( smoothing->GetOutput() );
+            caster1->SetInput(smoothing->GetOutput());
             writer1->SetInput( caster1->GetOutput() );
             writer1->SetFileName(this->pathGacFilter);
             caster1->SetOutputMinimum(   0 );
@@ -1081,7 +1081,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
 
         string typeTiff = ".tif";
 
-        stringFileCine<<this->pathCine<<(i+1)<<typeTiff;
+        stringFileCine<<this->pathCine<<"00"<<(i+1)<<typeTiff;
 
         string cineFile = stringFileCine.str();
         stringFileCine.str("");
@@ -1138,7 +1138,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         geodesicActiveContour->SetNumberOfIterations(iterations);
 
         smoothing->SetInput(val);
-        gradientMagnitude->SetInput( smoothing->GetOutput() );
+        gradientMagnitude->SetInput(smoothing->GetOutput());
         sigmoid->SetInput( gradientMagnitude->GetOutput() );
         geodesicActiveContour->SetInput(  fastMarching->GetOutput() );
         geodesicActiveContour->SetFeatureImage( sigmoid->GetOutput() );
@@ -1280,7 +1280,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         WriterType::Pointer writer2 = WriterType::New();
         WriterType::Pointer writer3 = WriterType::New();
         WriterType::Pointer writer4 = WriterType::New();
-        caster1->SetInput( smoothing->GetOutput() );
+        caster1->SetInput(smoothing->GetOutput());
         writer1->SetInput( caster1->GetOutput() );
         writer1->SetFileName(this->pathGacFilterFinal);
         caster1->SetOutputMinimum(   0 );

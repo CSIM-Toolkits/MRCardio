@@ -13,6 +13,9 @@
 #include "qstring.h"
 #include "QString"
 #include "convertvolume.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 // Use an anonymous namespace to keep class types and function names
 // from colliding when module is used as shared object module.  Every
 // thing should be in an anonymous namespace except for the module
@@ -27,7 +30,7 @@ int DoIt( int argc, char * argv[], T )
 {
     PARSE_ARGS;
     typedef    float InputPixelType;
-    typedef    unsigned char     OutputPixelType;
+    typedef    float     OutputPixelType;
 
     typedef itk::Image<InputPixelType,  3> InputImageType;
     typedef itk::Image<OutputPixelType, 3> OutputImageType;
@@ -46,9 +49,15 @@ int DoIt( int argc, char * argv[], T )
     reader->Update();
     int first;
     int last;
+    const char *homedir;
     string line;
     string line2;
-    ifstream myfile ("/home/gustavo/temp/slices.txt");
+    string slices;
+
+    homedir = getpwuid(getuid())->pw_dir;
+    slices = "/temp/slices.txt";
+    string pathFile = homedir + slices;
+    ifstream myfile (pathFile.c_str());
     if(myfile.is_open()){
         getline(myfile,line);
         first = atoi(line.c_str());
@@ -58,7 +67,7 @@ int DoIt( int argc, char * argv[], T )
     myfile.close();
 
     //ImageType::Pointer imag_out = ImageType::New();
-    typedef itk::Image<unsigned char,3> ImageType;
+    typedef itk::Image<float,3> ImageType;
     ImageType::Pointer imag_out = ImageType::New();
     segment seg;
     bool up = false;
@@ -86,7 +95,8 @@ int DoIt( int argc, char * argv[], T )
         seg.MyocardiumELV(first,last,sigma,sigma_min,sigma_max,propagation,curvature,advection,rms,iterations,timestep,it,conductance,alpha,beta,distance, up, down, left, hight);
     }
     if(axis == "Eixo Longo Horizontal"){
-
+        convertVolume conv;
+        conv.Convert(0,5);
     }
 
     convertVolume convert;
