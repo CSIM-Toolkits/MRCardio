@@ -515,7 +515,6 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             string line2;
             int x;
             int y;
-            int radius;
             if (endocardiumFile.is_open())
             {
                 getline (endocardiumFile,line);
@@ -1160,7 +1159,6 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         string line2;
         int x;
         int y;
-        int radius;
         if (endocardiumFile.is_open())
         {
             getline (endocardiumFile,line);

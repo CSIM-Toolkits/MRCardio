@@ -43,15 +43,10 @@ int DoIt( int argc, char * argv[], T )
 
     for(int i = atoi(firstSlice.c_str()); i < (atoi(lastSlice.c_str()) - 4);i++){
         typedef    unsigned short InputPixelType;
-        typedef    T     OutputPixelType;
 
         typedef itk::Image<InputPixelType,  2> InputImageType;
-        typedef itk::Image<OutputPixelType, 2> OutputImageType;
 
         typedef itk::ImageFileReader<InputImageType>  ReaderType;
-        typedef itk::ImageFileWriter<OutputImageType> WriterType;
-
-        typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
 
         typename ReaderType::Pointer reader = ReaderType::New();
         itk::PluginFilterWatcher watchReader(reader, "Read Volume",

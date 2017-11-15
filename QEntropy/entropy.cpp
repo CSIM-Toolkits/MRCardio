@@ -66,8 +66,6 @@ double entropy::Execute(ImageType::Pointer Image, double q_entropy){
     }
     data[0] = 0;
     total = total - value_out;
-    HistogramType::ConstIterator itr = histogram->Begin();
-    HistogramType::ConstIterator end = histogram->End();
 
     for(int i=0;i<256;i++){
         norm_histo[i] = data[i]/total;

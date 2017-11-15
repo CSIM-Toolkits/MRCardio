@@ -44,13 +44,8 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
 
     typedef itk::Image< PixelType, 2> ImageType;
 
-    typedef itk::ShapedNeighborhoodIterator<ImageType> IteratorType;
-
     double dim = 0.0;
     int cont_A = 0;
-    int cont_elem = 0;
-    double sum_la = 0.0;
-    bool isZero = false;
     bool isElement = false;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
     double M = region[0];
@@ -110,13 +105,8 @@ double fracdimension::GetBoxCountingDimension3D(ImageType::Pointer image){
 
     typedef itk::Image< PixelType, 3> ImageType;
 
-    typedef itk::ShapedNeighborhoodIterator<ImageType> IteratorType;
-
     double dim = 0.0;
     int cont_A = 0;
-    int cont_elem = 0;
-    double sum_la = 0.0;
-    bool isZero = false;
     bool isElement = false;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
     double M = region[0];
@@ -179,15 +169,9 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
     typedef unsigned int PixelType;
 
     typedef itk::Image< PixelType, 2> ImageType;
-
-    typedef itk::ShapedNeighborhoodIterator<ImageType> IteratorType;
-
+    bool isElement;
     double dim = 0.0;
     int cont_A = 0;
-    int cont_elem = 0;
-    double sum_la = 0.0;
-    bool isZero = false;
-    bool isElement = false;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
     double M = region[0];
     double r = 0;
@@ -198,9 +182,6 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
     while(s < (M/2)){
         double min = 999999;
         double max = 0;
-        int levelSize = floor(255/s);
-        int box = floor(levelSize/255);
-        int cont_I = 0;
         cont_A = 0;
         dim = 0;
         int cont = 0;
@@ -246,10 +227,6 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
     return dim;
 }
 
-double fracdimension::GetDBCDimension3D(ImageType::Pointer Image){
-
-}
-
 /**
  * @brief fracdimension::GetMinkowskiDimension2D
  * Computing Minkowski Dimension for 2D images
@@ -261,12 +238,8 @@ double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
 
     typedef itk::Image< PixelType, 2> ImageType;
 
-    typedef itk::ShapedNeighborhoodIterator<ImageType> IteratorType;
-
     double dim = 0.0;
     int cont_A = 0;
-    int cont_elem = 0;
-    double sum_la = 0.0;
     bool isElement = false;
     bool isZero = false;
     int contZero = 0;

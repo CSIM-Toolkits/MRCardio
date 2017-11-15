@@ -32,18 +32,6 @@ double Utils::GetPixel(ImageType3D::Pointer image, double x, double y, double z)
     return pixelValue;
 }
 
-double Utils::GetMaximum(ImageType::Pointer image){
-    double maximum;
-
-    return maximum;
-}
-
-double Utils::GetMinimum(ImageType::Pointer image){
-    double minimum;
-
-    return minimum;
-}
-
 double Utils::GetStd(ImageType::Pointer image){
     double std = 0.0;
     double meanImage = GetMean(image);

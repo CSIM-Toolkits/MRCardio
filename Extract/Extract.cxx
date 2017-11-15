@@ -20,12 +20,10 @@ int DoIt( int argc, char * argv[], TPixel )
   PARSE_ARGS;
 
   typedef TPixel InputPixelType;
-  typedef TPixel OutputPixelType;
 
   const unsigned int Dimension = 3;
 
   typedef itk::Image<InputPixelType,  Dimension> InputImageType;
-  typedef itk::Image<OutputPixelType, Dimension> OutputImageType;
 
   typedef itk::ImageFileReader<InputImageType>  ReaderType;
 

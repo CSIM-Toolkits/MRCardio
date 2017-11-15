@@ -90,6 +90,7 @@ int ExtractFeatures::Extract(OffsetType offset, InternalImageType::Pointer input
     *clusterProminence = featureCalc->GetClusterProminence();
     *clusterShade = featureCalc->GetClusterShade();
 
+    return true;
 }
 
 int ExtractFeatures::Extract3D(OffsetType3D offset3D, InternalImageType3D::Pointer inputImage3D, double *entropy, double *energy,
@@ -134,6 +135,8 @@ int ExtractFeatures::Extract3D(OffsetType3D offset3D, InternalImageType3D::Point
     *inverseDifferenceMoment = featureCalc3D->GetInverseDifferenceMoment();
     *clusterProminence = featureCalc3D->GetClusterProminence();
     *clusterShade = featureCalc3D->GetClusterShade();
+
+    return true;
 }
 
 int ExtractFeatures::ExtractRunLength2D(InternalImageType::Pointer inputImage2D, double *shortRunEmphasis, double *longRunEmphasis,
@@ -212,13 +215,9 @@ int ExtractFeatures::ExtractRunLength2D(InternalImageType::Pointer inputImage2D,
 
         RunLengthFilterType::FeatureValueVectorPointer means =
                 runLengthFilter->GetFeatureMeans();
-        const RunLengthFilterType::FeatureNameVector* names =
-                runLengthFilter->GetRequestedFeatures();
 
         RunLengthFilterType::FeatureValueVector::ConstIterator mIt =
                 means->Begin();
-        RunLengthFilterType::FeatureNameVector::ConstIterator nIt =
-                names->Begin();
 
         *shortRunEmphasis = mIt.Value(); ++mIt;
         *longRunEmphasis = mIt.Value(); ++mIt;
@@ -315,13 +314,9 @@ int ExtractFeatures::ExtractRunLength3D(InternalImageType3D::Pointer inputImage3
 
         RunLengthFilterType::FeatureValueVectorPointer means =
                 runLengthFilter->GetFeatureMeans();
-        const RunLengthFilterType::FeatureNameVector* names =
-                runLengthFilter->GetRequestedFeatures();
 
         RunLengthFilterType::FeatureValueVector::ConstIterator mIt =
                 means->Begin();
-        RunLengthFilterType::FeatureNameVector::ConstIterator nIt =
-                names->Begin();
 
         *shortRunEmphasis = mIt.Value(); ++mIt;
         *longRunEmphasis = mIt.Value(); ++mIt;

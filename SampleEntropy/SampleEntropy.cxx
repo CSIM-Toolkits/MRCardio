@@ -51,15 +51,10 @@ int DoIt( int argc, char * argv[], T)
         {
             for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
                 typedef    unsigned char InputPixelType;
-                typedef    T     OutputPixelType;
 
                 typedef itk::Image<InputPixelType,  2> InputImageType;
-                typedef itk::Image<OutputPixelType, 2> OutputImageType;
 
                 typedef itk::ImageFileReader<InputImageType>  ReaderType;
-                typedef itk::ImageFileWriter<OutputImageType> WriterType;
-
-                typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
 
                 typename ReaderType::Pointer reader = ReaderType::New();
                 itk::PluginFilterWatcher watchReader(reader, "Read Volume",
@@ -114,15 +109,10 @@ int DoIt( int argc, char * argv[], T)
         if (sampleEntropy.is_open())
         {
             typedef    unsigned char InputPixelType;
-            typedef    T     OutputPixelType;
 
             typedef itk::Image<InputPixelType,  3> InputImageType;
-            typedef itk::Image<OutputPixelType, 3> OutputImageType;
 
             typedef itk::ImageFileReader<InputImageType>  ReaderType;
-            typedef itk::ImageFileWriter<OutputImageType> WriterType;
-
-            typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
 
             typename ReaderType::Pointer reader = ReaderType::New();
             itk::PluginFilterWatcher watchReader(reader, "Read Volume",

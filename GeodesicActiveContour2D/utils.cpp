@@ -32,18 +32,6 @@ double Utils::GetPixel(ImageType::Pointer image, double x, double y, double z){
     return pixelValue;
 }
 
-double Utils::GetMaximum(ImageType::Pointer image){
-    double maximum;
-
-    return maximum;
-}
-
-double Utils::GetMinimum(ImageType::Pointer image){
-    double minimum;
-
-    return minimum;
-}
-
 double Utils::GetStd(ImageType::Pointer image){
     double std = 0.0;
     double meanImage = GetMean(image);
@@ -98,8 +86,6 @@ double Utils::GetDepth(ImageType::Pointer image){
 }
 
 void Utils::GetSeedLeft(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
-    double width = GetWidth(image);
-    double height = GetHeight(image);
     double value = 9999;
     bool a = false;
     for(int i = centerX; i > 0; i--){
@@ -117,7 +103,6 @@ void Utils::GetSeedLeft(ImageType::Pointer image, int centerX, int centerY, int 
 }
 
 void Utils::GetSeedHight(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
-    double width = GetWidth(image);
     double height = GetHeight(image);
     double value = 9999;
     bool a = false;
@@ -136,8 +121,6 @@ void Utils::GetSeedHight(ImageType::Pointer image, int centerX, int centerY, int
 }
 
 void Utils::GetSeedUp(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
-    double width = GetWidth(image);
-    double height = GetHeight(image);
     double value = 9999;
     bool a = false;
     for(int i = centerY; i > 0; i--){
@@ -156,7 +139,6 @@ void Utils::GetSeedUp(ImageType::Pointer image, int centerX, int centerY, int *x
 
 void Utils::GetSeedDown(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
     double width = GetWidth(image);
-    double height = GetHeight(image);
     double value = 9999;
     bool a = false;
     for(int i = centerY; i < width ; i++){

@@ -31,7 +31,6 @@ int DoIt( int argc, char * argv[], TPixel )
 
     if(dimension == "Haralick Features 2D"){
         typedef float InputPixelType;
-        typedef float OutputPixelType;
 
         const unsigned int Dimension = 2;
 
@@ -58,7 +57,6 @@ int DoIt( int argc, char * argv[], TPixel )
             for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
 
                 typedef itk::Image<InputPixelType,  Dimension> InputImageType;
-                typedef itk::Image<OutputPixelType, Dimension> OutputImageType;
 
                 typedef itk::ImageFileReader<InputImageType>  ReaderType;
 
@@ -91,7 +89,6 @@ int DoIt( int argc, char * argv[], TPixel )
                 neighborhood.SetRadius(1);
                 unsigned int centerIndex = neighborhood.GetCenterNeighborhoodIndex();
                 OffsetType offset;
-                const char* volume = inputVolume.c_str();
                 for ( unsigned int d = 0; d < centerIndex; d++ )
                 {
                     double entropy;
@@ -146,12 +143,10 @@ int DoIt( int argc, char * argv[], TPixel )
 
 
             typedef float InputPixelType3D;
-            typedef float OutputPixelType3D;
 
             const unsigned int Dimension3D = 3;
 
             typedef itk::Image<InputPixelType3D,  Dimension3D> InputImageType3D;
-            typedef itk::Image<OutputPixelType3D, Dimension3D> OutputImageType3D;
 
             typedef itk::ImageFileReader<InputImageType3D>  ReaderType3D;
 
@@ -170,7 +165,6 @@ int DoIt( int argc, char * argv[], TPixel )
             neighborhood3D.SetRadius(1);
             unsigned int centerIndex3D = neighborhood3D.GetCenterNeighborhoodIndex();
             OffsetType3D offset3D;
-            const char* volume3D = inputVolume.c_str();
             for ( unsigned int d = 0; d < centerIndex3D; d++ )
             {
                 offset3D = neighborhood3D.GetOffset(d);
@@ -217,12 +211,10 @@ int DoIt( int argc, char * argv[], TPixel )
             double longRunHighGreyLevelEmphasis;
 
             typedef float InputPixelType3D;
-            typedef float OutputPixelType3D;
 
             const unsigned int Dimension3D = 3;
 
             typedef itk::Image<InputPixelType3D,  Dimension3D> InputImageType3D;
-            typedef itk::Image<OutputPixelType3D, Dimension3D> OutputImageType3D;
 
             typedef itk::ImageFileReader<InputImageType3D>  ReaderType3D;
 
@@ -239,9 +231,7 @@ int DoIt( int argc, char * argv[], TPixel )
             NeighborhoodType3D neighborhood3D;
             typedef InternalImageType3D::OffsetType OffsetType3D;
             neighborhood3D.SetRadius(1);
-            unsigned int centerIndex3D = neighborhood3D.GetCenterNeighborhoodIndex();
             OffsetType3D offset3D;
-            const char* volume3D = inputVolume.c_str();
 
             hac3D.ExtractRunLength3D(imag3D, &shortRunEmphasis, &longRunEmphasis, &greyLevelNonuniformity,
                                      &runLengthNonuniformity, &lowGrayLevelRunEmphasis, &highGreyLevelRunEmphasis,
@@ -264,7 +254,6 @@ int DoIt( int argc, char * argv[], TPixel )
     }
     if(dimension == "Run Length Features 2D"){
         typedef float InputPixelType;
-        typedef float OutputPixelType;
 
         const unsigned int Dimension = 2;
 
@@ -292,7 +281,6 @@ int DoIt( int argc, char * argv[], TPixel )
             for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
 
                 typedef itk::Image<InputPixelType,  Dimension> InputImageType;
-                typedef itk::Image<OutputPixelType, Dimension> OutputImageType;
 
                 typedef itk::ImageFileReader<InputImageType>  ReaderType;
 
@@ -330,12 +318,10 @@ int DoIt( int argc, char * argv[], TPixel )
                 double longRunHighGreyLevelEmphasis;
 
                 typedef float InputPixelType2D;
-                typedef float OutputPixelType2D;
 
                 const unsigned int Dimension2D = 2;
 
                 typedef itk::Image<InputPixelType2D,  Dimension2D> InputImageType2D;
-                typedef itk::Image<OutputPixelType2D, Dimension2D> OutputImageType2D;
 
                 typedef itk::ImageFileReader<InputImageType2D>  ReaderType2D;
 
@@ -352,9 +338,7 @@ int DoIt( int argc, char * argv[], TPixel )
                 NeighborhoodType2D neighborhood2D;
                 typedef InternalImageType2D::OffsetType OffsetType2D;
                 neighborhood2D.SetRadius(1);
-                unsigned int centerIndex2D = neighborhood2D.GetCenterNeighborhoodIndex();
                 OffsetType2D offset2D;
-                const char* volume2D = inputVolume.c_str();
 
                 hac2D.ExtractRunLength2D(imag2D, &shortRunEmphasis, &longRunEmphasis, &greyLevelNonuniformity,
                                          &runLengthNonuniformity, &lowGrayLevelRunEmphasis, &highGreyLevelRunEmphasis,

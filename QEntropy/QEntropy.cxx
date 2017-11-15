@@ -76,7 +76,6 @@ int DoIt( int argc, char * argv[], T )
         reader->SetFileName( inputVolume.c_str() );
         reader->Update();
 
-        typedef itk::Image<unsigned short,2> ImageType2D;
         string typeTiff = ".tif";
         stringstream segment;
         segment<<final.c_str()<<(i+1)<<typeTiff;
@@ -85,8 +84,6 @@ int DoIt( int argc, char * argv[], T )
         typename ReaderType::Pointer readerFixed = ReaderType::New();
         readerFixed->SetFileName(filenameSegmented);
         readerFixed->Update();
-
-        typedef itk::ImageRegionIterator< InputImageType > ImageIteratorType;
 
         typedef itk::Image<unsigned char,2> ImageType;
         ImageType::Pointer imag = readerFixed->GetOutput();

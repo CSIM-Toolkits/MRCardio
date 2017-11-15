@@ -42,9 +42,6 @@ int DoIt( int argc, char * argv[], T )
     typename ReaderType::Pointer reader = ReaderType::New();
     itk::PluginFilterWatcher watchReader(reader, "Read Volume",
                                          CLPProcessInformation);
-    const char* volume = inputVolume.c_str();
-    const char* volume_out = outputVolume.c_str();
-    //volume = inputVolume.c_str();
     reader->SetFileName( inputVolume.c_str() );
     reader->Update();
     int first;

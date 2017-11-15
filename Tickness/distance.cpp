@@ -130,20 +130,13 @@ void Distance::GetTickness(int first, int last){
 }
 
 double Distance::calcDistance(ImageType2D::Pointer image, int x, int y, int pos){
-    double distance = 0.0;
 
     typedef unsigned int PixelType;
 
     typedef itk::Image< PixelType, 2> ImageType;
 
-    typedef itk::ShapedNeighborhoodIterator<ImageType> IteratorType;
-
-    double dim = 0.0;
-    int cont_A = 0;
     bool isElement = false;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
-    cont_A = 0;
-    dim = 0;
 
     itk::Point<int,2> p0;
     itk::Point<int,2> p1;

@@ -15,8 +15,6 @@ public:
 
     double GetPixel(ImageType::Pointer image, double x, double y);
     double GetPixel(ImageType::Pointer image, double x, double y, double z);
-    double GetMinimum(ImageType::Pointer image);
-    double GetMaximum(ImageType::Pointer image);
     double GetStd(ImageType::Pointer image);
     double GetMean(ImageType::Pointer image);
     double GetHeight(ImageType::Pointer image);

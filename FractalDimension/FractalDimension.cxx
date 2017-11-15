@@ -60,15 +60,10 @@ int DoIt( int argc, char * argv[], T )
         {
             for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
                 typedef    unsigned int InputPixelType;
-                typedef    T     OutputPixelType;
 
                 typedef itk::Image<InputPixelType,  2> InputImageType;
-                typedef itk::Image<OutputPixelType, 2> OutputImageType;
 
                 typedef itk::ImageFileReader<InputImageType>  ReaderType;
-                typedef itk::ImageFileWriter<OutputImageType> WriterType;
-
-                typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
 
                 typename ReaderType::Pointer reader = ReaderType::New();
                 itk::PluginFilterWatcher watchReader(reader, "Read Volume",
@@ -153,15 +148,10 @@ int DoIt( int argc, char * argv[], T )
         {
             for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
                 typedef    unsigned int InputPixelType;
-                typedef    T     OutputPixelType;
 
                 typedef itk::Image<InputPixelType,  2> InputImageType;
-                typedef itk::Image<OutputPixelType, 2> OutputImageType;
 
                 typedef itk::ImageFileReader<InputImageType>  ReaderType;
-                typedef itk::ImageFileWriter<OutputImageType> WriterType;
-
-                typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
 
                 typename ReaderType::Pointer reader = ReaderType::New();
                 itk::PluginFilterWatcher watchReader(reader, "Read Volume",
@@ -216,15 +206,10 @@ int DoIt( int argc, char * argv[], T )
 
     if(dimension == "Box Counting 3D"){
         typedef    unsigned int InputPixelType;
-        typedef    T     OutputPixelType;
 
         typedef itk::Image<InputPixelType,  3> InputImageType;
-        typedef itk::Image<OutputPixelType, 3> OutputImageType;
 
         typedef itk::ImageFileReader<InputImageType>  ReaderType;
-        typedef itk::ImageFileWriter<OutputImageType> WriterType;
-
-        typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
 
         typename ReaderType::Pointer reader = ReaderType::New();
         itk::PluginFilterWatcher watchReader(reader, "Read Volume",
@@ -232,10 +217,6 @@ int DoIt( int argc, char * argv[], T )
 
         reader->SetFileName( inputVolume.c_str() );
         reader->Update();
-
-        typedef itk::ImageRegionIterator< InputImageType > ImageIteratorType;
-
-        const char* volume_out = outputVolume.c_str();
 
         typedef itk::Image<unsigned int,3> ImageType;
         ImageType::Pointer imag = reader->GetOutput();
@@ -281,15 +262,10 @@ int DoIt( int argc, char * argv[], T )
         {
             for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
                 typedef    unsigned int InputPixelType;
-                typedef    T     OutputPixelType;
 
                 typedef itk::Image<InputPixelType,  2> InputImageType;
-                typedef itk::Image<OutputPixelType, 2> OutputImageType;
 
                 typedef itk::ImageFileReader<InputImageType>  ReaderType;
-                typedef itk::ImageFileWriter<OutputImageType> WriterType;
-
-                typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
 
                 typename ReaderType::Pointer reader = ReaderType::New();
                 itk::PluginFilterWatcher watchReader(reader, "Read Volume",
@@ -340,40 +316,6 @@ int DoIt( int argc, char * argv[], T )
             }
             boxCounting2D.close();
         }
-    }
-
-    if(dimension == "Differencial Box Counting 3D"){
-        typedef    unsigned int InputPixelType;
-        typedef    T     OutputPixelType;
-
-        typedef itk::Image<InputPixelType,  3> InputImageType;
-        typedef itk::Image<OutputPixelType, 3> OutputImageType;
-
-        typedef itk::ImageFileReader<InputImageType>  ReaderType;
-        typedef itk::ImageFileWriter<OutputImageType> WriterType;
-
-        typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
-
-        typename ReaderType::Pointer reader = ReaderType::New();
-        itk::PluginFilterWatcher watchReader(reader, "Read Volume",
-                                             CLPProcessInformation);
-
-        reader->SetFileName( inputVolume.c_str() );
-        reader->Update();
-
-        typedef itk::ImageRegionIterator< InputImageType > ImageIteratorType;
-
-        const char* volume_out = outputVolume.c_str();
-
-        typedef itk::Image<unsigned int,3> ImageType;
-        ImageType::Pointer imag = reader->GetOutput();
-        fracdimension dim;
-        double dimens;
-        //dimens = dim.GetDBCDimension(imag);
-        //dim.GradientMagnitude(imag, volume_out);
-        dimens = dim.GetDBCDimension3D(imag);
-        cout<<"Dimension: "<<dimens<<endl;
-
     }
 
     return EXIT_SUCCESS;
