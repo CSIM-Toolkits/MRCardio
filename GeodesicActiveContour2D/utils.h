@@ -27,6 +27,7 @@ public:
     void GetCenter(ImageType::Pointer image, int *x, int *y);
     double GetPerimeter(ImageTypeUC::Pointer image);
     double GetArea(ImageTypeUC::Pointer image);
+
 };
 
 #endif // UTILS_H

@@ -1,14 +1,10 @@
 #include "convertvolume.h"
-#include <string>
-#include "itkImage.h"
-#include <string.h>
-#include <QString>
-#include <iostream>
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
 
 using namespace std;
+
+typedef float PixelType;
+typedef itk::Image<PixelType,3> ImageType;
 
 /**
  * @brief convertVolume::convertVolume
@@ -28,8 +24,6 @@ convertVolume::convertVolume()
 
 }
 
-typedef float PixelType;
-typedef itk::Image<PixelType,3> ImageType;
 /**
  * @brief convertVolume::Convert
  * Convert an images series to volume
@@ -55,30 +49,27 @@ ImageType::Pointer convertVolume::Convert(int first, int last){
       string format = this->pathSegmentedFinal + "%03d.tif";
       nameGenerator->SetSeriesFormat(format);
 
-      nameGenerator->SetStartIndex( (first)+1 );
-      nameGenerator->SetEndIndex( last );
-      nameGenerator->SetIncrementIndex( 1 );
+      nameGenerator->SetStartIndex((first)+1);
+      nameGenerator->SetEndIndex(last);
+      nameGenerator->SetIncrementIndex(1);
       std::vector<std::string> names = nameGenerator->GetFileNames();
 
       // List the files
-      //
       std::vector<std::string>::iterator nit;
-      for (nit = names.begin();
-           nit != names.end();
-           nit++)
-        {
-        std::cout << "File: " << (*nit).c_str() << std::endl;
-        }
+      for (nit = names.begin(); nit != names.end(); nit++){
+          std::cout << "File: " << (*nit).c_str() << std::endl;
+      }
 
       reader->SetFileNames( names  );
       reader->Update();
       writer->SetFileName(this->pathOutput);
       writer->SetInput(reader->GetOutput());
       writer->Update();
-      typedef itk::Image<float,3> ImageType2;
-      ImageType2::Pointer imag_out = ImageType::New();
-      imag_out = reader->GetOutput();
-      return imag_out;
 
+      typedef itk::Image<float,3> ConvertedImageType;
+      ConvertedImageType::Pointer imagOutput = ConvertedImageType::New();
+      imagOutput = reader->GetOutput();
+
+      return imagOutput;
 
 }

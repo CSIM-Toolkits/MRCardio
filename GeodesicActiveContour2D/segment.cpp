@@ -1,4 +1,5 @@
 #include "segment.h"
+#include "utils.h"
 #include "itkGeodesicActiveContourLevelSetImageFilter.h"
 #include "itkCurvatureAnisotropicDiffusionImageFilter.h"
 #include "itkGradientMagnitudeRecursiveGaussianImageFilter.h"
@@ -6,24 +7,14 @@
 #include "itkFastMarchingImageFilter.h"
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
-#include "itkImageFileReader.h"
-#include "itkImageFileWriter.h"
-#include "itkImage.h"
-#include <iostream>
-#include "QString"
-#include "itkOrientImageFilter.h"
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <itkGradientMagnitudeImageFilter.h>
-#include <itkAndImageFilter.h>
-#include "utils.h"
-#include <unistd.h>
-#include <sys/types.h>
-#include <pwd.h>
-
 #include "itkOtsuThresholdImageFilter.h"
 #include "itkVotingBinaryIterativeHoleFillingImageFilter.h"
+#include "itkImageFileReader.h"
+#include "itkImageFileWriter.h"
+#include <itkGradientMagnitudeImageFilter.h>
+#include <itkAndImageFilter.h>
+#include <pwd.h>
+#include <iostream>
 
 using namespace std;
 
@@ -92,6 +83,7 @@ segment::segment()
 
     this->pathExtractValues = this->homedir + this->extractValues;
     this->pathExtractValuesMyocardium = this->homedir + this->extractValuesMyocardium;
+
 }
 
 /**
@@ -114,9 +106,13 @@ segment::segment()
  * @param beta
  * @param distance
  */
-void segment::InternalEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance){
+void segment::InternalEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation,
+        double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance,
+        double alpha, double beta, double distance){
+
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ofstream extractValues(this->pathExtractValues.c_str());
+
     if (extractValues.is_open()){
         for(int i =first; i<last;i++){
             typedef   float           InternalPixelType;
@@ -131,9 +127,9 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
                     OutputImageType    >       ThresholdingFilterType;
             ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
             thresholder->SetLowerThreshold( -1000.0 );
-            thresholder->SetUpperThreshold(     0.0 );
-            thresholder->SetOutsideValue(  0  );
-            thresholder->SetInsideValue(  255 );
+            thresholder->SetUpperThreshold(0.0);
+            thresholder->SetOutsideValue(0);
+            thresholder->SetInsideValue(255);
 
             typedef  itk::ImageFileReader< InternalImageType > ReaderType;
             typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
@@ -218,12 +214,12 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
             const double sig = sigma;
             gradientMagnitude->SetSigma(sig);
 
-            sigmoid->SetAlpha( alpha );
-            sigmoid->SetBeta(  beta  );
+            sigmoid->SetAlpha(alpha);
+            sigmoid->SetBeta(beta);
 
             string line;
-            int x;
-            int y;
+            int x = 0;
+            int y = 0;
 
             if (endocardiumFile.is_open())
             {
@@ -243,21 +239,21 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
             typedef FastMarchingFilterType::NodeType       NodeType;
             NodeContainer::Pointer seeds = NodeContainer::New();
             InternalImageType::IndexType  seedPosition;
-            seedPosition.SetElement(0,x);
-            seedPosition.SetElement(1,y);
+            seedPosition.SetElement(0, x);
+            seedPosition.SetElement(1, y);
             //seedPosition.SetElement(2,(int)z);
             cout<<"X, Y = "<<x<<" "<<y<<endl;
             NodeType node;
             const double seedValue = - distance;
-            node.SetValue( seedValue );
-            node.SetIndex( seedPosition );
+            node.SetValue(seedValue);
+            node.SetIndex(seedPosition);
 
             seeds->Initialize();
-            seeds->InsertElement( 0, node );
+            seeds->InsertElement(0, node );
 
-            fastMarching->SetTrialPoints(  seeds  );
+            fastMarching->SetTrialPoints(seeds);
 
-            fastMarching->SetSpeedConstant( 1.0 );
+            fastMarching->SetSpeedConstant(1.0);
 
             CastFilterType::Pointer caster1 = CastFilterType::New();
             CastFilterType::Pointer caster2 = CastFilterType::New();
@@ -270,26 +266,26 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
             caster1->SetInput( smoothing->GetOutput() );
             writer1->SetInput( caster1->GetOutput() );
             writer1->SetFileName(this->pathGacFilter);
-            caster1->SetOutputMinimum(   0 );
-            caster1->SetOutputMaximum( 255 );
+            caster1->SetOutputMinimum(0);
+            caster1->SetOutputMaximum(255);
             writer1->Update();
             caster2->SetInput( gradientMagnitude->GetOutput() );
             writer2->SetInput( caster2->GetOutput() );
             writer2->SetFileName(this->pathGacGradient);
-            caster2->SetOutputMinimum(   0 );
-            caster2->SetOutputMaximum( 255 );
+            caster2->SetOutputMinimum(0);
+            caster2->SetOutputMaximum(255);
             writer2->Update();
             caster3->SetInput( sigmoid->GetOutput() );
             writer3->SetInput( caster3->GetOutput() );
             writer3->SetFileName(this->pathGacSigmoid);
-            caster3->SetOutputMinimum(   0 );
-            caster3->SetOutputMaximum( 255 );
+            caster3->SetOutputMinimum(0);
+            caster3->SetOutputMaximum(255);
             writer3->Update();
             caster4->SetInput( fastMarching->GetOutput() );
             writer4->SetInput( caster4->GetOutput() );
             writer4->SetFileName(this->pathGacMap);
-            caster4->SetOutputMinimum(   0 );
-            caster4->SetOutputMaximum( 255 );
+            caster4->SetOutputMinimum(0);
+            caster4->SetOutputMaximum(255);
 
             fastMarching->SetOutputSize(
                         reader->GetOutput()->GetBufferedRegion().GetSize() );
@@ -379,6 +375,7 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
             gradientWriter->Update();
         }
     }
+
     extractValues.close();
     endocardiumFile.close();
 
@@ -408,10 +405,14 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
  * @param left
  * @param hight
  */
-void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance, bool up, bool down, bool left, bool hight){
+void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation,
+        double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance,
+        double alpha, double beta, double distance, bool up, bool down, bool left, bool hight){
+
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ofstream extractValuesMyocardium(this->pathExtractValuesMyocardium.c_str());
     ifstream radiusFile (this->pathRadius.c_str());
+
     if (extractValuesMyocardium.is_open()){
         for(int i =first; i<last;i++){
             typedef   float           InternalPixelType;
@@ -425,10 +426,10 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                     InternalImageType,
                     OutputImageType    >       ThresholdingFilterType;
             ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
-            thresholder->SetLowerThreshold( -1000.0 );
-            thresholder->SetUpperThreshold(     0.0 );
-            thresholder->SetOutsideValue(  0  );
-            thresholder->SetInsideValue(  255 );
+            thresholder->SetLowerThreshold( -1000.0);
+            thresholder->SetUpperThreshold(0.0);
+            thresholder->SetOutsideValue(0);
+            thresholder->SetInsideValue(255);
 
             typedef  itk::ImageFileReader< InternalImageType > ReaderType;
             typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
@@ -457,16 +458,16 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                     = FilterType::New();
 
             typedef itk::BinaryThresholdImageFilter <InternalImageType, OutputImageType>
-                BinaryThresholdImageFilterType;
+                    BinaryThresholdImageFilterType;
 
             BinaryThresholdImageFilterType::Pointer thresholdFilter
-                = BinaryThresholdImageFilterType::New();
-                thresholdFilter->SetInput(val);
-                thresholdFilter->SetLowerThreshold(0);
-                thresholdFilter->SetUpperThreshold(160);
-                thresholdFilter->SetInsideValue(255);
-                thresholdFilter->SetOutsideValue(0);
-                thresholdFilter->Update();
+                    = BinaryThresholdImageFilterType::New();
+            thresholdFilter->SetInput(val);
+            thresholdFilter->SetLowerThreshold(0);
+            thresholdFilter->SetUpperThreshold(160);
+            thresholdFilter->SetInsideValue(255);
+            thresholdFilter->SetOutsideValue(0);
+            thresholdFilter->Update();
 
             otsuFilter->SetInput(val);
             otsuFilter->Update(); // To compute threshold
@@ -568,13 +569,13 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             const double sig = sigma;
             gradientMagnitude->SetSigma(sig);
 
-            sigmoid->SetAlpha( alpha );
-            sigmoid->SetBeta(  beta  );
+            sigmoid->SetAlpha(alpha);
+            sigmoid->SetBeta(beta);
 
             string line;
             string line2;
-            int x;
-            int y;
+            int x = 0;
+            int y = 0;
             if (endocardiumFile.is_open())
             {
                 getline (endocardiumFile,line);
@@ -612,15 +613,15 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
             FillCastType::Pointer filterFillCast = FillCastType::New();
             filterFillCast->SetInput( filterFillHole->GetOutput() );
-            filterFillCast->SetOutputMinimum(   0 );
-            filterFillCast->SetOutputMaximum( 255 );
+            filterFillCast->SetOutputMinimum(0);
+            filterFillCast->SetOutputMaximum(255);
             filterFillCast->Update();
 
             InternalImageType::Pointer valS = filterFillCast->GetOutput();
 
             int contSeed = 0;
-            typedef FastMarchingFilterType::NodeContainer  NodeContainer;
-            typedef FastMarchingFilterType::NodeType       NodeType;
+            typedef FastMarchingFilterType::NodeContainer   NodeContainer;
+            typedef FastMarchingFilterType::NodeType    NodeType;
             NodeContainer::Pointer seeds = NodeContainer::New();
             Utils utils;
 
@@ -702,9 +703,9 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 seedCoord<<seedXHIGHT + 3<<'	'<<seedYHIGHT<<endl;
             }
 
-            fastMarching->SetTrialPoints(  seeds  );
+            fastMarching->SetTrialPoints(seeds);
 
-            fastMarching->SetSpeedConstant( 1.0 );
+            fastMarching->SetSpeedConstant(1.0);
 
             CastFilterType::Pointer caster1 = CastFilterType::New();
             CastFilterType::Pointer caster2 = CastFilterType::New();
@@ -717,26 +718,26 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             caster1->SetInput(smoothing->GetOutput());
             writer1->SetInput( caster1->GetOutput() );
             writer1->SetFileName(this->pathGacFilterFinal);
-            caster1->SetOutputMinimum(   0 );
-            caster1->SetOutputMaximum( 255 );
+            caster1->SetOutputMinimum(0);
+            caster1->SetOutputMaximum(255);
             writer1->Update();
             caster2->SetInput( gradientMagnitude->GetOutput() );
             writer2->SetInput( caster2->GetOutput() );
             writer2->SetFileName(this->pathGacGradientFinal);
-            caster2->SetOutputMinimum(   0 );
-            caster2->SetOutputMaximum( 255 );
+            caster2->SetOutputMinimum(0);
+            caster2->SetOutputMaximum(255);
             writer2->Update();
             caster3->SetInput( sigmoid->GetOutput() );
             writer3->SetInput( caster3->GetOutput() );
             writer3->SetFileName(this->pathGacSigmoidFinal);
-            caster3->SetOutputMinimum(   0 );
-            caster3->SetOutputMaximum( 255 );
+            caster3->SetOutputMinimum(0);
+            caster3->SetOutputMaximum(255);
             writer3->Update();
             caster4->SetInput( fastMarching->GetOutput() );
             writer4->SetInput( caster4->GetOutput() );
             writer4->SetFileName(this->pathGacMapFinal);
-            caster4->SetOutputMinimum(   0 );
-            caster4->SetOutputMaximum( 255 );
+            caster4->SetOutputMinimum(0);
+            caster4->SetOutputMaximum(255);
 
             fastMarching->SetOutputSize(
                         reader->GetOutput()->GetBufferedRegion().GetSize() );
@@ -766,8 +767,8 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
             CastFilterType::Pointer caster5 = CastFilterType::New();
             caster5->SetInput( reader->GetOutput() );
-            caster5->SetOutputMinimum(   0 );
-            caster5->SetOutputMaximum( 255 );
+            caster5->SetOutputMinimum(0);
+            caster5->SetOutputMaximum(255);
             caster5->Update();
             typedef itk::AndImageFilter <OutputImageType>  AndImageFilterType;
             AndImageFilterType::Pointer andFilter
@@ -843,6 +844,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
         }
     }
+
     extractValuesMyocardium.close();
     endocardiumFile.close();
 
@@ -868,9 +870,13 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
  * @param beta
  * @param distance
  */
-void segment::InternalELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance){
+void segment::InternalELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation,
+            double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance,
+            double alpha, double beta, double distance){
+
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ofstream extractValues(this->pathExtractValues.c_str());
+
     if (extractValues.is_open()){
         for(int i =first; i<last;i++){
             typedef   float           InternalPixelType;
@@ -884,10 +890,10 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
                     InternalImageType,
                     OutputImageType    >       ThresholdingFilterType;
             ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
-            thresholder->SetLowerThreshold( -1000.0 );
-            thresholder->SetUpperThreshold(     0.0 );
-            thresholder->SetOutsideValue(  0  );
-            thresholder->SetInsideValue(  255 );
+            thresholder->SetLowerThreshold( -1000.0);
+            thresholder->SetUpperThreshold(0.0);
+            thresholder->SetOutsideValue(0);
+            thresholder->SetInsideValue(255);
 
             typedef  itk::ImageFileReader< InternalImageType > ReaderType;
             typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
@@ -961,8 +967,6 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
             geodesicActiveContour->SetInput(  fastMarching->GetOutput() );
             geodesicActiveContour->SetFeatureImage( sigmoid->GetOutput() );
             thresholder->SetInput( geodesicActiveContour->GetOutput() );
-            //ImageOut = thresholder->GetOutput();
-            //writer->SetInput( thresholder->GetOutput() );
 
             smoothing->SetTimeStep(timestep);
             smoothing->SetNumberOfIterations(it_dif);
@@ -971,12 +975,12 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
             const double sig = sigma;
             gradientMagnitude->SetSigma(sig);
 
-            sigmoid->SetAlpha( alpha );
-            sigmoid->SetBeta(  beta  );
+            sigmoid->SetAlpha(alpha);
+            sigmoid->SetBeta(beta);
 
             string line;
-            int x;
-            int y;
+            int x = 0;
+            int y = 0;
 
             if (endocardiumFile.is_open())
             {
@@ -1000,21 +1004,21 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
             int seedY;
             Utils utils;
             utils.GetCenter(val, &seedX, &seedY);
-            seedPosition.SetElement(0,x);
-            seedPosition.SetElement(1,y);
+            seedPosition.SetElement(0, x);
+            seedPosition.SetElement(1, y);
             //seedPosition.SetElement(2,(int)z);
             cout<<"X, Y = "<<seedX<<" "<<seedY<<endl;
             NodeType node;
             const double seedValue = - distance;
-            node.SetValue( seedValue );
-            node.SetIndex( seedPosition );
+            node.SetValue(seedValue);
+            node.SetIndex(seedPosition);
 
             seeds->Initialize();
-            seeds->InsertElement( 0, node );
+            seeds->InsertElement(0, node);
 
-            fastMarching->SetTrialPoints(  seeds  );
+            fastMarching->SetTrialPoints(seeds);
 
-            fastMarching->SetSpeedConstant( 1.0 );
+            fastMarching->SetSpeedConstant(1.0);
 
             CastFilterType::Pointer caster1 = CastFilterType::New();
             CastFilterType::Pointer caster2 = CastFilterType::New();
@@ -1028,26 +1032,26 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
             caster1->SetInput(smoothing->GetOutput());
             writer1->SetInput( caster1->GetOutput() );
             writer1->SetFileName(this->pathGacFilter);
-            caster1->SetOutputMinimum(   0 );
-            caster1->SetOutputMaximum( 255 );
+            caster1->SetOutputMinimum(0);
+            caster1->SetOutputMaximum(255);
             writer1->Update();
             caster2->SetInput( gradientMagnitude->GetOutput() );
             writer2->SetInput( caster2->GetOutput() );
             writer2->SetFileName(this->pathGacGradient);
-            caster2->SetOutputMinimum(   0 );
-            caster2->SetOutputMaximum( 255 );
+            caster2->SetOutputMinimum(0);
+            caster2->SetOutputMaximum(255);
             writer2->Update();
             caster3->SetInput( sigmoid->GetOutput() );
             writer3->SetInput( caster3->GetOutput() );
             writer3->SetFileName(this->pathGacSigmoid);
-            caster3->SetOutputMinimum(   0 );
-            caster3->SetOutputMaximum( 255 );
+            caster3->SetOutputMinimum(0);
+            caster3->SetOutputMaximum(255);
             writer3->Update();
             caster4->SetInput( fastMarching->GetOutput() );
             writer4->SetInput( caster4->GetOutput() );
             writer4->SetFileName(this->pathGacMap);
-            caster4->SetOutputMinimum(   0 );
-            caster4->SetOutputMaximum( 255 );
+            caster4->SetOutputMinimum(0);
+            caster4->SetOutputMaximum(255);
 
             fastMarching->SetOutputSize(
                         reader->GetOutput()->GetBufferedRegion().GetSize() );
@@ -1165,9 +1169,13 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
  * @param left
  * @param hight
  */
-void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance, bool up, bool down, bool left, bool hight){
+void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation,
+            double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance,
+            double alpha, double beta, double distance, bool up, bool down, bool left, bool hight){
+
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ifstream radiusFile (this->pathRadius.c_str());
+
     for(int i =first; i<last;i++){
         typedef   float           InternalPixelType;
         const     unsigned int    Dimension = 2;
@@ -1180,10 +1188,10 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
                 InternalImageType,
                 OutputImageType    >       ThresholdingFilterType;
         ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
-        thresholder->SetLowerThreshold( -1000.0 );
-        thresholder->SetUpperThreshold(     0.0 );
-        thresholder->SetOutsideValue(  0  );
-        thresholder->SetInsideValue(  255 );
+        thresholder->SetLowerThreshold( -1000.0);
+        thresholder->SetUpperThreshold(0.0);
+        thresholder->SetOutsideValue(0);
+        thresholder->SetInsideValue(255);
 
         typedef  itk::ImageFileReader< InternalImageType > ReaderType;
         typedef  itk::ImageFileWriter<  OutputImageType  > WriterType;
@@ -1257,8 +1265,6 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         geodesicActiveContour->SetInput(  fastMarching->GetOutput() );
         geodesicActiveContour->SetFeatureImage( sigmoid->GetOutput() );
         thresholder->SetInput( geodesicActiveContour->GetOutput() );
-        //ImageOut = thresholder->GetOutput();
-        //writer->SetInput( thresholder->GetOutput() );
 
         smoothing->SetTimeStep(timestep);
         smoothing->SetNumberOfIterations(it_dif);
@@ -1267,13 +1273,13 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         const double sig = sigma;
         gradientMagnitude->SetSigma(sig);
 
-        sigmoid->SetAlpha( alpha );
-        sigmoid->SetBeta(  beta  );
+        sigmoid->SetAlpha(alpha);
+        sigmoid->SetBeta(beta);
 
         string line;
         string line2;
-        int x;
-        int y;
+        int x = 0;
+        int y = 0;
         if (endocardiumFile.is_open())
         {
             getline (endocardiumFile,line);
@@ -1327,10 +1333,10 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
 
             NodeType nodeUp;
             const double seedValue = - distance;
-            nodeUp.SetValue( seedValue );
-            nodeUp.SetIndex( seedPositionUp );
+            nodeUp.SetValue(seedValue);
+            nodeUp.SetIndex(seedPositionUp);
 
-            seeds->InsertElement( contSeed, nodeUp );
+            seeds->InsertElement(contSeed, nodeUp);
             contSeed++;
         }
         if(down){
@@ -1338,15 +1344,15 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             int seedYDOWN;
             utils.GetSeedDown(valS, x, y, &seedXDOWN, &seedYDOWN);
             InternalImageType::IndexType  seedPositionDown;
-            seedPositionDown.SetElement(0,(seedXDOWN));
-            seedPositionDown.SetElement(1,(seedYDOWN + 3));
+            seedPositionDown.SetElement(0, (seedXDOWN));
+            seedPositionDown.SetElement(1, (seedYDOWN + 3));
 
             NodeType nodeDown;
             const double seedValue = - distance;
-            nodeDown.SetValue( seedValue );
-            nodeDown.SetIndex( seedPositionDown );
+            nodeDown.SetValue(seedValue);
+            nodeDown.SetIndex(seedPositionDown);
 
-            seeds->InsertElement( contSeed, nodeDown );
+            seeds->InsertElement(contSeed, nodeDown);
             contSeed++;
         }
         if(left){
@@ -1354,15 +1360,15 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             int seedYLEFT;
             utils.GetSeedLeft(valS, x, y, &seedXLEFT, &seedYLEFT);
             InternalImageType::IndexType  seedPositionLeft;
-            seedPositionLeft.SetElement(0,(seedXLEFT - 3));
-            seedPositionLeft.SetElement(1,(seedYLEFT));
+            seedPositionLeft.SetElement(0, (seedXLEFT - 3));
+            seedPositionLeft.SetElement(1, (seedYLEFT));
 
             NodeType nodeLeft;
             const double seedValue = - distance;
-            nodeLeft.SetValue( seedValue );
-            nodeLeft.SetIndex( seedPositionLeft );
+            nodeLeft.SetValue(seedValue);
+            nodeLeft.SetIndex(seedPositionLeft);
 
-            seeds->InsertElement( contSeed, nodeLeft );
+            seeds->InsertElement(contSeed, nodeLeft);
             contSeed++;
         }
         if(hight){
@@ -1370,20 +1376,20 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             int seedYHIGHT;
             utils.GetSeedHight(valS, x, y, &seedXHIGHT, &seedYHIGHT);
             InternalImageType::IndexType  seedPositionHight;
-            seedPositionHight.SetElement(0,(seedXHIGHT + 3));
-            seedPositionHight.SetElement(1,(seedYHIGHT));
+            seedPositionHight.SetElement(0, (seedXHIGHT + 3));
+            seedPositionHight.SetElement(1, (seedYHIGHT));
 
             NodeType nodeHight;
             const double seedValue = - distance;
-            nodeHight.SetValue( seedValue );
-            nodeHight.SetIndex( seedPositionHight );
+            nodeHight.SetValue(seedValue);
+            nodeHight.SetIndex(seedPositionHight);
 
-            seeds->InsertElement( contSeed, nodeHight );
+            seeds->InsertElement(contSeed, nodeHight);
             contSeed++;
         }
-        fastMarching->SetTrialPoints(  seeds  );
+        fastMarching->SetTrialPoints(seeds);
 
-        fastMarching->SetSpeedConstant( 1.0 );
+        fastMarching->SetSpeedConstant(1.0);
 
         CastFilterType::Pointer caster1 = CastFilterType::New();
         CastFilterType::Pointer caster2 = CastFilterType::New();
@@ -1396,26 +1402,26 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         caster1->SetInput(smoothing->GetOutput());
         writer1->SetInput( caster1->GetOutput() );
         writer1->SetFileName(this->pathGacFilterFinal);
-        caster1->SetOutputMinimum(   0 );
-        caster1->SetOutputMaximum( 255 );
+        caster1->SetOutputMinimum(0);
+        caster1->SetOutputMaximum(255);
         writer1->Update();
         caster2->SetInput( gradientMagnitude->GetOutput() );
         writer2->SetInput( caster2->GetOutput() );
         writer2->SetFileName(this->pathGacGradientFinal);
-        caster2->SetOutputMinimum(   0 );
-        caster2->SetOutputMaximum( 255 );
+        caster2->SetOutputMinimum(0);
+        caster2->SetOutputMaximum(255);
         writer2->Update();
         caster3->SetInput( sigmoid->GetOutput() );
         writer3->SetInput( caster3->GetOutput() );
         writer3->SetFileName(this->pathGacSigmoidFinal);
-        caster3->SetOutputMinimum(   0 );
-        caster3->SetOutputMaximum( 255 );
+        caster3->SetOutputMinimum(0);
+        caster3->SetOutputMaximum(255);
         writer3->Update();
         caster4->SetInput( fastMarching->GetOutput() );
         writer4->SetInput( caster4->GetOutput() );
         writer4->SetFileName(this->pathGacMapFinal);
-        caster4->SetOutputMinimum(   0 );
-        caster4->SetOutputMaximum( 255 );
+        caster4->SetOutputMinimum(0);
+        caster4->SetOutputMaximum(255);
 
         fastMarching->SetOutputSize(
                     reader->GetOutput()->GetBufferedRegion().GetSize() );
@@ -1445,8 +1451,8 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
 
         CastFilterType::Pointer caster5 = CastFilterType::New();
         caster5->SetInput( reader->GetOutput() );
-        caster5->SetOutputMinimum(   0 );
-        caster5->SetOutputMaximum( 255 );
+        caster5->SetOutputMinimum(0);
+        caster5->SetOutputMaximum(255);
         caster5->Update();
         typedef itk::AndImageFilter <OutputImageType>  AndImageFilterType;
         AndImageFilterType::Pointer andFilter
@@ -1466,11 +1472,6 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         string segmentedFile = stringFileSegmented.str();
         stringFileSegmented.str("");
 
-        //        typedef itk::GradientMagnitudeImageFilter<OutputImageType, OutputImageType >  GradientType;
-        //        GradientType::Pointer gradient = GradientType::New();
-        //        gradient->SetInput(thresholder->GetOutput());
-        //        gradient->Update();
-
         try
         {
             writer->SetFileName(segmentedFile);
@@ -1482,8 +1483,8 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             std::cerr << "Exception caught !" << std::endl;
             std::cerr << excep << std::endl;
         }
-
     }
+
     endocardiumFile.close();
 
 }

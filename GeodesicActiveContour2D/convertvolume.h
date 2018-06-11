@@ -5,9 +5,7 @@
 #include "itkImageSeriesReader.h"
 #include "itkImageFileWriter.h"
 #include "itkNumericSeriesFileNames.h"
-#include "itkTIFFImageIO.h"
-#include "itkPNGImageIO.h"
-#include <string>
+
 using namespace std;
 
 class convertVolume

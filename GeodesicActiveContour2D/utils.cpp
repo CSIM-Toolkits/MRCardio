@@ -1,7 +1,5 @@
 #include "utils.h"
-#include "itkImage.h"
 #include "math.h"
-#include "iostream"
 
 using namespace std;
 
@@ -283,7 +281,7 @@ double Utils::GetPerimeter(ImageTypeUC::Pointer image){
  * @return double
  */
 double Utils::GetArea(ImageTypeUC::Pointer image){
-    double area;
+    double area = 0.0;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
     for(int c = 0; c<region[0]; c++){
         for(int d = 0; d<region[1]; d++){
