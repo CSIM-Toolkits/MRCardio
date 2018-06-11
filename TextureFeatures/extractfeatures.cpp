@@ -22,6 +22,9 @@
 
 using namespace std;
 
+/**
+ * @brief ExtractFeatures::ExtractFeatures
+ */
 ExtractFeatures::ExtractFeatures()
 {
 }
@@ -93,6 +96,20 @@ int ExtractFeatures::Extract(OffsetType offset, InternalImageType::Pointer input
     return true;
 }
 
+/**
+ * @brief ExtractFeatures::Extract3D
+ * @param offset3D
+ * @param inputImage3D
+ * @param entropy
+ * @param energy
+ * @param correlation
+ * @param inertia
+ * @param haralickCorrelation
+ * @param inverseDifferenceMoment
+ * @param clusterProminence
+ * @param clusterShade
+ * @return
+ */
 int ExtractFeatures::Extract3D(OffsetType3D offset3D, InternalImageType3D::Pointer inputImage3D, double *entropy, double *energy,
                                double *correlation, double *inertia, double *haralickCorrelation, double *inverseDifferenceMoment,
                                double *clusterProminence, double *clusterShade)
@@ -139,6 +156,21 @@ int ExtractFeatures::Extract3D(OffsetType3D offset3D, InternalImageType3D::Point
     return true;
 }
 
+/**
+ * @brief ExtractFeatures::ExtractRunLength2D
+ * @param inputImage2D
+ * @param shortRunEmphasis
+ * @param longRunEmphasis
+ * @param greyLevelNonuniformity
+ * @param runLengthNonuniformity
+ * @param lowGrayLevelRunEmphasis
+ * @param highGreyLevelRunEmphasis
+ * @param shortRunLowGreyLevelEmphasis
+ * @param shortRunHighGreyLevelEmphasis
+ * @param longRunLowGreyLevelEmphasis
+ * @param longRunHighGreyLevelEmphasis
+ * @return
+ */
 int ExtractFeatures::ExtractRunLength2D(InternalImageType::Pointer inputImage2D, double *shortRunEmphasis, double *longRunEmphasis,
                                         double *greyLevelNonuniformity, double *runLengthNonuniformity, double *lowGrayLevelRunEmphasis,
                                         double *highGreyLevelRunEmphasis, double *shortRunLowGreyLevelEmphasis,
@@ -238,6 +270,21 @@ int ExtractFeatures::ExtractRunLength2D(InternalImageType::Pointer inputImage2D,
     }
 }
 
+/**
+ * @brief ExtractFeatures::ExtractRunLength3D
+ * @param inputImage3D
+ * @param shortRunEmphasis
+ * @param longRunEmphasis
+ * @param greyLevelNonuniformity
+ * @param runLengthNonuniformity
+ * @param lowGrayLevelRunEmphasis
+ * @param highGreyLevelRunEmphasis
+ * @param shortRunLowGreyLevelEmphasis
+ * @param shortRunHighGreyLevelEmphasis
+ * @param longRunLowGreyLevelEmphasis
+ * @param longRunHighGreyLevelEmphasis
+ * @return
+ */
 int ExtractFeatures::ExtractRunLength3D(InternalImageType3D::Pointer inputImage3D, double *shortRunEmphasis, double *longRunEmphasis,
                                         double *greyLevelNonuniformity, double *runLengthNonuniformity, double *lowGrayLevelRunEmphasis,
                                         double *highGreyLevelRunEmphasis, double *shortRunLowGreyLevelEmphasis,

@@ -296,6 +296,15 @@ double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
     return dim;
 }
 
+/**
+ * @brief fracdimension::linreg
+ * Computing linear regression based on x[] and y[]
+ * @param n
+ * @param x
+ * @param y
+ * @param m
+ * @param b
+ */
 void fracdimension::linreg(int n, double x[], double y[], double* m, double* b)
 {
     double   sumx = 0.0;                        /* sum of x                      */

@@ -5,11 +5,22 @@
 
 using namespace std;
 
+/**
+ * @brief Utils::Utils
+ */
 Utils::Utils()
 {
 
 }
 
+/**
+ * @brief Utils::GetPixel
+ * Return the pixel value in (x,y) coordinates
+ * @param image
+ * @param x
+ * @param y
+ * @return pixel
+ */
 double Utils::GetPixel(ImageType::Pointer image, double x, double y){
     ImageType::IndexType pixelIndex;
 
@@ -21,6 +32,15 @@ double Utils::GetPixel(ImageType::Pointer image, double x, double y){
     return pixelValue;
 }
 
+/**
+ * @brief Utils::GetPixel
+ * Return the pixel value in (x,y,z) coordinates
+ * @param image
+ * @param x
+ * @param y
+ * @param z
+ * @return pixel
+ */
 double Utils::GetPixel(ImageType::Pointer image, double x, double y, double z){
     ImageType::IndexType pixelIndex;
 
@@ -32,6 +52,12 @@ double Utils::GetPixel(ImageType::Pointer image, double x, double y, double z){
     return pixelValue;
 }
 
+/**
+ * @brief Utils::GetStd
+ * Return the standard deviation of image
+ * @param image
+ * @return double
+ */
 double Utils::GetStd(ImageType::Pointer image){
     double std = 0.0;
     double meanImage = GetMean(image);
@@ -47,6 +73,12 @@ double Utils::GetStd(ImageType::Pointer image){
     return sqrt(std);
 }
 
+/**
+ * @brief Utils::GetMean
+ * Return the mean of image
+ * @param image
+ * @return double
+ */
 double Utils::GetMean(ImageType::Pointer image){
     double mean = 0.0;
     double width = GetWidth(image);
@@ -61,6 +93,12 @@ double Utils::GetMean(ImageType::Pointer image){
     return (mean/N);
 }
 
+/**
+ * @brief Utils::GetHeight
+ * Return the height of image
+ * @param image
+ * @return mixed
+ */
 double Utils::GetHeight(ImageType::Pointer image){
     typedef itk::Image<unsigned char, 2>  ImageType;
 
@@ -69,6 +107,12 @@ double Utils::GetHeight(ImageType::Pointer image){
     return region[0];
 }
 
+/**
+ * @brief Utils::GetWidth
+ * Return the width of image
+ * @param image
+ * @return mixed
+ */
 double Utils::GetWidth(ImageType::Pointer image){
     typedef itk::Image<unsigned char, 2>  ImageType;
 
@@ -77,6 +121,12 @@ double Utils::GetWidth(ImageType::Pointer image){
     return region[1];
 }
 
+/**
+ * @brief Utils::GetDepth
+ * Return the depth of image
+ * @param image
+ * @return mixed
+ */
 double Utils::GetDepth(ImageType::Pointer image){
     typedef itk::Image<unsigned char, 2>  ImageType;
 
@@ -85,6 +135,15 @@ double Utils::GetDepth(ImageType::Pointer image){
     return region[2];
 }
 
+/**
+ * @brief Utils::GetSeedLeft
+ * Find the seeds coordinates of septal myocardial position
+ * @param image
+ * @param centerX
+ * @param centerY
+ * @param x
+ * @param y
+ */
 void Utils::GetSeedLeft(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
     double value = 9999;
     bool a = false;
@@ -102,6 +161,15 @@ void Utils::GetSeedLeft(ImageType::Pointer image, int centerX, int centerY, int 
     }
 }
 
+/**
+ * @brief Utils::GetSeedHight
+ * Find the seeds coordinates of lateral myocardial position
+ * @param image
+ * @param centerX
+ * @param centerY
+ * @param x
+ * @param y
+ */
 void Utils::GetSeedHight(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
     double height = GetHeight(image);
     double value = 9999;
@@ -120,6 +188,15 @@ void Utils::GetSeedHight(ImageType::Pointer image, int centerX, int centerY, int
     }
 }
 
+/**
+ * @brief Utils::GetSeedUp
+ * Find the seeds coordinates of anterior myocardial position
+ * @param image
+ * @param centerX
+ * @param centerY
+ * @param x
+ * @param y
+ */
 void Utils::GetSeedUp(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
     double value = 9999;
     bool a = false;
@@ -137,6 +214,15 @@ void Utils::GetSeedUp(ImageType::Pointer image, int centerX, int centerY, int *x
     }
 }
 
+/**
+ * @brief Utils::GetSeedDown
+ * Find the seeds coordinates of inferior myocardial position
+ * @param image
+ * @param centerX
+ * @param centerY
+ * @param x
+ * @param y
+ */
 void Utils::GetSeedDown(ImageType::Pointer image, int centerX, int centerY, int *x, int *y){
     double width = GetWidth(image);
     double value = 9999;
@@ -155,6 +241,13 @@ void Utils::GetSeedDown(ImageType::Pointer image, int centerX, int centerY, int 
     }
 }
 
+/**
+ * @brief Utils::GetCenter
+ * Get the center of image
+ * @param image
+ * @param x
+ * @param y
+ */
 void Utils::GetCenter(ImageType::Pointer image, int *x, int *y){
     int width = (int) GetWidth(image)/2;
     int height = (int) GetHeight(image)/2;
@@ -162,6 +255,12 @@ void Utils::GetCenter(ImageType::Pointer image, int *x, int *y){
     *y = height;
 }
 
+/**
+ * @brief Utils::GetPerimeter
+ * Get the perimeter of image contour
+ * @param image
+ * @return double
+ */
 double Utils::GetPerimeter(ImageTypeUC::Pointer image){
     double perimeter = 0.0;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
@@ -177,6 +276,12 @@ double Utils::GetPerimeter(ImageTypeUC::Pointer image){
     return perimeter;
 }
 
+/**
+ * @brief Utils::GetArea
+ * Get the area of image
+ * @param image
+ * @return double
+ */
 double Utils::GetArea(ImageTypeUC::Pointer image){
     double area;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();

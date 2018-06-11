@@ -12,11 +12,25 @@
 
 using namespace std;
 
+/**
+ * @brief SampEn::SampEn
+ */
 SampEn::SampEn()
 {
 
 }
 
+/**
+ * @brief SampEn::isSimilar
+ * @param image
+ * @param x1
+ * @param y1
+ * @param x2
+ * @param y2
+ * @param m
+ * @param r
+ * @return boolean
+ */
 bool SampEn::isSimilar(ImageType::Pointer image, int x1, int y1, int x2, int y2, int m, double r){
     Utils utils;
     for(int y = 0; y < m; y++){
@@ -30,6 +44,17 @@ bool SampEn::isSimilar(ImageType::Pointer image, int x1, int y1, int x2, int y2,
     return true;
 }
 
+/**
+ * @brief SampEn::isSimilarNext
+ * @param image
+ * @param x1
+ * @param y1
+ * @param x2
+ * @param y2
+ * @param m
+ * @param r
+ * @return boolean
+ */
 bool SampEn::isSimilarNext(ImageType::Pointer image, int x1, int y1, int x2, int y2, int m, double r){
     Utils utils;
     double diff;
@@ -48,6 +73,19 @@ bool SampEn::isSimilarNext(ImageType::Pointer image, int x1, int y1, int x2, int
     return true;
 }
 
+/**
+ * @brief SampEn::isSimilar3D
+ * @param image
+ * @param x1
+ * @param y1
+ * @param x2
+ * @param y2
+ * @param z1
+ * @param z2
+ * @param m
+ * @param r
+ * @return boolean
+ */
 bool SampEn::isSimilar3D(ImageType3D::Pointer image, int x1, int y1, int x2, int y2, int z1, int z2, int m, double r){
     Utils utils;
     for(int y = 0; y < m; y++){
@@ -63,6 +101,19 @@ bool SampEn::isSimilar3D(ImageType3D::Pointer image, int x1, int y1, int x2, int
     return true;
 }
 
+/**
+ * @brief SampEn::isSimilarNext3D
+ * @param image
+ * @param x1
+ * @param y1
+ * @param x2
+ * @param y2
+ * @param z1
+ * @param z2
+ * @param m
+ * @param r
+ * @return boolean
+ */
 bool SampEn::isSimilarNext3D(ImageType3D::Pointer image, int x1, int y1, int x2, int y2, int z1, int z2, int m, double r){
     Utils utils;
     double diff;
@@ -87,6 +138,13 @@ bool SampEn::isSimilarNext3D(ImageType3D::Pointer image, int x1, int y1, int x2,
     return true;
 }
 
+/**
+ * @brief SampEn::calcSampleEn2D
+ * @param image
+ * @param m
+ * @param r
+ * @return boolean
+ */
 double SampEn::calcSampleEn2D(ImageType::Pointer image, int m, double r){
     Utils utils;
     double sampleEntropy;
@@ -148,6 +206,13 @@ double SampEn::calcSampleEn2D(ImageType::Pointer image, int m, double r){
     return sampleEntropy;
 }
 
+/**
+ * @brief SampEn::calcSampleEn3D
+ * @param image
+ * @param m
+ * @param r
+ * @return boolean
+ */
 double SampEn::calcSampleEn3D(ImageType3D::Pointer image, int m, double r){
     Utils utils;
     double sampleEntropy;
@@ -211,7 +276,6 @@ double SampEn::calcSampleEn3D(ImageType3D::Pointer image, int m, double r){
 
     sampleEntropy = -(log(((double) Cm1) / ((double) Cm)));
     cout<<"Results: "<<sampleEntropy<<endl;
-
 
     return sampleEntropy;
 }

@@ -5,11 +5,21 @@
 
 using namespace std;
 
+/**
+ * @brief Utils::Utils
+ */
 Utils::Utils()
 {
 
 }
 
+/**
+ * @brief Utils::GetPixel
+ * @param image
+ * @param x
+ * @param y
+ * @return double
+ */
 double Utils::GetPixel(ImageType::Pointer image, double x, double y){
     ImageType::IndexType pixelIndex;
 
@@ -21,6 +31,14 @@ double Utils::GetPixel(ImageType::Pointer image, double x, double y){
     return pixelValue;
 }
 
+/**
+ * @brief Utils::GetPixel
+ * @param image
+ * @param x
+ * @param y
+ * @param z
+ * @return double
+ */
 double Utils::GetPixel(ImageType3D::Pointer image, double x, double y, double z){
     ImageType3D::IndexType pixelIndex;
 
@@ -32,6 +50,11 @@ double Utils::GetPixel(ImageType3D::Pointer image, double x, double y, double z)
     return pixelValue;
 }
 
+/**
+ * @brief Utils::GetStd
+ * @param image
+ * @return double
+ */
 double Utils::GetStd(ImageType::Pointer image){
     double std = 0.0;
     double meanImage = GetMean(image);
@@ -47,6 +70,11 @@ double Utils::GetStd(ImageType::Pointer image){
     return sqrt(std);
 }
 
+/**
+ * @brief Utils::GetMean
+ * @param image
+ * @return double
+ */
 double Utils::GetMean(ImageType::Pointer image){
     double mean = 0.0;
     double width = GetWidth(image);
@@ -61,6 +89,11 @@ double Utils::GetMean(ImageType::Pointer image){
     return (mean/N);
 }
 
+/**
+ * @brief Utils::GetHeight
+ * @param image
+ * @return double
+ */
 double Utils::GetHeight(ImageType::Pointer image){
     typedef itk::Image<unsigned char, 2>  ImageType;
 
@@ -69,6 +102,11 @@ double Utils::GetHeight(ImageType::Pointer image){
     return region[0];
 }
 
+/**
+ * @brief Utils::GetWidth
+ * @param image
+ * @return double
+ */
 double Utils::GetWidth(ImageType::Pointer image){
     typedef itk::Image<unsigned char, 2>  ImageType;
 
@@ -76,6 +114,12 @@ double Utils::GetWidth(ImageType::Pointer image){
 
     return region[1];
 }
+
+/**
+ * @brief Utils::GetHeight3D
+ * @param image
+ * @return double
+ */
 double Utils::GetHeight3D(ImageType3D::Pointer image){
     typedef itk::Image<unsigned char, 3>  ImageType3D;
 
@@ -84,6 +128,11 @@ double Utils::GetHeight3D(ImageType3D::Pointer image){
     return region[0];
 }
 
+/**
+ * @brief Utils::GetWidth3D
+ * @param image
+ * @return double
+ */
 double Utils::GetWidth3D(ImageType3D::Pointer image){
     typedef itk::Image<unsigned char, 3>  ImageType3D;
 
@@ -92,6 +141,11 @@ double Utils::GetWidth3D(ImageType3D::Pointer image){
     return region[1];
 }
 
+/**
+ * @brief Utils::GetDepth3D
+ * @param image
+ * @return double
+ */
 double Utils::GetDepth3D(ImageType3D::Pointer image){
     typedef itk::Image<unsigned char, 3>  ImageType3D;
 

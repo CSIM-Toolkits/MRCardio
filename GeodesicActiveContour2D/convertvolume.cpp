@@ -9,6 +9,10 @@
 #include <pwd.h>
 
 using namespace std;
+
+/**
+ * @brief convertVolume::convertVolume
+ */
 convertVolume::convertVolume()
 {
     this->pw = getpwuid(getuid());
@@ -23,8 +27,16 @@ convertVolume::convertVolume()
     this->pathOutput = this->homedir + this->output;
 
 }
+
 typedef float PixelType;
 typedef itk::Image<PixelType,3> ImageType;
+/**
+ * @brief convertVolume::Convert
+ * Convert an images series to volume
+ * @param first
+ * @param last
+ * @return image
+ */
 ImageType::Pointer convertVolume::Convert(int first, int last){
 
     typedef float   PixelType;

@@ -10,10 +10,20 @@
 #include <math.h>
 
 using namespace std;
+
+/**
+ * @brief entropy::entropy
+ */
 entropy::entropy()
 {
 }
 
+/**
+ * @brief entropy::Execute
+ * @param Image
+ * @param q_entropy
+ * @return double
+ */
 double entropy::Execute(ImageType::Pointer Image, double q_entropy){
     typedef unsigned char       PixelTypen;
     const unsigned int          Dimension = 2;

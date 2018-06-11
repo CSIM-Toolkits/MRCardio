@@ -15,6 +15,10 @@
 #include <pwd.h>
 
 using namespace std;
+
+/**
+ * @brief Haralick::Haralick
+ */
 Haralick::Haralick()
 {
 }
@@ -31,6 +35,10 @@ typedef InternalImageType::OffsetType OffsetType;
 typedef itk::AddImageFilter <InternalImageType> AddImageFilterType;
 typedef itk::MultiplyImageFilter<InternalImageType> MultiplyImageFilterType;
 
+/**
+ * @brief Haralick::Execute
+ * @param Image
+ */
 void Haralick::Execute(ImageType::Pointer Image){
 
     const char *homedir;
@@ -74,7 +82,15 @@ void Haralick::Execute(ImageType::Pointer Image){
 
 }
 
-//calculate features for one offset
+/**
+ * @brief Haralick::calcTextureFeatureImage
+ * Calculate features for one offset
+ * @param offset
+ * @param inputImage
+ * @param outInertia
+ * @param outCorrelation
+ * @param outEnergy
+ */
 void Haralick::calcTextureFeatureImage(OffsetType offset,
                                        InternalImageType::Pointer inputImage, InternalImageType::Pointer outInertia,
                                        InternalImageType::Pointer outCorrelation, InternalImageType::Pointer outEnergy)

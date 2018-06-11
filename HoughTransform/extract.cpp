@@ -44,6 +44,9 @@
 #include <pwd.h>
 using namespace std;
 
+/**
+ * @brief Extract::Extract
+ */
 Extract::Extract()
 {
     this->pw = getpwuid(getuid());
@@ -63,6 +66,14 @@ Extract::Extract()
 
 }
 
+/**
+ * @brief Extract::Execute
+ * @param first
+ * @param last
+ * @param volume
+ * @param minimum
+ * @param maximum
+ */
 void Extract::Execute(int first,int last,const char* volume, int minimum, int maximum){
 
     typedef   unsigned char   PixelType;

@@ -27,6 +27,9 @@
 
 using namespace std;
 
+/**
+ * @brief segment::segment
+ */
 segment::segment()
 {
     this->pw = getpwuid(getuid());
@@ -91,6 +94,26 @@ segment::segment()
     this->pathExtractValuesMyocardium = this->homedir + this->extractValuesMyocardium;
 }
 
+/**
+ * @brief segment::InternalEC
+ * Segmentation of endocardium on the short axis
+ * @param first
+ * @param last
+ * @param sigma
+ * @param sig_min
+ * @param sig_max
+ * @param propagation
+ * @param curvature
+ * @param advection
+ * @param rms
+ * @param iterations
+ * @param timestep
+ * @param it_dif
+ * @param conductance
+ * @param alpha
+ * @param beta
+ * @param distance
+ */
 void segment::InternalEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance){
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ofstream extractValues(this->pathExtractValues.c_str());
@@ -361,6 +384,30 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
 
 }
 
+/**
+ * @brief segment::MyocardiumEC
+ * Segmentation of myocardium on the short axis
+ * @param first
+ * @param last
+ * @param sigma
+ * @param sig_min
+ * @param sig_max
+ * @param propagation
+ * @param curvature
+ * @param advection
+ * @param rms
+ * @param iterations
+ * @param timestep
+ * @param it_dif
+ * @param conductance
+ * @param alpha
+ * @param beta
+ * @param distance
+ * @param up
+ * @param down
+ * @param left
+ * @param hight
+ */
 void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance, bool up, bool down, bool left, bool hight){
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ofstream extractValuesMyocardium(this->pathExtractValuesMyocardium.c_str());
@@ -408,6 +455,19 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                     FilterType;
             FilterType::Pointer otsuFilter
                     = FilterType::New();
+
+            typedef itk::BinaryThresholdImageFilter <InternalImageType, OutputImageType>
+                BinaryThresholdImageFilterType;
+
+            BinaryThresholdImageFilterType::Pointer thresholdFilter
+                = BinaryThresholdImageFilterType::New();
+                thresholdFilter->SetInput(val);
+                thresholdFilter->SetLowerThreshold(0);
+                thresholdFilter->SetUpperThreshold(160);
+                thresholdFilter->SetInsideValue(255);
+                thresholdFilter->SetOutsideValue(0);
+                thresholdFilter->Update();
+
             otsuFilter->SetInput(val);
             otsuFilter->Update(); // To compute threshold
 
@@ -415,7 +475,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             FillHoleFilterType::InputSizeType radiusF;
             radiusF.Fill(3);
             FillHoleFilterType::Pointer filterFillHole = FillHoleFilterType::New();
-            filterFillHole->SetInput( otsuFilter->GetOutput() );
+            filterFillHole->SetInput( thresholdFilter->GetOutput() );
             filterFillHole->SetRadius( radiusF );
             filterFillHole->SetMajorityThreshold(2);
             filterFillHole->SetBackgroundValue(255);
@@ -566,6 +626,12 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
             seeds->Initialize();
 
+            stringstream se;
+            se<<"/home/gustavo/temp/cine"<<i+1<<".txt";
+            string fs = se.str();
+            se.str("");
+            ofstream seedCoord(fs.c_str());
+            extractValuesMyocardium.is_open();
             if(up){
                 int seedXUP;
                 int seedYUP;
@@ -580,7 +646,9 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 nodeUp.SetIndex( seedPositionUp );
 
                 seeds->InsertElement( contSeed, nodeUp );
+
                 contSeed++;
+                seedCoord<<seedXUP<<'	'<<seedYUP - 3<<endl;
             }
             if(down){
                 int seedXDOWN;
@@ -597,6 +665,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
                 seeds->InsertElement( contSeed, nodeDown );
                 contSeed++;
+                seedCoord<<seedXDOWN<<'	'<<seedYDOWN + 3<<endl;
             }
             if(left){
                 int seedXLEFT;
@@ -613,6 +682,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
                 seeds->InsertElement( contSeed, nodeLeft );
                 contSeed++;
+                seedCoord<<seedXLEFT - 3<<'	'<<seedYLEFT<<endl;
             }
             if(hight){
                 int seedXHIGHT;
@@ -629,6 +699,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
                 seeds->InsertElement( contSeed, nodeHight );
                 contSeed++;
+                seedCoord<<seedXHIGHT + 3<<'	'<<seedYHIGHT<<endl;
             }
 
             fastMarching->SetTrialPoints(  seeds  );
@@ -777,6 +848,26 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
 }
 
+/**
+ * @brief segment::InternalELV
+ * Segmentation of endocardium on the vertical long axis
+ * @param first
+ * @param last
+ * @param sigma
+ * @param sig_min
+ * @param sig_max
+ * @param propagation
+ * @param curvature
+ * @param advection
+ * @param rms
+ * @param iterations
+ * @param timestep
+ * @param it_dif
+ * @param conductance
+ * @param alpha
+ * @param beta
+ * @param distance
+ */
 void segment::InternalELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance){
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ofstream extractValues(this->pathExtractValues.c_str());
@@ -1050,6 +1141,30 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
     }
 }
 
+/**
+ * @brief segment::MyocardiumELV
+ * Segmentation of myocardium on the vertical long axis
+ * @param first
+ * @param last
+ * @param sigma
+ * @param sig_min
+ * @param sig_max
+ * @param propagation
+ * @param curvature
+ * @param advection
+ * @param rms
+ * @param iterations
+ * @param timestep
+ * @param it_dif
+ * @param conductance
+ * @param alpha
+ * @param beta
+ * @param distance
+ * @param up
+ * @param down
+ * @param left
+ * @param hight
+ */
 void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation, double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance, double alpha, double beta, double distance, bool up, bool down, bool left, bool hight){
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ifstream radiusFile (this->pathRadius.c_str());

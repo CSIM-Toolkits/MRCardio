@@ -93,7 +93,7 @@ int DoIt( int argc, char * argv[], T )
     }
     if(axis == "Eixo Longo Horizontal"){
         convertVolume conv;
-        conv.Convert(0,5);
+        conv.Convert(0,23);
     }
 
     convertVolume convert;

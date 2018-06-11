@@ -30,6 +30,9 @@
 
 using namespace std;
 
+/**
+ * @brief Distance::Distance
+ */
 Distance::Distance()
 {
     this->pw = getpwuid(getuid());
@@ -47,6 +50,11 @@ Distance::Distance()
     this->pathSegmentedFinal = this->homedir + this->segmentedFinal;
 }
 
+/**
+ * @brief Distance::GetTickness
+ * @param first
+ * @param last
+ */
 void Distance::GetTickness(int first, int last){
 
     string typeTiff = ".tif";
@@ -129,6 +137,14 @@ void Distance::GetTickness(int first, int last){
 
 }
 
+/**
+ * @brief Distance::calcDistance
+ * @param image
+ * @param x
+ * @param y
+ * @param pos
+ * @return double
+ */
 double Distance::calcDistance(ImageType2D::Pointer image, int x, int y, int pos){
 
     typedef unsigned int PixelType;
