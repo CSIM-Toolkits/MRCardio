@@ -1,23 +1,17 @@
 #include "itkImageFileWriter.h"
-
-#include "itkSmoothingRecursiveGaussianImageFilter.h"
-
 #include "itkPluginUtilities.h"
 #include "itkCastImageFilter.h"
-
 #include "FractalDimensionCLP.h"
 #include "fracdimension.h"
 #include "itkGradientMagnitudeImageFilter.h"
 #include <iostream>
-
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
+
 // Use an anonymous namespace to keep class types and function names
 // from colliding when module is used as shared object module.  Every
 // thing should be in an anonymous namespace except for the module
 // entry point, e.g. main()
-//
+
 using namespace std;
 namespace
 {
@@ -138,12 +132,12 @@ int DoIt( int argc, char * argv[], T )
         ofstream minkowski2D(finalMinkowski.c_str());
         string pathSlices = "/temp/slices.txt";
         string slicesFile = homedir + pathSlices;
-                ifstream slices(slicesFile.c_str());
-                if(slices.is_open()){
-                    getline(slices,firstSlice);
-                    getline(slices, lastSlice);
-                }
-                slices.close();
+        ifstream slices(slicesFile.c_str());
+        if(slices.is_open()){
+            getline(slices,firstSlice);
+            getline(slices, lastSlice);
+        }
+        slices.close();
         if (minkowski2D.is_open())
         {
             for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
@@ -252,12 +246,12 @@ int DoIt( int argc, char * argv[], T )
         ofstream boxCounting2D(finalDifferencialBoxCounting.c_str());
         string pathSlices = "/temp/slices.txt";
         string slicesFile = homedir + pathSlices;
-                ifstream slices(slicesFile.c_str());
-                if(slices.is_open()){
-                    getline(slices,firstSlice);
-                    getline(slices, lastSlice);
-                }
-                slices.close();
+        ifstream slices(slicesFile.c_str());
+        if(slices.is_open()){
+            getline(slices,firstSlice);
+            getline(slices, lastSlice);
+        }
+        slices.close();
         if (boxCounting2D.is_open())
         {
             for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){

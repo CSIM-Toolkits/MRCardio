@@ -2,7 +2,6 @@
 #define FRACDIMENSION_H
 
 #include <itkImage.h>
-#include <math.h>
 
 class fracdimension
 {

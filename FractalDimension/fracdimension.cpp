@@ -1,31 +1,5 @@
 #include "fracdimension.h"
 
-#include "itkImage.h"
-#include <fstream>
-//#include "itkImageToHistogramGenerator.h"
-#include "itkScalarImageToHistogramGenerator.h"
-#include "itkImageFileReader.h"
-#include "itkImageFileWriter.h"
-
-#include "itkImageRegionConstIterator.h"
-#include "itkShapedNeighborhoodIterator.h"
-#include "itkNeighborhoodAlgorithm.h"
-#include "itkFlatStructuringElement.h"
-#include "itkSubtractImageFilter.h"
-#include "itkBinaryDilateImageFilter.h"
-#include "itkBinaryErodeImageFilter.h"
-#include "itkBinaryBallStructuringElement.h"
-#include "itkGradientMagnitudeImageFilter.h"
-#include "itkBinaryThresholdImageFilter.h"
-
-#include <iostream>
-#include <string>
-#include <math.h>
-#include <fstream>
-
-#include "itkBinaryBallStructuringElement.h"
-#include <math.h>
-
 using namespace std;
 
 fracdimension::fracdimension()
@@ -59,8 +33,8 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
         cont_A = 0;
         dim = 0;
         int cont = 0;
-        for(int a=0; a<region[0]; a = a + (1+((k-1)*2))){
-            for(int b= 0; b<region[1]; b = b + (1+((k-1)*2))){
+        for(int a = 0; a<region[0]; a = a + (1+((k-1)*2))){
+            for(int b = 0; b<region[1]; b = b + (1+((k-1)*2))){
                 isElement = false;
                 for(int c = 0; c<(1+((k-1)*2)); c++){
                     for(int d = 0; d<(1+((k-1)*2)); d++){
@@ -120,9 +94,9 @@ double fracdimension::GetBoxCountingDimension3D(ImageType::Pointer image){
         cont_A = 0;
         dim = 0;
         int cont = 0;
-        for(int a=0; a<region[0]; a = a + (1+((k-1)*2))){
-            for(int b= 0; b<region[1]; b = b + (1+((k-1)*2))){
-                for(int u= 0; u<region[2]; u = u + (1+((k-1)*2))){
+        for(int a= 0; a<region[0]; a = a + (1+((k-1)*2))){
+            for(int b = 0; b<region[1]; b = b + (1+((k-1)*2))){
+                for(int u = 0; u<region[2]; u = u + (1+((k-1)*2))){
                     isElement = false;
                     for(int c = 0; c<(1+((k-1)*2)); c++){
                         for(int d = 0; d<(1+((k-1)*2)); d++){
@@ -169,7 +143,6 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
     typedef unsigned int PixelType;
 
     typedef itk::Image< PixelType, 2> ImageType;
-    bool isElement;
     double dim = 0.0;
     int cont_A = 0;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
@@ -185,9 +158,8 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
         cont_A = 0;
         dim = 0;
         int cont = 0;
-        for(int a=0; a<region[0]; a = a + (1+((k-1)*2))){
-            for(int b= 0; b<region[1]; b = b + (1+((k-1)*2))){
-                isElement = false;
+        for(int a= 0; a<region[0]; a = a + (1+((k-1)*2))){
+            for(int b = 0; b<region[1]; b = b + (1+((k-1)*2))){
                 for(int c = 0; c<(1+((k-1)*2)); c++){
                     for(int d = 0; d<(1+((k-1)*2)); d++){
                         const ImageType::IndexType index = {{a+c,b+d}};
