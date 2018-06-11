@@ -55,6 +55,8 @@ segment::segment()
     this->gacSigmoidMHAFinal = "/temp/GACSigmoidFinal.mha";
     this->gacMapMHAFinal = "/temp/GACMapFinal.mha";
 
+    this->seeds =  "/temp/cineSeeds_";
+
     this->pathEndocardium = this->homedir + this->endocardium;
     this->pathRadius = this->homedir + this->radius;
     this->pathSlices = this->homedir + this->slices;
@@ -83,6 +85,8 @@ segment::segment()
 
     this->pathExtractValues = this->homedir + this->extractValues;
     this->pathExtractValuesMyocardium = this->homedir + this->extractValuesMyocardium;
+
+    this->pathSeeds = this->homedir + this->seeds;
 
 }
 
@@ -627,30 +631,32 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
             seeds->Initialize();
 
-            stringstream se;
-            se<<"/home/gustavo/temp/cine"<<i+1<<".txt";
-            string fs = se.str();
-            se.str("");
+            stringstream seedPath;
+            seedPath<<this->pathSeeds<<i+1<<".txt";
+            string fs = seedPath.str();
+            seedPath.str("");
             ofstream seedCoord(fs.c_str());
             extractValuesMyocardium.is_open();
+
             if(up){
                 int seedXUP;
                 int seedYUP;
                 utils.GetSeedUp(valS, x, y, &seedXUP, &seedYUP);
                 InternalImageType::IndexType  seedPositionUp;
-                seedPositionUp.SetElement(0,(seedXUP));
-                seedPositionUp.SetElement(1,(seedYUP - 3));
+                seedPositionUp.SetElement(0, (seedXUP));
+                seedPositionUp.SetElement(1, (seedYUP - 3));
 
                 NodeType nodeUp;
                 const double seedValue = - distance;
-                nodeUp.SetValue( seedValue );
-                nodeUp.SetIndex( seedPositionUp );
+                nodeUp.SetValue(seedValue);
+                nodeUp.SetIndex(seedPositionUp);
 
                 seeds->InsertElement( contSeed, nodeUp );
 
                 contSeed++;
                 seedCoord<<seedXUP<<'	'<<seedYUP - 3<<endl;
             }
+
             if(down){
                 int seedXDOWN;
                 int seedYDOWN;
@@ -668,6 +674,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 contSeed++;
                 seedCoord<<seedXDOWN<<'	'<<seedYDOWN + 3<<endl;
             }
+
             if(left){
                 int seedXLEFT;
                 int seedYLEFT;
@@ -685,6 +692,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 contSeed++;
                 seedCoord<<seedXLEFT - 3<<'	'<<seedYLEFT<<endl;
             }
+
             if(hight){
                 int seedXHIGHT;
                 int seedYHIGHT;

@@ -48,6 +48,7 @@ public:
     string gacGradientFinal;
     string gacSigmoidFinal;
     string gacMapFinal;
+    string seeds;
 
     string gacGradientMHA;
     string gacSigmoidMHA;
@@ -84,6 +85,7 @@ public:
     string extractValuesMyocardium;
     string pathExtractValues;
     string pathExtractValuesMyocardium;
+    string pathSeeds;
 };
 
 #endif // SEGMENT_H
