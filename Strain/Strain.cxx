@@ -1,12 +1,6 @@
 #include "itkImageFileWriter.h"
-
-#include "itkSmoothingRecursiveGaussianImageFilter.h"
-
 #include "itkPluginUtilities.h"
-
 #include "StrainCLP.h"
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
 #include "mapping.h"
 
@@ -62,22 +56,7 @@ int DoIt( int argc, char * argv[], T )
         string typeTiff = ".tif";
         stringstream segment;
         stringstream segmentMoving;
-//        if(i<8 && i <= (atoi(lastSlice.c_str()) - 2)){
-//            segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
-//            segmentMoving<<final.c_str()<<"00"<<(i+2)<<typeTiff;
-//        }
-//        if(i == 8 && i <= (atoi(lastSlice.c_str()) - 2)){
-//            segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
-//            segmentMoving<<final.c_str()<<"0"<<(i+2)<<typeTiff;
-//        }
-//        if(i>=9 && i<98 && i <= (atoi(lastSlice.c_str()) - 2)){
-//            segment<<final.c_str()<<"0"<<(i+1)<<typeTiff;
-//            segmentMoving<<final.c_str()<<"0"<<(i+2)<<typeTiff;
-//        }
-//        if(i == 98 && i <= (atoi(lastSlice.c_str()) - 2 )){
-//            segment<<final.c_str()<<"0"<<(i+1)<<typeTiff;
-//            segmentMoving<<final.c_str()<<(i+2)<<typeTiff;
-//        }
+
         segment<<final.c_str()<<(i+1)<<typeTiff;
         segmentMoving<<final.c_str()<<(i+4)<<typeTiff;
         string filenameSegmented = segment.str();

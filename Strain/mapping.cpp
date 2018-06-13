@@ -1,15 +1,13 @@
 #include "mapping.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-
 #include "itkImageRegionIterator.h"
 #include "itkSymmetricForcesDemonsRegistrationFilter.h"
 #include "itkHistogramMatchingImageFilter.h"
 #include "itkCastImageFilter.h"
 #include "itkWarpImageFilter.h"
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
+
 using namespace std;
 
 Mapping::Mapping()
@@ -27,6 +25,12 @@ Mapping::Mapping()
 
 }
 
+/**
+ * @brief Mapping::calcMapping
+ * @param fixedImag
+ * @param movingImag
+ * @param index
+ */
 void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movingImag, int index){
 
     const unsigned int Dimension = 2;
@@ -186,8 +190,7 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
 
     vector3D[2] = 0; // set Z component to zero.
 
-    while( !it2.IsAtEnd() )
-    {
+    while( !it2.IsAtEnd() ){
         vector2D = it2.Get();
         vector3D[0] = vector2D[0];
         vector3D[1] = vector2D[1];
@@ -195,7 +198,6 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
         ++it2;
         ++it3;
     }
-
 
     writer3D->SetInput( vectorImage3D );
 

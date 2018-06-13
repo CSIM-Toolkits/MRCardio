@@ -2,7 +2,7 @@
 #define MAPPING_H
 
 #include "itkImage.h"
-#include "QString"
+
 using namespace std;
 
 class Mapping
