@@ -1,13 +1,6 @@
 #include "entropy.h"
 #include "itkImage.h"
-#include <fstream>
-//#include "itkImageToHistogramGenerator.h"
 #include "itkScalarImageToHistogramGenerator.h"
-#include "itkImageFileReader.h"
-#include "itkImageFileWriter.h"
-#include <iostream>
-#include <string>
-#include <math.h>
 
 using namespace std;
 
@@ -105,7 +98,7 @@ double entropy::Execute(ImageType::Pointer Image, double q_entropy){
             break;
         }
     }
-    //q_entropy = (double) SistemaCardio->ui->horizontalScrollBar_2->value()/100.0;
+
     double max_entrop = -9999999;
     double som_entrop = 0;
     double entrop_a = 0;

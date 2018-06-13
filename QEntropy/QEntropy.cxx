@@ -1,25 +1,12 @@
 #include "itkImageFileWriter.h"
-
-#include "itkSmoothingRecursiveGaussianImageFilter.h"
-
+#include "itkCastImageFilter.h"
 #include "itkPluginUtilities.h"
-
 #include "QEntropyCLP.h"
-
-#include <fstream>
 #include "itkScalarImageToHistogramGenerator.h"
 #include "itkThresholdImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkImage.h"
-#include "itkImageFileReader.h"
-#include <iostream>
-#include <string>
-#include <math.h>
-#include "itkImageRegionIterator.h"
-
 #include "entropy.h"
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
 
 using namespace std;
