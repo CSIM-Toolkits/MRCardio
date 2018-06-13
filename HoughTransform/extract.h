@@ -2,7 +2,7 @@
 #define EXTRACT_H
 
 #include "itkImage.h"
-#include "QString"
+
 using namespace std;
 
 class Extract

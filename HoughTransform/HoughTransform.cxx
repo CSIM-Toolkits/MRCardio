@@ -1,16 +1,8 @@
 #include "itkImageFileWriter.h"
-
-#include "itkSmoothingRecursiveGaussianImageFilter.h"
-
 #include "itkPluginUtilities.h"
-
 #include "HoughTransformCLP.h"
 #include "extract.h"
-#include <iostream>
-#include "string"
-#include "qstring.h"
-#include "QString"
-#include "itkImage.h"
+
 // Use an anonymous namespace to keep class types and function names
 // from colliding when module is used as shared object module.  Every
 // thing should be in an anonymous namespace except for the module
@@ -25,13 +17,10 @@ int DoIt( int argc, char * argv[], T )
 
     PARSE_ARGS;
     typedef    float InputPixelType;
-    //typedef    unsigned char     OutputPixelType;
 
     typedef itk::Image<InputPixelType,  3> InputImageType;
-    //typedef itk::Image<OutputPixelType, 3> OutputImageType;
 
     typedef itk::ImageFileReader<InputImageType>  ReaderType;
-    //typedef itk::ImageFileWriter<OutputImageType> WriterType;
 
     typename ReaderType::Pointer reader = ReaderType::New();
     itk::PluginFilterWatcher watchReader(reader, "Read Volume",

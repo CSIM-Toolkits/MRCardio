@@ -1,21 +1,4 @@
 #include "itkHoughTransformRadialVotingImageFilter.h"
-// Software Guide : EndCodeSnippet
-
-#include "itkImage.h"
-#include "itkImageSource.h"
-#include "itkImageFileReader.h"
-#include "itkImageFileWriter.h"
-#include "itkImageRegionIterator.h"
-#include "itkThresholdImageFilter.h"
-#include "itkMinimumMaximumImageCalculator.h"
-#include <itkGradientMagnitudeImageFilter.h>
-#include <itkDiscreteGaussianImageFilter.h>
-#include <list>
-#include "itkCastImageFilter.h"
-#include "vnl/vnl_math.h"
-
-#include "time.h"
-
 #include "extract.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
@@ -24,24 +7,14 @@
 #include "itkMinimumMaximumImageCalculator.h"
 #include "itkGradientMagnitudeImageFilter.h"
 #include "itkDiscreteGaussianImageFilter.h"
-#include <list>
 #include "itkHoughTransform2DCirclesImageFilter.h"
 #include "itkCastImageFilter.h"
-#include "itkMath.h"
-#include <iostream>
-#include "QString"
-#include "itkImage.h"
 #include "itkExtractImageFilter.h"
-#include <string.h>
-#include <sstream>
-#include <itkCastImageFilter.h>
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkGradientMagnitudeRecursiveGaussianImageFilter.h"
 #include "itkSigmoidImageFilter.h"
-#include <fstream>
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
+
 using namespace std;
 
 /**
