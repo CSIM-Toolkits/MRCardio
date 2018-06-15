@@ -2,8 +2,7 @@
 #define DISTANCE_H
 
 #include <itkImage.h>
-#include <math.h>
-#include "QString"
+
 using namespace std;
 
 class Distance

@@ -1,11 +1,7 @@
 #include "distance.h"
-
-#include "itkImage.h"
-#include <fstream>
 #include "itkScalarImageToHistogramGenerator.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-
 #include "itkImageRegionConstIterator.h"
 #include "itkShapedNeighborhoodIterator.h"
 #include "itkNeighborhoodAlgorithm.h"
@@ -16,16 +12,7 @@
 #include "itkBinaryBallStructuringElement.h"
 #include "itkGradientMagnitudeImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
-
-#include <iostream>
-#include <string>
-#include <math.h>
-#include <fstream>
-
 #include "itkBinaryBallStructuringElement.h"
-#include <math.h>
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
 
 using namespace std;

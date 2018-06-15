@@ -1,21 +1,8 @@
 #include "TicknessCLP.h"
-
 #include "itkImageFileWriter.h"
-
-#include "itkSmoothingRecursiveGaussianImageFilter.h"
-
 #include "itkPluginUtilities.h"
-#include "itkCastImageFilter.h"
-
-#include "itkGradientMagnitudeImageFilter.h"
-#include <iostream>
-
 #include "distance.h"
-
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
-
 
 // Use an anonymous namespace to keep class types and function names
 // from colliding when module is used as shared object module.  Every
