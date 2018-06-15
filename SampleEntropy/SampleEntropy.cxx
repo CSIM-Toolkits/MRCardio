@@ -1,17 +1,8 @@
 #include "itkImageFileWriter.h"
-
-#include "itkSmoothingRecursiveGaussianImageFilter.h"
-
 #include "itkPluginUtilities.h"
-
 #include "SampleEntropyCLP.h"
 #include "sampen.h"
 #include "utils.h"
-
-#include "iostream"
-
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
 
 using namespace std;
@@ -41,12 +32,12 @@ int DoIt( int argc, char * argv[], T)
         string lastSlice;
         string pathSlices = "/temp/slices.txt";
         string slicesFile = homedir + pathSlices;
-                ifstream slices(slicesFile.c_str());
-                if(slices.is_open()){
-                    getline(slices,firstSlice);
-                    getline(slices, lastSlice);
-                }
-                slices.close();
+        ifstream slices(slicesFile.c_str());
+        if(slices.is_open()){
+            getline(slices,firstSlice);
+            getline(slices, lastSlice);
+        }
+        slices.close();
         if (sampleEntropy.is_open())
         {
             for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
@@ -89,7 +80,6 @@ int DoIt( int argc, char * argv[], T)
                 double std;
                 std = stand.GetStd(imag);
                 double result = sampleEntropy2D.calcSampleEn2D(imag, m , (r*std));
-                //cout<<"Dimension: "<<dimens<<endl;
                 sampleEntropy<<"Image: "<<i<<" :"<<result<<endl;
             }
             sampleEntropy.close();
@@ -129,7 +119,6 @@ int DoIt( int argc, char * argv[], T)
 
             SampEn sampleEntropy3D;
             double result = sampleEntropy3D.calcSampleEn3D(imag, m , r);
-            //cout<<"Dimension: "<<dimens<<endl;
             sampleEntropy<<"Image: "<<result<<endl;
             sampleEntropy.close();
         }

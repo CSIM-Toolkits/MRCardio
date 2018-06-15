@@ -1,7 +1,4 @@
 #include "utils.h"
-#include "itkImage.h"
-#include "math.h"
-#include "iostream"
 
 using namespace std;
 

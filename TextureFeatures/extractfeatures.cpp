@@ -176,7 +176,6 @@ int ExtractFeatures::ExtractRunLength2D(InternalImageType::Pointer inputImage2D,
     typedef itk::Image<PixelType, ImageDimension> ImageType;
     typedef itk::Image<RealType, ImageDimension> RealImageType;
 
-
     typedef itk::Statistics::DenseFrequencyContainer2 HistogramFrequencyContainerType;
 
     typedef itk::Statistics::ScalarImageToRunLengthFeaturesFilter
@@ -187,10 +186,8 @@ int ExtractFeatures::ExtractRunLength2D(InternalImageType::Pointer inputImage2D,
     ImageType::Pointer mask = NULL;
     PixelType label = itk::NumericTraits<PixelType>::One;
 
-
     unsigned int numberOfBins = 256;
     runLengthFilter->SetNumberOfBinsPerAxis( numberOfBins );
-
 
     itk::ImageRegionIteratorWithIndex<ImageType> ItI( inputImage2D,
                                                       inputImage2D->GetLargestPossibleRegion() );
@@ -301,10 +298,8 @@ int ExtractFeatures::ExtractRunLength3D(InternalImageType3D::Pointer inputImage3
     ImageType::Pointer mask = NULL;
     PixelType label = itk::NumericTraits<PixelType>::One;
 
-
     unsigned int numberOfBins = 256;
     runLengthFilter->SetNumberOfBinsPerAxis( numberOfBins );
-
 
     itk::ImageRegionIteratorWithIndex<ImageType> ItI( inputImage3D,
                                                       inputImage3D->GetLargestPossibleRegion() );

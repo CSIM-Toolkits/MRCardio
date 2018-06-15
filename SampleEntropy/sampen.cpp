@@ -1,13 +1,10 @@
 #include "sampen.h"
-
 #include <iostream>
-#include "QString"
 #include "itkImage.h"
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkMinimumMaximumImageCalculator.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include <stdlib.h>
 #include "utils.h"
 
 using namespace std;
@@ -17,7 +14,6 @@ using namespace std;
  */
 SampEn::SampEn()
 {
-
 }
 
 /**
