@@ -5,20 +5,14 @@
 #include <itkLabelImageToStatisticsLabelMapFilter.h>
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include <itkDenseFrequencyContainer2.h>
 #include "itkHistogramToTextureFeaturesFilter.h"
 #include "itkScalarImageToCooccurrenceMatrixFilter.h"
-#include "itkVectorContainer.h"
 #include "itkAddImageFilter.h"
 #include "itkMultiplyImageFilter.h"
 #include "itkRegionOfInterestImageFilter.h"
-
 #include "itkBoundingBox.h"
 #include "itkImageRegionIteratorWithIndex.h"
-#include "itkPointSet.h"
-
 #include "itkScalarImageToRunLengthFeaturesFilter.h"
-#include "itkDenseFrequencyContainer2.h"
 
 class ExtractFeatures
 {

@@ -1,17 +1,9 @@
 #include "itkImageFileWriter.h"
-
-#include "itkSmoothingRecursiveGaussianImageFilter.h"
 #include "itkLabelImageToLabelMapFilter.h"
-
 #include "itkPluginUtilities.h"
-
 #include "TextureFeaturesCLP.h"
 #include "haralick.h"
-#include "iostream"
 #include "extractfeatures.h"
-
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
 
 using namespace std;
@@ -46,12 +38,12 @@ int DoIt( int argc, char * argv[], TPixel )
         string lastSlice;
         string pathSlices = "/temp/slices.txt";
         string slicesFile = homedir + pathSlices;
-                ifstream slices(slicesFile.c_str());
-                if(slices.is_open()){
-                    getline(slices,firstSlice);
-                    getline(slices, lastSlice);
-                }
-                slices.close();
+        ifstream slices(slicesFile.c_str());
+        if(slices.is_open()){
+            getline(slices,firstSlice);
+            getline(slices, lastSlice);
+        }
+        slices.close();
         if (haralick2D.is_open())
         {
             for(int i = atoi(firstSlice.c_str()); i < atoi(lastSlice.c_str());i++){
@@ -140,7 +132,6 @@ int DoIt( int argc, char * argv[], TPixel )
             double inverseDifferenceMoment;
             double clusterProminence;
             double clusterShade;
-
 
             typedef float InputPixelType3D;
 
@@ -269,12 +260,12 @@ int DoIt( int argc, char * argv[], TPixel )
         string lastSlice;
         string pathSlices = "/temp/slices.txt";
         string slicesFile = homedir + pathSlices;
-                ifstream slices(slicesFile.c_str());
-                if(slices.is_open()){
-                    getline(slices,firstSlice);
-                    getline(slices, lastSlice);
-                }
-                slices.close();
+        ifstream slices(slicesFile.c_str());
+        if(slices.is_open()){
+            getline(slices,firstSlice);
+            getline(slices, lastSlice);
+        }
+        slices.close();
 
         if (runLength2D.is_open())
         {
@@ -363,21 +354,6 @@ int DoIt( int argc, char * argv[], TPixel )
             runLength2D.close();
         }
     }
-    //hac.Extract(offset,imag);
-
-    /*typedef itk::SmoothingRecursiveGaussianImageFilter<
-    InputImageType, OutputImageType>  FilterType;
-  typename FilterType::Pointer filter = FilterType::New();
-  filter->SetInput( reader->GetOutput() );
-  filter->SetSigma( sigma );
-
-  typedef itk::ImageFileWriter<OutputImageType> WriterType;
-  typename WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( outputVolume.c_str() );
-  writer->SetInput( filter->GetOutput() );
-  writer->SetUseCompression(1);
-  writer->Update();
-  */
 
     return EXIT_SUCCESS;
 }

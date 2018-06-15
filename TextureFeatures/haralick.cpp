@@ -1,17 +1,12 @@
 #include "haralick.h"
-#include "itkImage.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-#include <itkDenseFrequencyContainer2.h>
 #include "itkHistogramToTextureFeaturesFilter.h"
 #include "itkScalarImageToCooccurrenceMatrixFilter.h"
 #include "itkVectorContainer.h"
 #include "itkAddImageFilter.h"
 #include "itkMultiplyImageFilter.h"
 #include "itkRegionOfInterestImageFilter.h"
-#include <iostream>
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
 
 using namespace std;
@@ -62,7 +57,6 @@ void Haralick::Execute(ImageType::Pointer Image){
         calcTextureFeatureImage(offset, image, inertia, correlation, energy);
 
         writer->SetInput(inertia);
-        //  snprintf(buf, 100, "Inertia%u.mha", d); // Warning: call to int __builtin___snprintf_chk will always overflow destination buffer
         std::stringstream ssInertia;
         ssInertia << pathDir.c_str() << "Inertia" << d << ".mha";
         writer->SetFileName(ssInertia.str());
@@ -121,7 +115,6 @@ void Haralick::calcTextureFeatureImage(OffsetType offset,
     size.Fill(3); //window size=3x3x3
     window.SetSize(size);
     InternalImageType::IndexType pi; //pixel index
-    //slide window over the entire image
     for (unsigned x=1; x<inputImage->GetLargestPossibleRegion().GetSize(0)-1; x++)
     {
         pi.SetElement(0,x);

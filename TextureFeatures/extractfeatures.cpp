@@ -1,24 +1,16 @@
 #include "extractfeatures.h"
 #include <itkImageFileReader.h>
 #include <itkLabelImageToStatisticsLabelMapFilter.h>
-
 #include <itkImageFileWriter.h>
-#include "itkImage.h"
 #include <itkPasteImageFilter.h>
 #include <itkShapeLabelMapFilter.hxx>
 #include <itkGeometryUtilities.h>
 #include <itkScalarImageToTextureFeaturesFilter.h>
-#include "itkImageFileReader.h"
-#include "itkImageFileWriter.h"
-#include <itkDenseFrequencyContainer2.h>
 #include "itkHistogramToTextureFeaturesFilter.h"
 #include "itkScalarImageToCooccurrenceMatrixFilter.h"
-#include "itkVectorContainer.h"
 #include "itkAddImageFilter.h"
 #include "itkMultiplyImageFilter.h"
 #include "itkRegionOfInterestImageFilter.h"
-#include <fstream>
-#include <iostream>
 
 using namespace std;
 
@@ -59,8 +51,8 @@ int ExtractFeatures::Extract(OffsetType offset, InternalImageType::Pointer input
     //Gray Level Co-occurance Matrix Generator
     Image2CoOccuranceType::Pointer glcmGenerator=Image2CoOccuranceType::New();
     glcmGenerator->SetOffset(offset);
-    glcmGenerator->SetNumberOfBinsPerAxis(16); //reasonable number of bins
-    glcmGenerator->SetPixelValueMinMax(0, 255); //for input UCHAR pixel type
+    glcmGenerator->SetNumberOfBinsPerAxis(16);
+    glcmGenerator->SetPixelValueMinMax(0, 255);
     Hist2FeaturesType::Pointer featureCalc=Hist2FeaturesType::New();
     //Region Of Interest
     typedef itk::RegionOfInterestImageFilter<InternalImageType,InternalImageType> roiType;
