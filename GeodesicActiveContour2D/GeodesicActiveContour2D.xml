@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>MRCardio</category>
+  <title>GeodesicActiveContour2D</title>
+  <description><![CDATA[This module allows the segmentation of myocardium in SPECT and MR images]]></description>
+  <version>0.0.1</version>
+  <documentation-url>http://www.example.com/Slicer/Modules/GeodesicActiveContour2D</documentation-url>
+  <license>Slicer</license>
+  <contributor>Gustavo Canavaci Barizon (USP)</contributor>
+  <acknowledgements>This work was partially funded by CAPES and University of Sao Paulo.</acknowledgements>
+  <parameters>
+    <label>IO</label>
+    <description><![CDATA[Input/output parameters]]></description>
+    <image>
+      <name>inputVolume</name>
+      <label>Input Volume</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description><![CDATA[Input volume]]></description>
+    </image>
+    <string-enumeration>
+        <name>axis</name>
+        <longflag>--axis</longflag>
+        <label>Axis Orientation</label>
+        <description>Axis Orientation.</description>
+        <default>Eixo Curto</default>
+        <element>Eixo Curto</element>
+        <element>Eixo Longo Vertical</element>
+        <element>Eixo Longo Horizontal</element>
+      </string-enumeration>
+    <image>
+      <name>outputVolume</name>
+      <label>Output Volume</label>
+      <channel>output</channel>
+      <index>1</index>
+      <description><![CDATA[Output Volume]]></description>
+    </image>
+    <double>
+      <name>sigma</name>
+      <longflag>sigma</longflag>
+      <flag>m</flag>
+      <label>Sigma</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>0.7</default>
+    </double>
+    <double>
+      <name>sigma_min</name>
+      <longflag>sigma_min</longflag>
+      <flag>s</flag>
+      <label>SigmaMin</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>0.0</default>
+    </double>
+    <double>
+      <name>sigma_max</name>
+      <longflag>sigma_max</longflag>
+      <flag>z</flag>
+      <label>SigmaMax</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>255.0</default>
+    </double>
+    <double>
+      <name>propagation</name>
+      <longflag>propagation</longflag>
+      <flag>p</flag>
+      <label>PropagationScaling</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>10.0</default>
+    </double>
+    <double>
+      <name>curvature</name>
+      <longflag>curvature</longflag>
+      <flag>c</flag>
+      <label>CurvatureScaling</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>1.0</default>
+    </double>
+    <double>
+      <name>advection</name>
+      <longflag>advection</longflag>
+      <flag>a</flag>
+      <label>AdvectionScaling</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>1.8</default>
+    </double>
+    <double>
+      <name>rms</name>
+      <longflag>rms</longflag>
+      <flag>r</flag>
+      <label>MaximumRMS</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>0.01</default>
+    </double>
+    <integer>
+      <name>iterations</name>
+      <longflag>iterations</longflag>
+      <flag>i</flag>
+      <label>Iterations</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>1200</default>
+    </integer>
+    <double>
+      <name>timestep</name>
+      <longflag>timestep</longflag>
+      <flag>t</flag>
+      <label>TimeStep</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>0.125</default>
+    </double>
+    <integer>
+      <name>it</name>
+      <longflag>it</longflag>
+      <flag>y</flag>
+      <label>IterationsDiffusion</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>2</default>
+    </integer>
+    <double>
+      <name>conductance</name>
+      <longflag>conductance</longflag>
+      <flag>k</flag>
+      <label>Conductance</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>20.0</default>
+    </double>
+    <double>
+      <name>alpha</name>
+      <longflag>alpha</longflag>
+      <flag>o</flag>
+      <label>Alpha</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>-0.1</default>
+    </double>
+    <double>
+      <name>beta</name>
+      <longflag>beta</longflag>
+      <flag>b</flag>
+      <label>Beta</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>4.0</default>
+    </double>
+    <double>
+      <name>distance</name>
+      <longflag>distance</longflag>
+      <flag>d</flag>
+      <label>InitialDistance</label>
+      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
+      <default>1.0</default>
+    </double>
+    <string-enumeration>
+        <name>position0</name>
+        <longflag>--position</longflag>
+        <label>Seed Position - 0</label>
+        <description>Seed Position</description>
+        <default>yes</default>
+        <element>yes</element>
+        <element>no</element>
+    </string-enumeration>
+    <string-enumeration>
+        <name>position90</name>
+        <longflag>--position90</longflag>
+        <label>Seed Position - 90</label>
+        <description>Seed Position</description>
+        <default>no</default>
+        <element>yes</element>
+        <element>no</element>
+    </string-enumeration>
+    <string-enumeration>
+        <name>position180</name>
+        <longflag>--position180</longflag>
+        <label>Seed Position - 180</label>
+        <description>Seed Position</description>
+        <default>yes</default>
+        <element>yes</element>
+        <element>no</element>
+    </string-enumeration>
+    <string-enumeration>
+        <name>position270</name>
+        <longflag>--position270</longflag>
+        <label>Seed Position - 270</label>
+        <description>Seed Position</description>
+        <default>no</default>
+        <element>yes</element>
+        <element>no</element>
+    </string-enumeration>
+  </parameters>
+</executable>

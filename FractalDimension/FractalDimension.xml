@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>MRCardio</category>
+  <title>FractalDimension</title>
+  <description><![CDATA[This module allows the measuring of fractal dimension of myocardium edges (Box Counting) and fractal dimension of myocardium (Differencial Box Counting)]]></description>
+  <version>0.0.1</version>
+  <documentation-url>http://www.example.com/Slicer/Modules/FractalDimension</documentation-url>
+  <license>Slicer</license>
+  <contributor>Gustavo Canavaci Barizon (USP)</contributor>
+  <acknowledgements>This work was partially funded by CAPES and University of Sao Paulo.</acknowledgements>
+  <parameters>
+    <label>IO</label>
+    <description><![CDATA[Input/output parameters]]></description>
+    <image>
+      <name>inputVolume</name>
+      <label>Input Volume</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description><![CDATA[Input volume]]></description>
+    </image>
+    <image>
+      <name>outputVolume</name>
+      <label>Output Volume</label>
+      <channel>output</channel>
+      <index>1</index>
+      <description><![CDATA[Output Volume]]></description>
+    </image>
+    <string-enumeration>
+        <name>dimension</name>
+        <longflag>--dimension</longflag>
+        <label>Dimension</label>
+        <description>Dimension of Image.</description>
+        <default>Differencial Box Counting 2D</default>
+        <element>Minkowski 2D</element>
+        <element>Box Counting 2D</element>
+        <element>Box Counting 3D</element>
+        <element>Differencial Box Counting 2D</element>
+      </string-enumeration>
+      <string-enumeration>
+          <name>edge</name>
+          <longflag>--edge</longflag>
+          <label>Epicardium/Endocardium</label>
+          <description>Edge of Myocardium.</description>
+          <default>Epicardium</default>
+          <element>Epicardium</element>
+          <element>Endocardium</element>
+        </string-enumeration>
+  </parameters>
+</executable>

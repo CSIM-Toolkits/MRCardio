@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>MRCardio</category>
+  <title>AnistropicDiffusion</title>
+  <description><![CDATA[This module allows the application of the anisotropic diffusion filter in cardiac images]]></description>
+  <version>0.1.0.$Revision$(alpha)</version>
+  <documentation-url>http://slicer.org/slicerWiki/index.php/Documentation/4.3/Modules/Add</documentation-url>
+  <license/>
+  <contributor>Gustavo Canavaci Barizon (USP)</contributor>
+  <acknowledgements>This work was partially funded by CAPES and University of Sao Paulo.</acknowledgements>
+  <parameters>
+    <label>IO</label>
+    <description><![CDATA[Input/output parameters]]></description>
+    <image>
+      <name>inputVolume</name>
+      <label>Input Volume</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description><![CDATA[Input original volume]]></description>
+    </image>
+    <image>
+      <name>outputVolume</name>
+      <label>Output Volume</label>
+      <channel>output</channel>
+      <index>2</index>
+      <description><![CDATA[Volume result]]></description>
+    </image>
+  </parameters>
+  <parameters>
+    <label>Anisotropic Diffusion Filter Parameters</label>
+    <description><![CDATA[Control how the module operates]]></description>
+        <double>
+      <name>conductance</name>
+      <longflag>--conductance</longflag>
+      <label>Conductance</label>
+      <description><![CDATA[Conductance of Anisotropic Diffusion]]></description>
+      <default>5.0</default>
+      <constraints>
+        <minimum>0</minimum>
+        <maximum>20</maximum>
+        <step>0.25</step>
+      </constraints>
+        </double>
+        <double>
+      <name>timeStep</name>
+      <longflag>--timeStep</longflag>
+      <label>Time Step</label>
+      <description><![CDATA[Time Step of Anisotropic Diffusion]]></description>
+      <default>0.0625</default>
+      <constraints>
+        <minimum>0</minimum>
+        <maximum>1</maximum>
+        <step>0.005</step>
+      </constraints>
+        </double>
+        <integer>
+      <name>iterations</name>
+      <longflag>--iterations</longflag>
+      <label>Iterations</label>
+      <description><![CDATA[Number of Iterations]]></description>
+      <default>5</default>
+      <constraints>
+        <minimum>1</minimum>
+        <maximum>20</maximum>
+        <step>1</step>
+      </constraints>
+        </integer>
+
+  </parameters>
+</executable>

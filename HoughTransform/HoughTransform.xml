@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>MRCardio</category>
+  <title>HoughTransform</title>
+  <description><![CDATA[This module allows the detection of circular objects in images]]></description>
+  <version>0.0.1</version>
+  <documentation-url>http://www.example.com/Slicer/Modules/HoughTransform</documentation-url>
+  <license>Slicer</license>
+  <contributor>Gustavo Canavaci Barizon (USP)</contributor>
+  <acknowledgements>This work was partially funded by CAPES and University of Sao Paulo.</acknowledgements>
+  <parameters>
+    <label>IO</label>
+    <description><![CDATA[Input/output parameters]]></description>
+    <image>
+      <name>inputVolume</name>
+      <label>Input Volume</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description><![CDATA[Input volume]]></description>
+    </image>
+    <image>
+      <name>outputVolume</name>
+      <label>Output Volume</label>
+      <channel>output</channel>
+      <index>1</index>
+      <description><![CDATA[Output Volume]]></description>
+    </image>
+    <integer>
+      <name>sliceBegin</name>
+      <longflag>slicebegin</longflag>
+      <flag>s</flag>
+      <label>Slice Begin</label>
+      <description><![CDATA[A integer value (in units of mm) passed to the algorithm]]></description>
+      <default>1</default>
+    </integer>
+    <integer>
+      <name>sliceEnd</name>
+      <longflag>sliceend</longflag>
+      <flag>e</flag>
+      <label>Slice End</label>
+      <description><![CDATA[A integer value (in units of mm) passed to the algorithm]]></description>
+      <default>360</default>
+    </integer>
+    <integer>
+      <name>minimumRadius</name>
+      <longflag>minimumradius</longflag>
+      <flag>m</flag>
+      <label>Minimum Radius</label>
+      <description><![CDATA[A integer value (in units of mm) passed to the algorithm]]></description>
+      <default>5</default>
+    </integer>
+    <integer>
+      <name>maximumRadius</name>
+      <longflag>maximumradius</longflag>
+      <flag>r</flag>
+      <label>Maximum Radius</label>
+      <description><![CDATA[A integer value (in units of mm) passed to the algorithm]]></description>
+      <default>30</default>
+    </integer>
+  </parameters>
+</executable>

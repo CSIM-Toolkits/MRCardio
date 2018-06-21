@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>MRCardio</category>
+  <title>TextureFeatures</title>
+  <description><![CDATA[This module allows the measuring of Haralick Descriptors of myocardium in SPECT and MR images]]></description>
+  <version>0.0.1</version>
+  <documentation-url>http://www.example.com/Slicer/Modules/TextureFeatures</documentation-url>
+  <license>Slicer</license>
+  <contributor>Gustavo Canavaci Barizon (USP)</contributor>
+  <acknowledgements>This work was partially funded by CAPES and University of Sao Paulo.</acknowledgements>
+  <parameters>
+    <label>IO</label>
+    <image>
+      <name>inputVolume</name>
+      <label>Input Volume</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description><![CDATA[Input volume]]></description>
+    </image>
+    <image>
+      <name>outputVolume</name>
+      <label>Output Volume</label>
+      <channel>output</channel>
+      <index>1</index>
+      <description><![CDATA[Output Volume]]></description>
+    </image>
+    <string-enumeration>
+        <name>dimension</name>
+        <longflag>--dimension</longflag>
+        <label>Dimension</label>
+        <description>Dimension of Image.</description>
+        <default>Haralick Features 2D</default>
+        <element>Haralick Features 3D</element>
+        <element>Haralick Features 2D</element>
+        <element>Run Length Features 3D</element>
+        <element>Run Length Features 2D</element>
+      </string-enumeration>
+  </parameters>
+</executable>
