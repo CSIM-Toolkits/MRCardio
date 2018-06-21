@@ -22,8 +22,6 @@ add_subdirectory(AD)
 add_subdirectory(QEntropy)
 add_subdirectory(Registration)
 add_subdirectory(FractalDimension)
-
-add_subdirectory(CardioSegmentation)
 add_subdirectory(Filtering)
 add_subdirectory(HoughTransform)
 add_subdirectory(GeodesicActiveContour2D)
