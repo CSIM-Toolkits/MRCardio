@@ -62,10 +62,6 @@ void Extract::Execute(int first,int last,const char* volume, int minimum, int ma
     typedef itk::Image<PixelType, 3> ImageType3D;
     typedef itk::Image<PixelType, 2> ImageType2D;
 
-    //typedef    unsigned char InputPixelType;
-
-    //typedef itk::Image<InputPixelType,  3> InputImageType;
-
     typedef   unsigned char   PixelType;
     typedef   float           AccumulatorPixelType;
     typedef itk::Image< PixelType, Dimension >  ImageType;
@@ -87,7 +83,6 @@ void Extract::Execute(int first,int last,const char* volume, int minimum, int ma
 
     int sizeX = reader3D->GetOutput()->GetRequestedRegion().GetSize()[0];
     int sizeY = reader3D->GetOutput()->GetRequestedRegion().GetSize()[1];
-    //int sizeZ = reader3D->GetOutput()->GetRequestedRegion().GetSize()[2];
 
     typedef itk::RescaleIntensityImageFilter< fImageType, ImageType3D > RescaleFilterType;
     RescaleFilterType::Pointer rescaleFilter = RescaleFilterType::New();
@@ -95,12 +90,6 @@ void Extract::Execute(int first,int last,const char* volume, int minimum, int ma
     rescaleFilter->SetOutputMinimum(0);
     rescaleFilter->SetOutputMaximum(255);
     rescaleFilter->Update();
-
-    /*typedef itk::CastImageFilter< fImageType, ImageType3D > CastFilterType;
-     CastFilterType::Pointer castFilter = CastFilterType::New();
-
-     castFilter->SetInput(rescaleFilter->GetOutput());
-     castFilter->Update();*/
 
     ofstream endocardiumFile (pathEndocardium.c_str());
     ofstream radiusFile (pathRadius.c_str());
@@ -113,35 +102,14 @@ void Extract::Execute(int first,int last,const char* volume, int minimum, int ma
         region2.SetSize(0, sizeX);
         region2.SetSize(1, sizeY);
         region2.SetSize(2, 0);
-
         region2.SetIndex(0, 0);
-        //region.SetIndex(1, slice);
         region2.SetIndex(1, 0);
         region2.SetIndex(2, i);
         extractImg->SetExtractionRegion(region2);
-#if ITK_VERSION_MAJOR >= 4
-        extractImg->SetDirectionCollapseToIdentity(); // This is required.
-#endif
+        #if ITK_VERSION_MAJOR >= 4
+        extractImg->SetDirectionCollapseToIdentity();
+        #endif
         extractImg->Update();
-
-        typedef   itk::GradientMagnitudeRecursiveGaussianImageFilter<
-                ImageType,
-                ImageType >  GradientFilterType;
-        GradientFilterType::Pointer  gradientMagnitude = GradientFilterType::New();
-        gradientMagnitude->SetInput(extractImg->GetOutput());
-        gradientMagnitude->SetSigma(0.5);
-        gradientMagnitude->Update();
-        typedef   itk::SigmoidImageFilter<
-                ImageType,
-                ImageType >  SigmoidFilterType;
-        SigmoidFilterType::Pointer sigmoid = SigmoidFilterType::New();
-
-        sigmoid->SetOutputMinimum(0.0);
-        sigmoid->SetOutputMaximum(255.0);
-        sigmoid->SetAlpha(-0.5);
-        sigmoid->SetBeta(9.0);
-        sigmoid->SetInput(gradientMagnitude->GetOutput());
-        sigmoid->Update();
 
         ImageType::Pointer localImage = extractImg->GetOutput();
         houghFilter->SetInput( extractImg->GetOutput() );
@@ -151,9 +119,7 @@ void Extract::Execute(int first,int last,const char* volume, int minimum, int ma
         //houghFilter->SetSweepAngle(5);
 
         houghFilter->SetSigmaGradient(1);
-
         //houghFilter->SetVariance(5);
-
         // houghFilter->SetDiscRadiusRatio( atof(argv[9]) );
 
         houghFilter->Update();
@@ -202,23 +168,10 @@ void Extract::Execute(int first,int last,const char* volume, int minimum, int ma
             itCircles++;
         }
 
-        /*try
-         {
-         writer->SetFileName(volume_out);
-         writer->SetInput(localOutputImage);
-         writer->Update();
-         }
-       catch( itk::ExceptionObject & excep )
-         {
-         std::cerr << "Exception caught !" << std::endl;
-         std::cerr << excep << std::endl;
-         }
-*/
         typedef  itk::ImageFileWriter< ImageType  > WriterType;
         WriterType::Pointer writerHough = WriterType::New();
 
         typedef itk::Image<unsigned char, 2>  UnsignedCharImageType;
-        //typedef itk::Image<float, 2>  FloatImageType;
         typedef  itk::ImageFileWriter<UnsignedCharImageType> WriterTypeCine;
         WriterTypeCine::Pointer writerCine = WriterTypeCine::New();
 
@@ -261,10 +214,5 @@ void Extract::Execute(int first,int last,const char* volume, int minimum, int ma
     }
     endocardiumFile.close();
     radiusFile.close();
-
-    /*typedef itk::Image<unsigned char,3> ImageType2;
-      ImageType2::Pointer imag_out = ImageType::New();
-      imag_out = localOutputImage;
-      return imag_out;*/
 
 }
