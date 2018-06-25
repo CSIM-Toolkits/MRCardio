@@ -97,7 +97,9 @@ void Extract::Execute(int first,int last,const char* volume, int minimum, int ma
     sliceFile<<first<<"\n";
     sliceFile<<last<<"\n";
     for(int i=first; i<last; i++){
+
         extractImg->SetInput(rescaleFilter->GetOutput());
+
         ImageType3D::RegionType region2;
         region2.SetSize(0, sizeX);
         region2.SetSize(1, sizeY);
@@ -106,6 +108,7 @@ void Extract::Execute(int first,int last,const char* volume, int minimum, int ma
         region2.SetIndex(1, 0);
         region2.SetIndex(2, i);
         extractImg->SetExtractionRegion(region2);
+
         #if ITK_VERSION_MAJOR >= 4
         extractImg->SetDirectionCollapseToIdentity();
         #endif
@@ -116,12 +119,9 @@ void Extract::Execute(int first,int last,const char* volume, int minimum, int ma
         houghFilter->SetNumberOfCircles(1);
         houghFilter->SetMinimumRadius(minimum);
         houghFilter->SetMaximumRadius(maximum);
-        //houghFilter->SetSweepAngle(5);
-
+        houghFilter->SetSweepAngle(0);
         houghFilter->SetSigmaGradient(1);
-        //houghFilter->SetVariance(5);
-        // houghFilter->SetDiscRadiusRatio( atof(argv[9]) );
-
+        houghFilter->SetVariance(2);
         houghFilter->Update();
 
         AccumulatorImageType::Pointer localAccumulator = houghFilter->GetOutput();
@@ -138,8 +138,8 @@ void Extract::Execute(int first,int last,const char* volume, int minimum, int ma
         localOutputImage->SetRegions( region );
         localOutputImage->SetOrigin(localImage->GetOrigin());
         localOutputImage->SetSpacing(localImage->GetSpacing());
-        localOutputImage->Allocate(); // initializes buffer to zero
-        //localOutputImage->FillBuffer(0);
+        localOutputImage->Allocate();
+        localOutputImage->FillBuffer(0);
         typedef HoughTransformFilterType::CirclesListType CirclesListType;
         CirclesListType::const_iterator itCircles = circles.begin();
         while( itCircles != circles.end() )
