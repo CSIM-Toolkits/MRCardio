@@ -110,9 +110,9 @@ segment::segment()
  * @param beta
  * @param distance
  */
-void segment::InternalEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation,
-        double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance,
-        double alpha, double beta, double distance){
+void segment::InternalEC(int first,int last, double sigma, float sig_min, float sig_max, float propagation,
+        float curvature, float advection, double rms, unsigned long iterations, double timestep, unsigned long it_dif, double conductance,
+        double alpha, double beta, const float distance){
 
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ofstream extractValues(this->pathExtractValues.c_str());
@@ -140,7 +140,6 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
             ReaderType::Pointer reader = ReaderType::New();
             WriterType::Pointer writer = WriterType::New();
             WriterType::Pointer writerArea = WriterType::New();
-            //WriterType::Pointer writer_out = WriterType::New();
             stringstream stringFileCine;
 
             string typeTiff = ".tif";
@@ -193,8 +192,8 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
             GeodesicActiveContourFilterType::Pointer geodesicActiveContour =
                     GeodesicActiveContourFilterType::New();
 
-            const double propagationScaling = propagation;
-            //  Software Guide : BeginCodeSnippet
+            float propagationScaling = propagation;
+
             geodesicActiveContour->SetPropagationScaling( propagationScaling );
             geodesicActiveContour->SetCurvatureScaling(curvature);
             geodesicActiveContour->SetAdvectionScaling(advection);
@@ -208,8 +207,6 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
             geodesicActiveContour->SetInput(  fastMarching->GetOutput() );
             geodesicActiveContour->SetFeatureImage( sigmoid->GetOutput() );
             thresholder->SetInput( geodesicActiveContour->GetOutput() );
-            //ImageOut = thresholder->GetOutput();
-            //writer->SetInput( thresholder->GetOutput() );
 
             smoothing->SetTimeStep(timestep);
             smoothing->SetNumberOfIterations(it_dif);
@@ -248,7 +245,7 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
             //seedPosition.SetElement(2,(int)z);
             cout<<"X, Y = "<<x<<" "<<y<<endl;
             NodeType node;
-            const double seedValue = - distance;
+            const float seedValue = - distance;
             node.SetValue(seedValue);
             node.SetIndex(seedPosition);
 
@@ -409,9 +406,9 @@ void segment::InternalEC(int first,int last, double sigma, double sig_min, doubl
  * @param left
  * @param hight
  */
-void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, double sig_max, double propagation,
-        double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance,
-        double alpha, double beta, double distance, bool up, bool down, bool left, bool hight){
+void segment::MyocardiumEC(int first,int last, double sigma, float sig_min, float sig_max, float propagation,
+        float curvature, float advection, double rms, unsigned long iterations, double timestep, unsigned long it_dif, double conductance,
+        double alpha, double beta, const float distance, bool up, bool down, bool left, bool hight){
 
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ofstream extractValuesMyocardium(this->pathExtractValuesMyocardium.c_str());
@@ -548,7 +545,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             GeodesicActiveContourFilterType::Pointer geodesicActiveContour =
                     GeodesicActiveContourFilterType::New();
 
-            const double propagationScaling = propagation;
+            float propagationScaling = propagation;
             //  Software Guide : BeginCodeSnippet
             geodesicActiveContour->SetPropagationScaling( propagationScaling );
             geodesicActiveContour->SetCurvatureScaling(curvature);
@@ -563,8 +560,6 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
             geodesicActiveContour->SetInput(  fastMarching->GetOutput() );
             geodesicActiveContour->SetFeatureImage( sigmoid->GetOutput() );
             thresholder->SetInput( geodesicActiveContour->GetOutput() );
-            //ImageOut = thresholder->GetOutput();
-            //writer->SetInput( thresholder->GetOutput() );
 
             smoothing->SetTimeStep(timestep);
             smoothing->SetNumberOfIterations(it_dif);
@@ -593,10 +588,12 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 x = atoi(cmd.c_str());
                 y = atoi(arg.c_str());
             }
+
+            int rad;
             if (radiusFile.is_open())
             {
                 getline(radiusFile,line2);
-                radius = atoi(line2.c_str());
+                rad = atoi(line2.c_str());
             }
 
             stringstream segment;
@@ -623,7 +620,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
             InternalImageType::Pointer valS = filterFillCast->GetOutput();
 
-            int contSeed = 0;
+            unsigned int contSeed = 0;
             typedef FastMarchingFilterType::NodeContainer   NodeContainer;
             typedef FastMarchingFilterType::NodeType    NodeType;
             NodeContainer::Pointer seeds = NodeContainer::New();
@@ -647,7 +644,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 seedPositionUp.SetElement(1, (seedYUP - 3));
 
                 NodeType nodeUp;
-                const double seedValue = - distance;
+                const float seedValue = - distance;
                 nodeUp.SetValue(seedValue);
                 nodeUp.SetIndex(seedPositionUp);
 
@@ -666,7 +663,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 seedPositionDown.SetElement(1,(seedYDOWN + 3));
 
                 NodeType nodeDown;
-                const double seedValue = - distance;
+                const float seedValue = - distance;
                 nodeDown.SetValue( seedValue );
                 nodeDown.SetIndex( seedPositionDown );
 
@@ -684,7 +681,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 seedPositionLeft.SetElement(1,(seedYLEFT));
 
                 NodeType nodeLeft;
-                const double seedValue = - distance;
+                const float seedValue = - distance;
                 nodeLeft.SetValue( seedValue );
                 nodeLeft.SetIndex( seedPositionLeft );
 
@@ -702,7 +699,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
                 seedPositionHight.SetElement(1,(seedYHIGHT));
 
                 NodeType nodeHight;
-                const double seedValue = - distance;
+                const float seedValue = - distance;
                 nodeHight.SetValue( seedValue );
                 nodeHight.SetIndex( seedPositionHight );
 
@@ -855,6 +852,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
 
     extractValuesMyocardium.close();
     endocardiumFile.close();
+    radiusFile.close();
 
 }
 
@@ -878,9 +876,9 @@ void segment::MyocardiumEC(int first,int last, double sigma, double sig_min, dou
  * @param beta
  * @param distance
  */
-void segment::InternalELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation,
-            double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance,
-            double alpha, double beta, double distance){
+void segment::InternalELV(int first,int last, double sigma, float sig_min, float sig_max, float propagation,
+            float curvature, float advection, double rms, unsigned long iterations, double timestep, unsigned long it_dif, double conductance,
+            double alpha, double beta, const float distance){
 
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ofstream extractValues(this->pathExtractValues.c_str());
@@ -960,8 +958,7 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
             GeodesicActiveContourFilterType::Pointer geodesicActiveContour =
                     GeodesicActiveContourFilterType::New();
 
-            const double propagationScaling = propagation;
-            //  Software Guide : BeginCodeSnippet
+            float propagationScaling = propagation;
             geodesicActiveContour->SetPropagationScaling( propagationScaling );
             geodesicActiveContour->SetCurvatureScaling(curvature);
             geodesicActiveContour->SetAdvectionScaling(advection);
@@ -1017,7 +1014,7 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
             //seedPosition.SetElement(2,(int)z);
             cout<<"X, Y = "<<seedX<<" "<<seedY<<endl;
             NodeType node;
-            const double seedValue = - distance;
+            const float seedValue = - distance;
             node.SetValue(seedValue);
             node.SetIndex(seedPosition);
 
@@ -1177,9 +1174,9 @@ void segment::InternalELV(int first,int last, double sigma, double sig_min, doub
  * @param left
  * @param hight
  */
-void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, double sig_max, double propagation,
-            double curvature, double advection, double rms, int iterations, double timestep, int it_dif, double conductance,
-            double alpha, double beta, double distance, bool up, bool down, bool left, bool hight){
+void segment::MyocardiumELV(int first,int last, double sigma, float sig_min, float sig_max, float propagation,
+            float curvature, float advection, double rms, unsigned long iterations, double timestep, unsigned long it_dif, double conductance,
+            double alpha, double beta, const float distance, bool up, bool down, bool left, bool hight){
 
     ifstream endocardiumFile (this->pathEndocardium.c_str());
     ifstream radiusFile (this->pathRadius.c_str());
@@ -1206,7 +1203,6 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         ReaderType::Pointer reader = ReaderType::New();
         ReaderType::Pointer readerS = ReaderType::New();
         WriterType::Pointer writer = WriterType::New();
-        //WriterType::Pointer writer_out = WriterType::New();
         stringstream stringFileCine;
 
         string typeTiff = ".tif";
@@ -1246,7 +1242,6 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
                 InternalImageType >    FastMarchingFilterType;
 
         FastMarchingFilterType::Pointer  fastMarching = FastMarchingFilterType::New();
-        //const InternalImageType * inputImage = reader->GetOutput();
         const InternalImageType * inputImage = val;
         fastMarching->SetOutputRegion( inputImage->GetBufferedRegion() );
         fastMarching->SetOutputSpacing( inputImage->GetSpacing() );
@@ -1258,8 +1253,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
         GeodesicActiveContourFilterType::Pointer geodesicActiveContour =
                 GeodesicActiveContourFilterType::New();
 
-        const double propagationScaling = propagation;
-        //  Software Guide : BeginCodeSnippet
+        float propagationScaling = propagation;
         geodesicActiveContour->SetPropagationScaling( propagationScaling );
         geodesicActiveContour->SetCurvatureScaling(curvature);
         geodesicActiveContour->SetAdvectionScaling(advection);
@@ -1301,10 +1295,12 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             x = atoi(cmd.c_str());
             y = atoi(arg.c_str());
         }
+
+        int rad;
         if (radiusFile.is_open())
         {
             getline(radiusFile,line2);
-            radius = atoi(line2.c_str());
+            rad = atoi(line2.c_str());
         }
 
         stringstream segment;
@@ -1323,7 +1319,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
 
         InternalImageType::Pointer valS = readerS->GetOutput();
 
-        int contSeed = 0;
+        unsigned int contSeed = 0;
         typedef FastMarchingFilterType::NodeContainer  NodeContainer;
         typedef FastMarchingFilterType::NodeType       NodeType;
         NodeContainer::Pointer seeds = NodeContainer::New();
@@ -1340,7 +1336,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             seedPositionUp.SetElement(1,(seedYUP - 3));
 
             NodeType nodeUp;
-            const double seedValue = - distance;
+            const float seedValue = - distance;
             nodeUp.SetValue(seedValue);
             nodeUp.SetIndex(seedPositionUp);
 
@@ -1356,7 +1352,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             seedPositionDown.SetElement(1, (seedYDOWN + 3));
 
             NodeType nodeDown;
-            const double seedValue = - distance;
+            const float seedValue = - distance;
             nodeDown.SetValue(seedValue);
             nodeDown.SetIndex(seedPositionDown);
 
@@ -1372,7 +1368,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             seedPositionLeft.SetElement(1, (seedYLEFT));
 
             NodeType nodeLeft;
-            const double seedValue = - distance;
+            const float seedValue = - distance;
             nodeLeft.SetValue(seedValue);
             nodeLeft.SetIndex(seedPositionLeft);
 
@@ -1388,7 +1384,7 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
             seedPositionHight.SetElement(1, (seedYHIGHT));
 
             NodeType nodeHight;
-            const double seedValue = - distance;
+            const float seedValue = - distance;
             nodeHight.SetValue(seedValue);
             nodeHight.SetIndex(seedPositionHight);
 
@@ -1494,5 +1490,6 @@ void segment::MyocardiumELV(int first,int last, double sigma, double sig_min, do
     }
 
     endocardiumFile.close();
+    radiusFile.close();
 
 }

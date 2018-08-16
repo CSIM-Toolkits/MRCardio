@@ -27,7 +27,6 @@ int DoIt( int argc, char * argv[], T )
     typedef itk::Image<OutputPixelType, 3> OutputImageType;
 
     typedef itk::ImageFileReader<InputImageType>  ReaderType;
-    typedef itk::ImageFileWriter<OutputImageType> WriterType;
 
 
     typename ReaderType::Pointer reader = ReaderType::New();
@@ -99,7 +98,7 @@ int DoIt( int argc, char * argv[], T )
         conv.Convert(0,23);
     }
 
-    convertVolume convert;
+    /*convertVolume convert;
     imagOutput = convert.Convert(first,last);
     typename WriterType::Pointer writer = WriterType::New();
     itk::PluginFilterWatcher watchWriter(writer, "Write Volume",
@@ -107,7 +106,7 @@ int DoIt( int argc, char * argv[], T )
     writer->SetFileName( outputVolume.c_str() );
     writer->SetInput(imagOutput);
     writer->SetUseCompression(1);
-    writer->Update();
+    writer->Update();*/
 
     return EXIT_SUCCESS;
 }

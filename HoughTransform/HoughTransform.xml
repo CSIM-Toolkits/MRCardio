@@ -31,7 +31,7 @@
       <flag>s</flag>
       <label>Slice Begin</label>
       <description><![CDATA[A integer value (in units of mm) passed to the algorithm]]></description>
-      <default>1</default>
+      <default>0</default>
     </integer>
     <integer>
       <name>sliceEnd</name>
@@ -47,7 +47,7 @@
       <flag>m</flag>
       <label>Minimum Radius</label>
       <description><![CDATA[A integer value (in units of mm) passed to the algorithm]]></description>
-      <default>5</default>
+      <default>10</default>
     </integer>
     <integer>
       <name>maximumRadius</name>

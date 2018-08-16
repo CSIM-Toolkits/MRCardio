@@ -91,7 +91,7 @@ void Distance::GetTickness(int first, int last){
             reader->Update();
 
             InternalImageType::Pointer val = reader->GetOutput();
-            double distance[4];
+            double distance[8];
             distance[0] = 0.0;
             distance[1] = 0.0;
             distance[2] = 0.0;
