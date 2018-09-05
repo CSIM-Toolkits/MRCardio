@@ -23,10 +23,10 @@
         <longflag>--axis</longflag>
         <label>Axis Orientation</label>
         <description>Axis Orientation.</description>
-        <default>Eixo Curto</default>
-        <element>Eixo Curto</element>
-        <element>Eixo Longo Vertical</element>
-        <element>Eixo Longo Horizontal</element>
+        <default>EixoCurto</default>
+        <element>EixoCurto</element>
+        <element>EixoLongoVertical</element>
+        <element>EixoLongoHorizontal</element>
       </string-enumeration>
     <image>
       <name>outputVolume</name>

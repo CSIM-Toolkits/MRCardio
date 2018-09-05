@@ -461,14 +461,14 @@ void segment::MyocardiumEC(int first,int last, double sigma, float sig_min, floa
             typedef itk::BinaryThresholdImageFilter <InternalImageType, OutputImageType>
                     BinaryThresholdImageFilterType;
 
-            BinaryThresholdImageFilterType::Pointer thresholdFilter
-                    = BinaryThresholdImageFilterType::New();
-            thresholdFilter->SetInput(val);
-            thresholdFilter->SetLowerThreshold(0);
-            thresholdFilter->SetUpperThreshold(160);
-            thresholdFilter->SetInsideValue(255);
-            thresholdFilter->SetOutsideValue(0);
-            thresholdFilter->Update();
+//            BinaryThresholdImageFilterType::Pointer thresholdFilter
+//                    = BinaryThresholdImageFilterType::New();
+//            thresholdFilter->SetInput(val);
+//            thresholdFilter->SetLowerThreshold(0);
+//            thresholdFilter->SetUpperThreshold(160);
+//            thresholdFilter->SetInsideValue(255);
+//            thresholdFilter->SetOutsideValue(0);
+//            thresholdFilter->Update();
 
             otsuFilter->SetInput(val);
             otsuFilter->Update(); // To compute threshold
@@ -477,7 +477,7 @@ void segment::MyocardiumEC(int first,int last, double sigma, float sig_min, floa
             FillHoleFilterType::InputSizeType radiusF;
             radiusF.Fill(3);
             FillHoleFilterType::Pointer filterFillHole = FillHoleFilterType::New();
-            filterFillHole->SetInput( thresholdFilter->GetOutput() );
+            filterFillHole->SetInput( otsuFilter->GetOutput() );
             filterFillHole->SetRadius( radiusF );
             filterFillHole->SetMajorityThreshold(2);
             filterFillHole->SetBackgroundValue(255);

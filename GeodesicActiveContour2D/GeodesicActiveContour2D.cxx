@@ -75,7 +75,7 @@ int DoIt( int argc, char * argv[], T )
         down = true;
     }
 
-    if(axis == "Eixo Curto"){
+    if(axis == "EixoCurto"){
         seg.InternalEC(first,last,sigma,sigma_min,sigma_max,propagation,
             curvature,advection,rms,iterations,timestep,it,conductance,
             alpha,beta,distance);
@@ -85,7 +85,7 @@ int DoIt( int argc, char * argv[], T )
             beta,distance, up, down, left, hight);
     }
 
-    if(axis == "Eixo Longo Vertical"){
+    if(axis == "EixoLongoVertical"){
         seg.InternalELV(first,last,sigma,sigma_min,sigma_max,propagation,curvature,
             advection,rms,iterations,timestep,it,conductance,alpha,beta,distance);
 
@@ -93,7 +93,7 @@ int DoIt( int argc, char * argv[], T )
             advection,rms,iterations,timestep,it,conductance,alpha,beta,distance, up, down, left, hight);
     }
 
-    if(axis == "Eixo Longo Horizontal"){
+    if(axis == "EixoLongoHorizontal"){
         convertVolume conv;
         conv.Convert(0,23);
     }

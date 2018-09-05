@@ -51,7 +51,7 @@ int ExtractFeatures::Extract(OffsetType offset, InternalImageType::Pointer input
     //Gray Level Co-occurance Matrix Generator
     Image2CoOccuranceType::Pointer glcmGenerator=Image2CoOccuranceType::New();
     glcmGenerator->SetOffset(offset);
-    glcmGenerator->SetNumberOfBinsPerAxis(16);
+    glcmGenerator->SetNumberOfBinsPerAxis(64);
     glcmGenerator->SetPixelValueMinMax(0, 255);
     Hist2FeaturesType::Pointer featureCalc=Hist2FeaturesType::New();
     //Region Of Interest
@@ -164,10 +164,10 @@ int ExtractFeatures::Extract3D(OffsetType3D offset3D, InternalImageType3D::Point
  * @return
  */
 int ExtractFeatures::ExtractRunLength2D(InternalImageType::Pointer inputImage2D, double *shortRunEmphasis, double *longRunEmphasis,
-                                        double *greyLevelNonuniformity, double *runLengthNonuniformity, double *lowGrayLevelRunEmphasis,
-                                        double *highGreyLevelRunEmphasis, double *shortRunLowGreyLevelEmphasis,
-                                        double *shortRunHighGreyLevelEmphasis, double *longRunLowGreyLevelEmphasis,
-                                        double *longRunHighGreyLevelEmphasis)
+    double *greyLevelNonuniformity, double *runLengthNonuniformity, double *lowGrayLevelRunEmphasis,
+    double *highGreyLevelRunEmphasis, double *shortRunLowGreyLevelEmphasis,
+    double *shortRunHighGreyLevelEmphasis, double *longRunLowGreyLevelEmphasis,
+    double *longRunHighGreyLevelEmphasis)
 {
     const unsigned int ImageDimension = 2;
     typedef float PixelType;
@@ -183,14 +183,14 @@ int ExtractFeatures::ExtractRunLength2D(InternalImageType::Pointer inputImage2D,
     RunLengthFilterType::Pointer runLengthFilter = RunLengthFilterType::New();
     runLengthFilter->SetInput(inputImage2D);
 
-    ImageType::Pointer mask = NULL;
+    ImageType::Pointer mask = nullptr;
     PixelType label = itk::NumericTraits<PixelType>::One;
 
-    unsigned int numberOfBins = 256;
+    unsigned int numberOfBins = 64;
     runLengthFilter->SetNumberOfBinsPerAxis( numberOfBins );
 
     itk::ImageRegionIteratorWithIndex<ImageType> ItI( inputImage2D,
-                                                      inputImage2D->GetLargestPossibleRegion() );
+        inputImage2D->GetLargestPossibleRegion() );
 
     PixelType maxValue = itk::NumericTraits<PixelType>::NonpositiveMin();
     PixelType minValue = itk::NumericTraits<PixelType>::max();
@@ -295,7 +295,7 @@ int ExtractFeatures::ExtractRunLength3D(InternalImageType3D::Pointer inputImage3
     RunLengthFilterType::Pointer runLengthFilter = RunLengthFilterType::New();
     runLengthFilter->SetInput(inputImage3D);
 
-    ImageType::Pointer mask = NULL;
+    ImageType::Pointer mask = nullptr;
     PixelType label = itk::NumericTraits<PixelType>::One;
 
     unsigned int numberOfBins = 256;
