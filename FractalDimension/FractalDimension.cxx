@@ -28,7 +28,7 @@ int DoIt( int argc, char * argv[], T )
         string pathBoxCounting;
 
         if(edge == "Epicardium"){
-            pathSegmented = "/temp/segmentedFinal_";
+            pathSegmented = "/temp/segmentedArea_";
             pathBoxCounting = "/temp/boxCountingEpicardium2D.txt";
         }
         else{
@@ -103,7 +103,7 @@ int DoIt( int argc, char * argv[], T )
                 fracdimension dim;
                 double dimens;
                 dimens = dim.GetBoxCountingDimension2D(imag);
-                //cout<<"Dimension: "<<dimens<<endl;
+                cout<<"Image: "<<i+1<<" :"<<dimens<<endl;
                 boxCounting2D<<"Image: "<<i+1<<" :"<<dimens<<endl;
             }
             boxCounting2D.close();
@@ -117,7 +117,7 @@ int DoIt( int argc, char * argv[], T )
         string pathMinkowski;
 
         if(edge == "Epicardium"){
-            pathSegmented = "/temp/segmentedFinal_";
+            pathSegmented = "/temp/segmentedArea_";
             pathMinkowski = "/temp/minkowskiEpicardium2D.txt";
         }
         else{
@@ -191,7 +191,7 @@ int DoIt( int argc, char * argv[], T )
                 fracdimension dim;
                 double dimens;
                 dimens = dim.GetMinkowskiDimension2D(imag);
-                //cout<<"Dimension: "<<dimens<<endl;
+                cout<<"Image: "<<i+1<<" :"<<dimens<<endl;
                 minkowski2D<<"Image: "<<i+1<<" :"<<dimens<<endl;
             }
             minkowski2D.close();

@@ -33,9 +33,8 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
     double *vetNR = new double[40];
     double *vetR = new double[40];
 
-    while(r > 0){
+    while(r > 2){
         cont_A = 0;
-        dim = 0;
         int cont = 0;
         for(int a = 0; a < int(x); a = a + int(r)){
             for(int b = 0; b < int(y); b = b + int(r)){
@@ -215,54 +214,40 @@ double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
 
     double dim = 0.0;
     int cont_A = 0;
-    bool isElement = false;
-    bool isZero = false;
-    int contZero = 0;
+    int contElement = 0;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
-    double M = region[0];
-    double r = 0;
+    double x = region[0];
+    double y = region[1];
+    double M = x;
+    double r = 2;
     int k = 1;
     double *vetNR = new double[40];
     double *vetR = new double[40];
 
-    double s = (1+((k-1)*2));
-    while(s < (M/2)){
+    while(r < (M/2)){
         cont_A = 0;
-        dim = 0;
-        contZero = 0;
-        int cont = 0;
-        for(int a=0; a<region[0]; a = a + (1+((k-1)*2))){
-            for(int b= 0; b<region[1]; b = b + (1+((k-1)*2))){
-                isElement = false;
-                isZero = true;
-                for(int c = 0; c<(1+((k-1)*2)); c++){
-                    for(int d = 0; d<(1+((k-1)*2)); d++){
-                        const ImageType::IndexType index = {{a+c,b+d}};
-                        if(((a+c) >= 0) && ((a+c) <= region[0]) && ((b+d) >= 0) && ((b+d) <= region[1])){
-                            if(image->GetPixel(index) > 0){
-                                isElement = true;
-                            }
-                            if(image->GetPixel(index) == 0){
-                                isZero = true;
-                                contZero++;
+        contElement = 0;
+        for(int a = 0; a < x; a++){
+            for(int b = 0; b < y; b++){
+                const ImageType::IndexType origin = {{a,b}};
+                if(image->GetPixel(origin) > 0){
+                    for(int c = int(-r); c <= int(r); c++){
+                        for(int d = int(-r); d <= int(r); d++){
+                            if(((a+c) >= 0) && ((a+c) <= x) && ((b+d) >= 0) && ((b+d) <= y)){
+                                contElement++;
                             }
                         }
                     }
                 }
-                if(isElement && isZero){
-                    cont_A = cont_A + contZero;
-                }
-                cont++;
+                cont_A = cont_A + contElement;
             }
         }
-
-        r = (1+((k-1)*2))/M;
         vetNR[k] = (log(cont_A));
         vetR[k] = (log(r));
+        r = r * 2;
         k++;
-        s = (1+((k-1)*2));
-
     }
+
     double m,b;
     linreg(k-1,vetR,vetNR,&m,&b);
     free(vetR);
@@ -298,10 +283,10 @@ void fracdimension::linreg(int n, double x[], double y[], double* m, double* b)
     }
 
     double denom = (n * sumx2 - pow(sumx,2));
-    if (denom == 0) {
+    if (denom == 0.0) {
         // singular matrix. can't solve the problem.
-        *m = 0;
-        *b = 0;
+        *m = 0.0;
+        *b = 0.0;
     }
 
     *m = (n * sumxy  -  sumx * sumy) / denom;
