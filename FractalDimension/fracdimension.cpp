@@ -22,24 +22,28 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
     int cont_A = 0;
     bool isElement = false;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
-    double M = region[0];
-    double r = 0;
+    double x = region[0];
+    double y = region[1];
+    double M = x;
+    if(M < y){
+        M = y;
+    }
+    double r = M;
     int k = 1;
     double *vetNR = new double[40];
     double *vetR = new double[40];
 
-    double s = (1+((k-1)*2));
-    while(s < (M/2)){
+    while(r > 0){
         cont_A = 0;
         dim = 0;
         int cont = 0;
-        for(int a = 0; a<region[0]; a = a + (1+((k-1)*2))){
-            for(int b = 0; b<region[1]; b = b + (1+((k-1)*2))){
+        for(int a = 0; a < int(x); a = a + int(r)){
+            for(int b = 0; b < int(y); b = b + int(r)){
                 isElement = false;
-                for(int c = 0; c<(1+((k-1)*2)); c++){
-                    for(int d = 0; d<(1+((k-1)*2)); d++){
+                for(int c = 0; c < r; c++){
+                    for(int d = 0; d < r; d++){
                         const ImageType::IndexType index = {{a+c,b+d}};
-                        if(((a+c) >= 0) && ((a+c) <= region[0]) && ((b+d) >= 0) && ((b+d) <= region[1])){
+                        if(((a+c) >= 0) && ((a+c) <= x) && ((b+d) >= 0) && ((b+d) <= y)){
                             if(image->GetPixel(index) > 0){
                                 isElement = true;
                             }
@@ -53,11 +57,10 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
             }
         }
 
-        r = (1+((k-1)*2))/M;
         vetNR[k] = (log(cont_A));
         vetR[k] = (log(r));
         k++;
-        s = (1+((k-1)*2));
+        r = r/2;
 
     }
     double m,b;

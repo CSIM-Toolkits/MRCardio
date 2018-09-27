@@ -30,11 +30,11 @@
         <longflag>--dimension</longflag>
         <label>Dimension</label>
         <description>Dimension of Image.</description>
-        <default>Differencial Box Counting 2D</default>
-        <element>Minkowski 2D</element>
-        <element>Box Counting 2D</element>
-        <element>Box Counting 3D</element>
-        <element>Differencial Box Counting 2D</element>
+        <default>DifferencialBoxCounting2D</default>
+        <element>Minkowski2D</element>
+        <element>BoxCounting2D</element>
+        <element>BoxCounting3D</element>
+        <element>DifferencialBoxCounting2D</element>
       </string-enumeration>
       <string-enumeration>
           <name>edge</name>

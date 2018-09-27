@@ -182,13 +182,13 @@ double Distance::calcDistance(ImageType2D::Pointer image, int x, int y, int pos)
             const ImageType::IndexType index = {{b,y}};
             if(((y) >= 0) && ((y) <= region[1]) && ((b) >= 0) && ((b) <= region[0])){
                 if(image->GetPixel(index) > 0 && !isElement){
-                    p0[0] = x;
-                    p0[1] = b;
+                    p0[0] = b;
+                    p0[1] = y;
                     isElement = true;
                 }
                 if(isElement && image->GetPixel(index) > 0){
-                    p1[0] = x;
-                    p1[1] = b;
+                    p1[0] = b;
+                    p1[1] = y;
                 }
             }
         }
@@ -199,13 +199,13 @@ double Distance::calcDistance(ImageType2D::Pointer image, int x, int y, int pos)
             const ImageType::IndexType index = {{b,y}};
             if(((y) >= 0) && ((y) <= region[1]) && ((b) >= 0) && ((b) <= region[0])){
                 if(image->GetPixel(index) > 0 && !isElement){
-                    p0[0] = x;
-                    p0[1] = b;
+                    p0[0] = b;
+                    p0[1] = y;
                     isElement = true;
                 }
                 if(isElement && image->GetPixel(index) > 0){
-                    p1[0] = x;
-                    p1[1] = b;
+                    p1[0] = b;
+                    p1[1] = y;
                 }
             }
         }

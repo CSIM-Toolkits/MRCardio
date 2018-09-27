@@ -21,7 +21,7 @@ int DoIt( int argc, char * argv[], T )
 {
     PARSE_ARGS;
 
-    if(dimension == "Box Counting 2D"){
+    if(dimension == "BoxCounting2D"){
         string firstSlice;
         string lastSlice;
         string pathSegmented;
@@ -110,7 +110,7 @@ int DoIt( int argc, char * argv[], T )
         }
     }
 
-    if(dimension == "Minkowski 2D"){
+    if(dimension == "Minkowski2D"){
         string firstSlice;
         string lastSlice;
         string pathSegmented;
@@ -198,7 +198,7 @@ int DoIt( int argc, char * argv[], T )
         }
     }
 
-    if(dimension == "Box Counting 3D"){
+    if(dimension == "BoxCounting3D"){
         typedef    unsigned int InputPixelType;
 
         typedef itk::Image<InputPixelType,  3> InputImageType;
@@ -223,7 +223,7 @@ int DoIt( int argc, char * argv[], T )
 
     }
 
-    if(dimension == "Differencial Box Counting 2D"){
+    if(dimension == "DifferencialBoxCounting2D"){
         string firstSlice;
         string lastSlice;
 
