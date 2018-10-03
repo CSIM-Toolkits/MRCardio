@@ -19,7 +19,7 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
     typedef itk::Image< PixelType, 2> ImageType;
 
     double dim = 0.0;
-    int cont_A = 0;
+    double cont_A = 0.0;
     bool isElement = false;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
     double x = region[0];
@@ -34,7 +34,7 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
     double *vetR = new double[40];
 
     while(r > 2){
-        cont_A = 0;
+        cont_A = 0.0;
         int cont = 0;
         for(int a = 0; a < int(x); a = a + int(r)){
             for(int b = 0; b < int(y); b = b + int(r)){
@@ -59,7 +59,7 @@ double fracdimension::GetBoxCountingDimension2D(ImageType2D::Pointer image){
         vetNR[k] = (log(cont_A));
         vetR[k] = (log(r));
         k++;
-        r = r/2;
+        r = r/2.0;
 
     }
     double m,b;
@@ -148,24 +148,26 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
     double dim = 0.0;
     int cont_A = 0;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
-    double M = region[0];
-    double r = 0;
+    double x = region[0];
+    double y = region[1];
+    double M = x;
+    double r = 0.0;
     int k = 1;
-    double *vetNR = new double[40];
-    double *vetR = new double[40];
-    double s = (1+((k-1)*2));
-    while(s < (M/2)){
-        double min = 999999;
-        double max = 0;
+    double *vetNR = new (nothrow) double[90];
+    double *vetR = new (nothrow) double[90];
+    double s = 2.0;
+    double h = 0.0;
+    while(s <= (M/2)){
+        double min = 9999.0;
+        double max = 0.0;
         cont_A = 0;
-        dim = 0;
         int cont = 0;
-        for(int a= 0; a<region[0]; a = a + (1+((k-1)*2))){
-            for(int b = 0; b<region[1]; b = b + (1+((k-1)*2))){
-                for(int c = 0; c<(1+((k-1)*2)); c++){
-                    for(int d = 0; d<(1+((k-1)*2)); d++){
+        for(int a= 0; a < x; a = a + int(s)){
+            for(int b = 0; b < y; b = b + int(s)){
+                for(int c = 0; c < int(s); c++){
+                    for(int d = 0; d < int(s); d++){
                         const ImageType::IndexType index = {{a+c,b+d}};
-                        if(((a+c) > 0) && ((a+c) < region[0]) && ((b+d) > 0) && ((b+d) < region[1])){
+                        if(((a+c) > 0) && ((a+c) < x) && ((b+d) > 0) && ((b+d) < y)){
                             double minB = image->GetPixel(index);
                             double maxB = image->GetPixel(index);
                             if(minB < min){
@@ -178,25 +180,26 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
                     }
                 }
                 if(max > 0){
-                    int positionMax = ceil(max/s);
-                    int positionMin = ceil(min/s);
+                    h = (s*256)/M;
+                    int positionMax = int(ceil(max/h));
+                    int positionMin = int(ceil(min/h));
                     cont_A = cont_A + (((positionMax)-(positionMin)) +1);
                     cont++;
                 }
             }
         }
 
-        r = (1+((k-1)*2))/M;
+        r = s/M;
         vetNR[k] = (log(cont_A));
         vetR[k] = (log(r));
         k++;
-        s = (1+((k-1)*2));
+        s = s + 1.0;
 
     }
     double m,b;
     linreg(k-1,vetR,vetNR,&m,&b);
-    free(vetR);
-    free(vetNR);
+    delete[] vetR;
+    delete [] vetNR;
     dim = -m;
     return dim;
 }
@@ -213,20 +216,20 @@ double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
     typedef itk::Image< PixelType, 2> ImageType;
 
     double dim = 0.0;
-    int cont_A = 0;
-    int contElement = 0;
+    double cont_A = 0.0;
+    double contElement = 0.0;
     const ImageType::SizeType region = image->GetLargestPossibleRegion().GetSize();
     double x = region[0];
     double y = region[1];
     double M = x;
-    double r = 2;
+    double r = 1.0;
     int k = 1;
-    double *vetNR = new double[40];
-    double *vetR = new double[40];
+    double *vetNR = new (nothrow) double[40];
+    double *vetR = new (nothrow) double[40];
 
-    while(r < (M/2)){
-        cont_A = 0;
-        contElement = 0;
+    while(r < (M/2.0)){
+        cont_A = 0.0;
+        contElement = 0.0;
         for(int a = 0; a < x; a++){
             for(int b = 0; b < y; b++){
                 const ImageType::IndexType origin = {{a,b}};
@@ -244,14 +247,14 @@ double fracdimension::GetMinkowskiDimension2D(ImageType2D::Pointer image){
         }
         vetNR[k] = (log(cont_A));
         vetR[k] = (log(r));
-        r = r * 2;
+        r = r * 2.0;
         k++;
     }
 
     double m,b;
     linreg(k-1,vetR,vetNR,&m,&b);
-    free(vetR);
-    free(vetNR);
+    delete[] vetR;
+    delete [] vetNR;
     dim = 2-m;
     return dim;
 }
