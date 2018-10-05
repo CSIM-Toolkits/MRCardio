@@ -153,8 +153,8 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
     double M = x;
     double r = 0.0;
     int k = 1;
-    double *vetNR = new (nothrow) double[90];
-    double *vetR = new (nothrow) double[90];
+    double *vetNR = new (nothrow) double[160];
+    double *vetR = new (nothrow) double[160];
     double s = 2.0;
     double h = 0.0;
     while(s <= (M/2)){
