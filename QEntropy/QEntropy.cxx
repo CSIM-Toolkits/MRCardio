@@ -1,13 +1,16 @@
 #include "itkImageFileWriter.h"
 #include "itkCastImageFilter.h"
 #include "itkPluginUtilities.h"
+#include "itkImageFileReader.h"
 #include "QEntropyCLP.h"
 #include "itkScalarImageToHistogramGenerator.h"
 #include "itkThresholdImageFilter.h"
+#include "itkAndImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkImage.h"
 #include "entropy.h"
 #include <pwd.h>
+#include <iostream>
 
 using namespace std;
 
@@ -23,85 +26,181 @@ template <class T>
 int DoIt( int argc, char * argv[], T )
 {
     PARSE_ARGS;
-    string pathSegmented = "/temp/cine_";
+    string pathSegmented = "/temp/segmentedFinal_";
+    string pathSecondSegmented = "/temp/entropy/entropy_";
 
     struct passwd *pw = getpwuid(getuid());
     string homedir = pw->pw_dir;
     string final = homedir + pathSegmented;
+    string secondFinal = homedir + pathSecondSegmented;
 
     string pathEntropy = "/temp/entropy/entropy_";
+    string pathSecondEntropy = "/temp/entropy2/secondEntropy_";
     string q_entropy = homedir + pathEntropy;
+    string second_q_entropy = homedir + pathSecondEntropy;
     string firstSlice;
     string lastSlice;
     string pathSlices = "/temp/slices.txt";
     string slicesFile = homedir + pathSlices;
     ifstream slices(slicesFile.c_str());
     if(slices.is_open()){
-        getline(slices,firstSlice);
+        getline(slices, firstSlice);
         getline(slices, lastSlice);
     }
     slices.close();
-    for(int i = atoi(firstSlice.c_str()); i < (atoi(lastSlice.c_str())-1);i++){
+    if(iteration == "1Iteration" || iteration == "2Iteration"){
+        for(int i = atoi(firstSlice.c_str()); i < (atoi(lastSlice.c_str()));i++){
 
-        typedef    unsigned char InputPixelType;
-        typedef    T     OutputPixelType;
+            typedef    unsigned char InputPixelType;
+            typedef    T     OutputPixelType;
 
-        typedef itk::Image<InputPixelType,  2> InputImageType;
-        typedef itk::Image<OutputPixelType, 2> OutputImageType;
+            typedef itk::Image<InputPixelType,  2> InputImageType;
+            typedef itk::Image<OutputPixelType, 2> OutputImageType;
 
-        typedef itk::ImageFileReader<InputImageType>  ReaderType;
-        typedef itk::ImageFileWriter<OutputImageType> WriterType;
+            typedef itk::ImageFileReader<InputImageType>  ReaderType;
+            typedef itk::ImageFileWriter<OutputImageType> WriterType;
 
-        typedef itk::BinaryThresholdImageFilter<
-                InputImageType, InputImageType>  FilterType;
-        typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
+            typedef itk::BinaryThresholdImageFilter<
+                    InputImageType, InputImageType>  FilterType;
+            typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
 
-        typename ReaderType::Pointer reader = ReaderType::New();
-        itk::PluginFilterWatcher watchReader(reader, "Read Volume",
-                                             CLPProcessInformation);
+            typename ReaderType::Pointer reader = ReaderType::New();
+            itk::PluginFilterWatcher watchReader(reader, "Read Volume",
+                                                 CLPProcessInformation);
 
-        reader->SetFileName( inputVolume.c_str() );
-        reader->Update();
+            reader->SetFileName( inputVolume.c_str() );
+            reader->Update();
 
-        string typeTiff = ".tif";
-        stringstream segment;
-        segment<<final.c_str()<<(i+1)<<typeTiff;
-        string filenameSegmented = segment.str();
-        segment.str("");
-        typename ReaderType::Pointer readerFixed = ReaderType::New();
-        readerFixed->SetFileName(filenameSegmented);
-        readerFixed->Update();
+            string typeTiff = ".tif";
+            stringstream segment;
+            if(i<9)
+                segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
+            if(i>=9 && i<99)
+                segment<<final.c_str()<<"0"<<(i+1)<<typeTiff;
+            if(i>=99)
+                segment<<final.c_str()<<(i+1)<<typeTiff;
+            string filenameSegmented = segment.str();
+            segment.str("");
 
-        typedef itk::Image<unsigned char,2> ImageType;
-        ImageType::Pointer imag = readerFixed->GetOutput();
-        entropy ent;
-        double threshold;
-        threshold = ent.Execute(imag,qentropy);
+            typename ReaderType::Pointer readerFixed = ReaderType::New();
+            readerFixed->SetFileName(filenameSegmented);
+            readerFixed->Update();
 
-        typename FilterType::Pointer filter = FilterType::New();
+            typedef itk::Image<unsigned char,2> ImageType;
+            ImageType::Pointer imag = readerFixed->GetOutput();
+            entropy ent;
+            double threshold;
+            threshold = ent.Execute(imag,qentropy);
 
-        filter->SetInput( readerFixed->GetOutput() );
-        //filter->SetUseImageSpacing( useImageSpacing );
-        filter->SetLowerThreshold(threshold);
-        filter->SetUpperThreshold(255);
-        filter->SetOutsideValue(0);
-        filter->SetInsideValue(255);
+            typename FilterType::Pointer filter = FilterType::New();
 
-        typename CastType::Pointer cast = CastType::New();
-        cast->SetInput( filter->GetOutput() );
+            filter->SetInput( readerFixed->GetOutput() );
+            filter->SetLowerThreshold(threshold);
+            filter->SetUpperThreshold(255);
+            filter->SetOutsideValue(0);
+            filter->SetInsideValue(255);
 
-        typename WriterType::Pointer writer = WriterType::New();
+            typename CastType::Pointer cast = CastType::New();
+            cast->SetInput( filter->GetOutput() );
 
-        stringstream stringFile;
-        stringFile<<q_entropy<<(i+1)<<typeTiff;
+            typename WriterType::Pointer writer = WriterType::New();
 
-        string File = stringFile.str();
-        stringFile.str("");
+            stringstream stringFile;
+            stringFile<<q_entropy<<(i+1)<<typeTiff;
 
-        writer->SetFileName(File);
-        writer->SetInput( cast->GetOutput() );
-        //writer->SetUseCompression(1);
-        writer->Update();
+            string File = stringFile.str();
+            stringFile.str("");
+
+            writer->SetFileName(File);
+            writer->SetInput( cast->GetOutput() );
+            writer->Update();
+        }
+    }
+    if(iteration == "2Iteration"){
+        for(int i = atoi(firstSlice.c_str()); i < (atoi(lastSlice.c_str()));i++){
+
+            typedef    unsigned char InputPixelType;
+            typedef    T     OutputPixelType;
+
+            typedef itk::Image<unsigned char, 2>  ImageType;
+
+            typedef itk::Image<InputPixelType,  2> InputImageType;
+            typedef itk::Image<OutputPixelType, 2> OutputImageType;
+
+            typedef itk::ImageFileReader<InputImageType>  ReaderType;
+            typedef itk::ImageFileWriter<OutputImageType> WriterType;
+
+            typedef itk::BinaryThresholdImageFilter<
+                    InputImageType, InputImageType>  FilterType;
+            typedef itk::CastImageFilter<InputImageType, OutputImageType> CastType;
+
+            typename ReaderType::Pointer reader = ReaderType::New();
+            itk::PluginFilterWatcher watchReader(reader, "Read Volume",
+                                                 CLPProcessInformation);
+
+            reader->SetFileName( inputVolume.c_str() );
+            reader->Update();
+
+            string typeTiff = ".tif";
+            stringstream segment;
+            segment<<secondFinal.c_str()<<(i+1)<<typeTiff;
+            string filenameSegmented = segment.str();
+            segment.str("");
+
+            typename ReaderType::Pointer readerFixed = ReaderType::New();
+            readerFixed->SetFileName(filenameSegmented);
+            readerFixed->Update();
+
+            stringstream segmentSecond;
+            if(i<9)
+                segmentSecond<<final.c_str()<<"00"<<(i+1)<<typeTiff;
+            if(i>=9 && i<99)
+                segmentSecond<<final.c_str()<<"0"<<(i+1)<<typeTiff;
+            if(i>=99)
+                segmentSecond<<final.c_str()<<(i+1)<<typeTiff;
+            string filenameSecondSegmented = segmentSecond.str();
+            segmentSecond.str("");
+
+            typename ReaderType::Pointer readerSecond = ReaderType::New();
+            readerSecond->SetFileName(filenameSecondSegmented);
+            readerSecond->Update();
+
+            typedef itk::AndImageFilter <ImageType> AndImageFilterType;
+            AndImageFilterType::Pointer andFilter = AndImageFilterType::New();
+
+            andFilter->SetInput(0, readerFixed->GetOutput());
+            andFilter->SetInput(1, readerSecond->GetOutput());
+            andFilter->Update();
+
+            typedef itk::Image<unsigned char,2> ImageType;
+            ImageType::Pointer imag = andFilter->GetOutput();
+            entropy ent;
+            double threshold;
+            threshold = ent.Execute(imag,qentropy);
+
+            typename FilterType::Pointer filter = FilterType::New();
+
+            filter->SetInput( andFilter->GetOutput() );
+            filter->SetLowerThreshold(threshold);
+            filter->SetUpperThreshold(255);
+            filter->SetOutsideValue(0);
+            filter->SetInsideValue(255);
+
+            typename CastType::Pointer cast = CastType::New();
+            cast->SetInput( filter->GetOutput() );
+
+            typename WriterType::Pointer writer = WriterType::New();
+
+            stringstream stringFile;
+            stringFile<<second_q_entropy<<(i+1)<<typeTiff;
+
+            string File = stringFile.str();
+            stringFile.str("");
+
+            writer->SetFileName(File);
+            writer->SetInput( cast->GetOutput() );
+            writer->Update();
+        }
     }
 
     return EXIT_SUCCESS;

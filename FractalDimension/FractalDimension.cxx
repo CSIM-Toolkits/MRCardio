@@ -46,7 +46,7 @@ int DoIt( int argc, char * argv[], T )
         string slicesFile = homedir + pathSlices;
         ifstream slices(slicesFile.c_str());
         if(slices.is_open()){
-            getline(slices,firstSlice);
+            getline(slices, firstSlice);
             getline(slices, lastSlice);
         }
         slices.close();

@@ -180,7 +180,14 @@ double fracdimension::GetDBCDimension2D(ImageType2D::Pointer image){
                     }
                 }
                 if(max > 0){
-                    h = (s*256)/M;
+                    //h = (s*256)/M;
+                    if (log(M) >= 3.0){
+                        h = s / ceil((log(M) * log(M) - 2));
+                    }
+                    else{
+                        h = s / ceil(log(M));
+                    }
+
                     int positionMax = int(ceil(max/h));
                     int positionMin = int(ceil(min/h));
                     cont_A = cont_A + (((positionMax)-(positionMin)) +1);

@@ -99,22 +99,22 @@ double entropy::Execute(ImageType::Pointer Image, double q_entropy){
         }
     }
 
-    double max_entrop = -9999999;
-    double som_entrop = 0;
-    double entrop_a = 0;
-    double entrop_b = 0;
+    double max_entrop = -9999.0;
+    double som_entrop = 0.0;
+    double entrop_a = 0.0;
+    double entrop_b = 0.0;
     int t;
     if(q_entropy==1.00){
         for(t=first_bin;t<=last_bin;t++){
             entrop_a = 0;
             for(int i=0;i<=t;i++){
-                if(data[i]!=0)
+                if(data[i] != 0.0)
                     entrop_a -= (norm_histo[i]/P1[t]) * log (norm_histo[i]/P1[t]);
 
             }
             entrop_b = 0;
             for(int j=t+1;j<256;j++){
-                if(data[j]!=0)
+                if(data[j] != 0.0)
                     entrop_b -= (norm_histo[j]/P2[t]) * log (norm_histo[j]/P2[t]);
             }
 
@@ -134,14 +134,14 @@ double entropy::Execute(ImageType::Pointer Image, double q_entropy){
         for(t=first_bin;t<=last_bin;t++){
             entrop_a = 0;
             for(int i=0;i<=t;i++){
-                if(data[i]!=0)
+                if(data[i] != 0.0)
                     //entrop_a += pow((norm_histo[i]/P1[t]),q_entropy);
                     //entrop_a += pow((norm_histo[i]),q_entropy);
                     entrop_a += pow((P1[t]),q_entropy);
             }
             entrop_b = 0;
             for(int j=t+1;j<256;j++){
-                if(data[j]!=0)
+                if(data[j] != 0.0)
                     //entrop_b += pow((norm_histo[j]/P2[t]),q_entropy);
                     //entrop_b += pow((norm_histo[j]),q_entropy);
                     entrop_b += pow((P2[t]),q_entropy);

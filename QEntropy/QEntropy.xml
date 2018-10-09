@@ -26,16 +26,25 @@
       <description><![CDATA[Output Volume]]></description>
     </image>
     <double>
-  <name>qentropy</name>
-  <longflag>--qentropy</longflag>
-  <label>QEntropy</label>
-  <description><![CDATA[Conductance of Anisotropic Diffusion]]></description>
-  <default>0.5</default>
-  <constraints>
-    <minimum>0</minimum>
-    <maximum>4</maximum>
-    <step>0.01</step>
-  </constraints>
+      <name>qentropy</name>
+      <longflag>--qentropy</longflag>
+      <label>QEntropy</label>
+      <description><![CDATA[Conductance of Anisotropic Diffusion]]></description>
+      <default>0.5</default>
+      <constraints>
+        <minimum>0</minimum>
+        <maximum>4</maximum>
+        <step>0.01</step>
+      </constraints>
     </double>
+    <string-enumeration>
+        <name>iteration</name>
+        <longflag>--iteration</longflag>
+        <label>Iterations</label>
+        <description>Iterations</description>
+        <default>2Iteration</default>
+        <element>1Iteration</element>
+        <element>2Iteration</element>
+    </string-enumeration>
   </parameters>
 </executable>
