@@ -30,6 +30,7 @@ add_subdirectory(SampleEntropy)
 add_subdirectory(Strain)
 add_subdirectory(Tickness)
 add_subdirectory(Extract)
+add_subdirectory(Classification)
 ## NEXT_MODULE
 
 #-----------------------------------------------------------------------------
