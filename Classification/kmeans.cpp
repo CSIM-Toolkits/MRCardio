@@ -54,9 +54,10 @@ void kmeans::Execute(int first, int last){
 
         kmeansFilter->SetInput(readerFixed->GetOutput());
         kmeansFilter->SetUseNonContiguousLabels(true);
-        kmeansFilter->AddClassWithInitialMean(8);
-        kmeansFilter->AddClassWithInitialMean(110);
-        kmeansFilter->AddClassWithInitialMean(210);
+        kmeansFilter->AddClassWithInitialMean(0);
+        kmeansFilter->AddClassWithInitialMean(64);
+        kmeansFilter->AddClassWithInitialMean(128);
+        kmeansFilter->AddClassWithInitialMean(192);
         kmeansFilter->Update();
 
         KMeansFilterType::ParametersType estimatedMeans = kmeansFilter->GetFinalMeans();
