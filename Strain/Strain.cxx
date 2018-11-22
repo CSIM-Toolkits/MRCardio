@@ -19,10 +19,12 @@ int DoIt( int argc, char * argv[], T )
 {
     PARSE_ARGS;
     string pathSegmented = "/temp/cine_";
+    string pathMyocardiumSegmented = "/temp/segmentedArea_";
 
     struct passwd *pw = getpwuid(getuid());
     string homedir = pw->pw_dir;
     string final = homedir + pathSegmented;
+    string segmented = homedir + pathMyocardiumSegmented;
 
     string firstSlice;
     string lastSlice;
@@ -35,7 +37,7 @@ int DoIt( int argc, char * argv[], T )
     }
     slices.close();
 
-    for(int i = atoi(firstSlice.c_str()); i < (atoi(lastSlice.c_str()) - 4);i++){
+    for(int i = (atoi(firstSlice.c_str())+1); i < (atoi(lastSlice.c_str()));i++){
         typedef    unsigned short InputPixelType;
 
         typedef itk::Image<InputPixelType,  2> InputImageType;
@@ -51,18 +53,30 @@ int DoIt( int argc, char * argv[], T )
 
         typename ReaderType::Pointer readerFixed = ReaderType::New();
         typename ReaderType::Pointer readerMoving = ReaderType::New();
+        typename ReaderType::Pointer readerSegmented = ReaderType::New();
 
         typedef itk::Image<unsigned short,2> ImageType2D;
         string typeTiff = ".tif";
         stringstream segment;
         stringstream segmentMoving;
 
-        segment<<final.c_str()<<(i+1)<<typeTiff;
-        segmentMoving<<final.c_str()<<(i+4)<<typeTiff;
+
+        segment<<final.c_str()<<i<<typeTiff;
+        segmentMoving<<final.c_str()<<(i+1)<<typeTiff;
         string filenameSegmented = segment.str();
         string filenameSegmentedMoving = segmentMoving.str();
         segment.str("");
         segmentMoving.str("");
+
+        stringstream stringFileSegmented;
+        if(i<9)
+            stringFileSegmented<<segmented<<"00"<<(i+1)<<typeTiff;
+        if(i>=9 && i<99)
+            stringFileSegmented<<segmented<<"0"<<(i+1)<<typeTiff;
+        if(i>=99)
+            stringFileSegmented<<segmented<<(i+1)<<typeTiff;
+        string segmentedFile = stringFileSegmented.str();
+        stringFileSegmented.str("");
 
         readerFixed->SetFileName(filenameSegmented);
         readerFixed->Update();
@@ -70,10 +84,14 @@ int DoIt( int argc, char * argv[], T )
         readerMoving->SetFileName(filenameSegmentedMoving);
         readerMoving->Update();
 
+        readerSegmented->SetFileName(segmentedFile);
+        readerSegmented->Update();
+
         ImageType2D::Pointer imagFixed = readerFixed->GetOutput();
         ImageType2D::Pointer imagMoving = readerMoving->GetOutput();
+        ImageType2D::Pointer imagSegmented = readerSegmented->GetOutput();
         Mapping map;
-        map.calcMapping(imagFixed, imagMoving, i);
+        map.calcMapping(imagFixed, imagMoving, imagSegmented, i);
     }
 
     return EXIT_SUCCESS;

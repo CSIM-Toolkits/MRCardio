@@ -6,6 +6,7 @@
 #include "itkHistogramMatchingImageFilter.h"
 #include "itkCastImageFilter.h"
 #include "itkWarpImageFilter.h"
+#include <itkAndImageFilter.h>
 #include <pwd.h>
 
 using namespace std;
@@ -31,7 +32,7 @@ Mapping::Mapping()
  * @param movingImag
  * @param index
  */
-void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movingImag, int index){
+void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movingImag, ImageType::Pointer segmentedImag, int index){
 
     const unsigned int Dimension = 2;
     typedef unsigned short PixelType;
@@ -63,7 +64,7 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     matcher->SetReferenceImage( fixedImageCaster->GetOutput() );
 
     matcher->SetNumberOfHistogramLevels( 256 );
-    matcher->SetNumberOfMatchPoints( 7 );
+    matcher->SetNumberOfMatchPoints( 50 );
 
     matcher->ThresholdAtMeanIntensityOn();
 
@@ -78,7 +79,7 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     filter->SetFixedImage( fixedImageCaster->GetOutput() );
     filter->SetMovingImage( matcher->GetOutput() );
 
-    filter->SetNumberOfIterations( 5 );
+    filter->SetNumberOfIterations( 10 );
     filter->SetStandardDeviations( 1.0 );
 
     filter->Update();
@@ -107,6 +108,7 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     typedef itk::CastImageFilter<
             MovingImageType,
             OutputImageType >          CastFilterType;
+
     typedef itk::ImageFileWriter< OutputImageType >  WriterType;
 
     WriterType::Pointer      writer =  WriterType::New();
@@ -147,7 +149,6 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     VectorImage2DType::IndexType   index2D  = region2D.GetIndex();
     VectorImage2DType::SizeType    size2D   = region2D.GetSize();
 
-
     typedef itk::Vector< float,       3 >  Vector3DType;
     typedef itk::Image< Vector3DType, 3 >  VectorImage3DType;
 
@@ -176,7 +177,6 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     vectorImage3D->Allocate();
 
     typedef itk::ImageRegionConstIterator< VectorImage2DType > Iterator2DType;
-
     typedef itk::ImageRegionIterator< VectorImage3DType > Iterator3DType;
 
     Iterator2DType  it2( vectorImage2D, region2D );
@@ -191,10 +191,13 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     vector3D[2] = 0; // set Z component to zero.
 
     while( !it2.IsAtEnd() ){
-        vector2D = it2.Get();
-        vector3D[0] = vector2D[0];
-        vector3D[1] = vector2D[1];
-        it3.Set( vector3D );
+        const ImageType::IndexType index = it2.GetIndex();
+        if(segmentedImag->GetPixel(index) > 0){
+            vector2D = it2.Get();
+            vector3D[0] = vector2D[0];
+            vector3D[1] = vector2D[1];
+            it3.Set( vector3D );
+        }
         ++it2;
         ++it3;
     }
