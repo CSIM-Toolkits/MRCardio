@@ -20,14 +20,19 @@ kmeans::kmeans()
     this->slices = "/temp/slices.txt";
     this->segmentedFinal = "/temp/segmentedFinal_";
     this->extractValues = "/temp/extractedValuesInternal.txt";
-    this->pathKmeans = "/temp/classification/kmeans_";
+    this->pathKmeans = "/temp/classification/texture/kmeans_";
     this->pathSegmentedFinal = this->homedir + this->segmentedFinal;
     this->pathExtractValues = this->homedir + this->extractValues;
     this->km = homedir + this->pathKmeans;
 
+    this->magnitudeFinal = "/temp/strain/magnitude_";
+    this->pathMagnitudeKmeans = "/temp/classification/magnitude/magnitudeKMeans_";
+    this->pathMagnitudeFinal = this->homedir + this->magnitudeFinal;
+    this->magnitudeKm = homedir + this->pathMagnitudeKmeans;
+
 }
 
-void kmeans::Execute(int first, int last){
+void kmeans::classTexture(int first, int last){
 
     for(int i =first; i<last;i++){
         ImageType::Pointer image = ImageType::New();
@@ -113,4 +118,86 @@ void kmeans::Execute(int first, int last){
         writer->Update();
     }
 
+}
+
+void kmeans::classMagnitude(int first, int last){
+
+    for(int i =first; i<last;i++){
+        ImageType::Pointer image = ImageType::New();
+
+        typedef itk::ScalarImageKmeansImageFilter< ImageType > KMeansFilterType;
+        typedef itk::ImageFileReader<ImageType>  ReaderType;
+        typedef itk::ImageFileWriter<ImageType> WriterType;
+
+        KMeansFilterType::Pointer kmeansFilter = KMeansFilterType::New();
+        string typeTiff = ".tif";
+        stringstream segment;
+        segment<<pathMagnitudeFinal.c_str()<<(i+1)<<typeTiff;
+        string filenameSegmented = segment.str();
+        segment.str("");
+
+        typename ReaderType::Pointer readerFixed = ReaderType::New();
+        readerFixed->SetFileName(filenameSegmented);
+        readerFixed->Update();
+
+        kmeansFilter->SetInput(readerFixed->GetOutput());
+        kmeansFilter->SetUseNonContiguousLabels(true);
+        kmeansFilter->AddClassWithInitialMean(0);
+        kmeansFilter->AddClassWithInitialMean(64);
+        kmeansFilter->AddClassWithInitialMean(128);
+        kmeansFilter->AddClassWithInitialMean(192);
+        kmeansFilter->Update();
+
+        KMeansFilterType::ParametersType estimatedMeans = kmeansFilter->GetFinalMeans();
+
+        const unsigned int numberOfClasses = estimatedMeans.Size();
+
+        for(unsigned int i = 0 ; i < numberOfClasses ; ++i){
+            std::cout << "cluster[" << i << "] ";
+            std::cout << "    estimated mean : " << estimatedMeans[i] << std::endl;
+        }
+
+        typedef KMeansFilterType::OutputImageType  OutputImageType;
+
+        typedef itk::RelabelComponentImageFilter<
+                OutputImageType,
+                OutputImageType > RelabelFilterType;
+
+        RelabelFilterType::Pointer relabeler = RelabelFilterType::New();
+
+        relabeler->SetInput( kmeansFilter->GetOutput() );
+
+        typedef itk::RescaleIntensityImageFilter< ImageType, ImageType > RescaleFilterType;
+        RescaleFilterType::Pointer rescaleFilter = RescaleFilterType::New();
+        rescaleFilter->SetInput(relabeler->GetOutput());
+        rescaleFilter->SetOutputMinimum(0);
+        rescaleFilter->SetOutputMaximum(255);
+
+        typedef RelabelFilterType::ObjectSizeInPixelsContainerType SizesType;
+
+        const SizesType &  sizes = relabeler->GetSizeOfObjectsInPixels();
+
+        SizesType::const_iterator sizeItr = sizes.begin();
+        SizesType::const_iterator sizeEnd = sizes.end();
+
+        std::cout << "Number of pixels per class " << std::endl;
+        unsigned int kclass = 0;
+        while( sizeItr != sizeEnd ){
+            std::cout << "Class " << kclass << " = " << *sizeItr << std::endl;
+            ++kclass;
+            ++sizeItr;
+        }
+
+        typename WriterType::Pointer writer = WriterType::New();
+
+        stringstream stringFile;
+        stringFile<<magnitudeKm<<(i+1)<<typeTiff;
+
+        string File = stringFile.str();
+        stringFile.str("");
+
+        writer->SetFileName(File);
+        writer->SetInput( rescaleFilter->GetOutput() );
+        writer->Update();
+    }
 }

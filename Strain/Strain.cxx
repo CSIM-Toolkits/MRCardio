@@ -19,12 +19,15 @@ int DoIt( int argc, char * argv[], T )
 {
     PARSE_ARGS;
     string pathSegmented = "/temp/cine_";
+    string pathVector = "/temp/strain/vector_";
+
     string pathMyocardiumSegmented = "/temp/segmentedArea_";
 
     struct passwd *pw = getpwuid(getuid());
     string homedir = pw->pw_dir;
     string final = homedir + pathSegmented;
     string segmented = homedir + pathMyocardiumSegmented;
+    string vector = homedir + pathVector;
 
     string firstSlice;
     string lastSlice;
@@ -56,6 +59,7 @@ int DoIt( int argc, char * argv[], T )
         typename ReaderType::Pointer readerSegmented = ReaderType::New();
 
         typedef itk::Image<unsigned short,2> ImageType2D;
+        typedef itk::VectorImage<float,2> VectorImageType;
         string typeTiff = ".tif";
         stringstream segment;
         stringstream segmentMoving;
@@ -92,6 +96,21 @@ int DoIt( int argc, char * argv[], T )
         ImageType2D::Pointer imagSegmented = readerSegmented->GetOutput();
         Mapping map;
         map.calcMapping(imagFixed, imagMoving, imagSegmented, i);
+
+        string typeMha = ".mha";
+        stringstream vectorFile;
+        vectorFile<<vector.c_str()<<i+1<<typeMha;
+        string filenameVector = vectorFile.str();
+        vectorFile.str("");
+
+        typedef itk::ImageFileReader< VectorImageType >  VectorReaderType;
+        VectorReaderType::Pointer vectorReader = VectorReaderType::New();
+        vectorReader->SetFileName(filenameVector);
+        vectorReader->Update();
+
+        VectorImageType::Pointer vectorImage = vectorReader->GetOutput();
+
+        map.calcMagnitude(vectorImage, i);
     }
 
     return EXIT_SUCCESS;

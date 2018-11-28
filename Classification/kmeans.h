@@ -11,7 +11,8 @@ public:
     kmeans();
     typedef unsigned char PixelType;
     typedef itk::Image<PixelType,2> ImageType;
-    void Execute(int first, int last);
+    void classTexture(int first, int last);
+    void classMagnitude(int first, int last);
     int t_final;
 
     struct passwd *pw;
@@ -25,6 +26,11 @@ public:
     string pathExtractValues;
     string pathKmeans;
     string km;
+
+    string magnitudeFinal;
+    string pathMagnitudeFinal;
+    string pathMagnitudeKmeans;
+    string magnitudeKm;
 
 
 };

@@ -20,9 +20,11 @@ Mapping::Mapping()
     this->deformable = "/temp/strain/deformable_";
     this->vector = "/temp/strain/vector_";
     this->field = "/temp/strain/field_";
+    this->magnitude = "/temp/strain/magnitude_";
     this->pathDeformable = this->homedir + this->deformable;
     this->pathVector = this->homedir + this->vector;
     this->pathField = this->homedir + this->field;
+    this->PathMagnitude = homedir + magnitude;
 
 }
 
@@ -220,5 +222,35 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     {
         std::cerr << excp << std::endl;
     }
+
+}
+
+void Mapping::calcMagnitude(VectorImageType::Pointer vectorImage, int index){
+    typedef itk::VectorImage< float,  2 >    VectorImageType;
+    typedef itk::Image< unsigned char, 2 >   UnsignedCharImageType;
+
+    typedef itk::ImageFileWriter< UnsignedCharImageType >  WriterType;
+
+    typedef itk::VectorMagnitudeImageFilter<VectorImageType, UnsignedCharImageType >  VectorMagnitudeFilterType;
+    VectorMagnitudeFilterType::Pointer magnitudeFilter = VectorMagnitudeFilterType::New();
+    magnitudeFilter->SetInput(vectorImage);
+
+    typedef itk::RescaleIntensityImageFilter<UnsignedCharImageType, UnsignedCharImageType > rescaleFilterType;
+
+    rescaleFilterType::Pointer rescaler = rescaleFilterType::New();
+    rescaler->SetOutputMinimum(0);
+    rescaler->SetOutputMaximum(255);
+    rescaler->SetInput( magnitudeFilter->GetOutput() );
+
+    WriterType::Pointer writer = WriterType::New();
+    string typeTiff = ".tif";
+    stringstream stringFileMagnitude;
+    stringFileMagnitude<<PathMagnitude<<(index+1)<<typeTiff;
+
+    string magnitudeFile = stringFileMagnitude.str();
+    stringFileMagnitude.str("");
+    writer->SetFileName(magnitudeFile);
+    writer->SetInput( rescaler->GetOutput() );
+    writer->Update();
 
 }
