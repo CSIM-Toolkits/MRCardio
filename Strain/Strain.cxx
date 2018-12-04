@@ -73,12 +73,12 @@ int DoIt( int argc, char * argv[], T )
         segmentMoving.str("");
 
         stringstream stringFileSegmented;
-        if(i<9)
-            stringFileSegmented<<segmented<<"00"<<(i+1)<<typeTiff;
-        if(i>=9 && i<99)
-            stringFileSegmented<<segmented<<"0"<<(i+1)<<typeTiff;
-        if(i>=99)
-            stringFileSegmented<<segmented<<(i+1)<<typeTiff;
+        if(i<=9)
+            stringFileSegmented<<segmented<<"00"<<(i)<<typeTiff;
+        if(i>9 && i<=99)
+            stringFileSegmented<<segmented<<"0"<<(i)<<typeTiff;
+        if(i>99)
+            stringFileSegmented<<segmented<<(i)<<typeTiff;
         string segmentedFile = stringFileSegmented.str();
         stringFileSegmented.str("");
 
@@ -99,7 +99,7 @@ int DoIt( int argc, char * argv[], T )
 
         string typeMha = ".mha";
         stringstream vectorFile;
-        vectorFile<<vector.c_str()<<i+1<<typeMha;
+        vectorFile<<vector.c_str()<<i<<typeMha;
         string filenameVector = vectorFile.str();
         vectorFile.str("");
 

@@ -122,7 +122,7 @@ void kmeans::classTexture(int first, int last){
 
 void kmeans::classMagnitude(int first, int last){
 
-    for(int i =first; i<last;i++){
+    for(int i =first; i<(last-1);i++){
         ImageType::Pointer image = ImageType::New();
 
         typedef itk::ScalarImageKmeansImageFilter< ImageType > KMeansFilterType;

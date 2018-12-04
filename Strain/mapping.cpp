@@ -117,7 +117,7 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     CastFilterType::Pointer  caster =  CastFilterType::New();
 
     stringstream stringFileDeformable;
-    stringFileDeformable<<pathDeformable<<(index+1)<<typeMha;
+    stringFileDeformable<<pathDeformable<<(index)<<typeMha;
 
     string deformableFile = stringFileDeformable.str();
     stringFileDeformable.str("");
@@ -132,7 +132,7 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     FieldWriterType::Pointer fieldWriter = FieldWriterType::New();
 
     stringstream stringFileField;
-    stringFileField<<pathField<<(index+1)<<typeMha;
+    stringFileField<<pathField<<(index)<<typeMha;
 
     string fieldFile = stringFileField.str();
     stringFileField.str("");
@@ -207,7 +207,7 @@ void Mapping::calcMapping(ImageType::Pointer fixedImag, ImageType::Pointer movin
     writer3D->SetInput( vectorImage3D );
 
     stringstream stringFileVector;
-    stringFileVector<<pathVector<<(index+1)<<typeMha;
+    stringFileVector<<pathVector<<(index)<<typeMha;
 
     string vectorFile = stringFileVector.str();
     stringFileVector.str("");
@@ -245,7 +245,7 @@ void Mapping::calcMagnitude(VectorImageType::Pointer vectorImage, int index){
     WriterType::Pointer writer = WriterType::New();
     string typeTiff = ".tif";
     stringstream stringFileMagnitude;
-    stringFileMagnitude<<PathMagnitude<<(index+1)<<typeTiff;
+    stringFileMagnitude<<PathMagnitude<<(index)<<typeTiff;
 
     string magnitudeFile = stringFileMagnitude.str();
     stringFileMagnitude.str("");

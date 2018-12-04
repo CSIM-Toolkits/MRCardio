@@ -281,7 +281,7 @@ int DoIt( int argc, char * argv[], TPixel )
                 reader->SetFileName( inputVolume.c_str() );
                 reader->Update();
                 typedef itk::Image<float,2> ImageType;
-                string typeTiff = ".png";
+                string typeTiff = ".tif";
                 stringstream segment;
                 if(i<9)
                     segment<<final.c_str()<<"00"<<(i+1)<<typeTiff;
